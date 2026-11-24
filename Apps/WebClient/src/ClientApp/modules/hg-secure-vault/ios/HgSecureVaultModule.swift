@@ -108,7 +108,12 @@ public class HgSecureVaultModule: Module {
     let context = LAContext()
     var canError: NSError?
     guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &canError) else {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "Device security is not set up")
+      // no passcode: the key, kept only while one is set, went with it
+      if canError?.code == LAError.Code.passcodeNotSet.rawValue {
+        promise.reject("ERR_VAULT_NO_KEY", "Device security is not set up")
+      } else {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "Could not ask (\(canError?.code ?? 0))")
+      }
       return
     }
     context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: prompt) { passed, error in
@@ -152,12 +157,15 @@ public class HgSecureVaultModule: Module {
     return SecKeyCreateRandomKey(attributes as CFDictionary, nil)
   }
 
-  private func privateKey(context: LAContext) -> SecKey? {
+  /** `status`: why there is none, so a key that is gone can be told from one that could not be read this time. */
+  private func privateKey(context: LAContext, status: UnsafeMutablePointer<OSStatus>? = nil) -> SecKey? {
     var query = privateKeyQuery()
     query[kSecReturnRef as String] = true
     query[kSecUseAuthenticationContext as String] = context
     var item: CFTypeRef?
-    guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess else { return nil }
+    let result = SecItemCopyMatching(query as CFDictionary, &item)
+    status?.pointee = result
+    guard result == errSecSuccess else { return nil }
     return (item as! SecKey)
   }
 
@@ -226,8 +234,14 @@ public class HgSecureVaultModule: Module {
       context = LAContext()
       context.localizedReason = prompt
     }
-    guard let secret = privateKey(context: context) else {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "There is no key")
+    var status: OSStatus = errSecSuccess
+    guard let secret = privateKey(context: context, status: &status) else {
+      // gone with the passcode it was kept under, as opposed to a Keychain that could not be read this time
+      if status == errSecItemNotFound {
+        promise.reject("ERR_VAULT_NO_KEY", "There is no key")
+      } else {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "Could not read the key (\(status))")
+      }
       return
     }
     // This is the step the OS guards: it asks for biometrics or the passcode here, unless a prompt has just passed.

@@ -1,9 +1,16 @@
-import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    jest,
+} from "@jest/globals";
 import * as SecureStore from "expo-secure-store";
 
 import { recordCache } from "@/services/recordCache";
 import { vault, type VaultUnlock } from "@/services/vault";
-import { useAppLockStore } from "@/stores/appLock.store";
+import { setSessionLock, useAppLockStore } from "@/stores/appLock.store";
 
 jest.mock("@/services/vault", () => ({
     vault: {
@@ -219,6 +226,103 @@ describe("app lock store", () => {
             secure.deleteItemAsync.mockRejectedValue(new Error("locked"));
             await expect(store().disable()).resolves.toBe(false);
             expect(store().enabled).toBe(true);
+        });
+    });
+
+    describe("the login's tokens, sealed like the records", () => {
+        const hooks = {
+            seal: jest.fn(async () => undefined),
+            unseal: jest.fn(async (): Promise<boolean> => true),
+            protect: jest.fn(async (_on: boolean) => undefined),
+        };
+        let remove: () => void = () => undefined;
+        beforeEach(() => {
+            hooks.seal.mockReset().mockResolvedValue(undefined);
+            hooks.unseal.mockReset().mockResolvedValue(true);
+            hooks.protect.mockReset().mockResolvedValue(undefined);
+            remove = setSessionLock(hooks);
+        });
+        afterEach(() => remove());
+
+        it("locking takes them out of memory", () => {
+            store().lock();
+            expect(hooks.seal).toHaveBeenCalledTimes(1);
+        });
+
+        it("unlocking brings them back before the lock lifts", async () => {
+            hooks.unseal.mockImplementation(async () => {
+                expect(store().locked).toBe(true);
+                return true;
+            });
+            useAppLockStore.setState({ locked: true });
+            await expect(store().unlock()).resolves.toBe(true);
+            expect(hooks.unseal).toHaveBeenCalledTimes(1);
+            expect(store().locked).toBe(false);
+        });
+
+        it("stays locked when they can't be brought back", async () => {
+            hooks.unseal.mockResolvedValue(false);
+            useAppLockStore.setState({ locked: true });
+            await expect(store().unlock()).resolves.toBe(false);
+            expect(store().locked).toBe(true);
+            expect(store().authenticating).toBe(false);
+        });
+
+        it("a launch's opening runs instead, and stays for the next unlock when it can't finish", async () => {
+            const beforeUnlock = jest.fn(async () => false);
+            useAppLockStore.setState({ locked: true, beforeUnlock });
+            await expect(store().unlock()).resolves.toBe(false);
+            expect(hooks.unseal).not.toHaveBeenCalled();
+            expect(store().locked).toBe(true);
+            expect(store().beforeUnlock).toBe(beforeUnlock);
+            useAppLockStore.setState({ beforeUnlock: undefined });
+        });
+
+        it("counts as authenticating while the opening runs, so a second prompt can't start it again", async () => {
+            let finish: () => void = () => undefined;
+            const beforeUnlock = jest.fn(
+                () => new Promise<void>((resolve) => (finish = resolve))
+            );
+            useAppLockStore.setState({ locked: true, beforeUnlock });
+            const first = store().unlock();
+            await new Promise((resolve) => setImmediate(resolve));
+            expect(store().authenticating).toBe(true);
+            // still set: the lock isn't dropped for want of a login meanwhile
+            expect(store().beforeUnlock).toBe(beforeUnlock);
+            await expect(store().unlock()).resolves.toBe(false);
+            finish();
+            await expect(first).resolves.toBe(true);
+            expect(beforeUnlock).toHaveBeenCalledTimes(1);
+            expect(store().beforeUnlock).toBeUndefined();
+        });
+
+        it("turning on seals the stored login", async () => {
+            await expect(store().enable()).resolves.toBe(true);
+            expect(hooks.protect).toHaveBeenCalledWith(true);
+        });
+
+        it("stays off, and forgets the opt-in, when the login can't be sealed", async () => {
+            hooks.protect.mockRejectedValue(new Error("no vault"));
+            await expect(store().enable()).resolves.toBe(false);
+            expect(store().enabled).toBe(false);
+            expect(secure.deleteItemAsync).toHaveBeenCalledWith(KEY);
+        });
+
+        it("turning off unseals the stored login before the key goes", async () => {
+            useAppLockStore.setState({ enabled: true });
+            jest.mocked(vault.destroy).mockImplementation(async () => {
+                expect(hooks.protect).toHaveBeenCalledWith(false);
+            });
+            await expect(store().disable()).resolves.toBe(true);
+            expect(vault.destroy).toHaveBeenCalled();
+        });
+
+        it("stays on, key and all, when the login can't be unsealed", async () => {
+            useAppLockStore.setState({ enabled: true });
+            hooks.protect.mockRejectedValue(new Error("locked"));
+            await expect(store().disable()).resolves.toBe(false);
+            expect(store().enabled).toBe(true);
+            expect(vault.destroy).not.toHaveBeenCalled();
         });
     });
 });

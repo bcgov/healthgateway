@@ -11,8 +11,9 @@ import {
 import { HgButton } from "@/components/common";
 import { OverAppScreen } from "@/components/site/OverAppScreen";
 import { useLoginLabel } from "@/navigation/login";
+import { describeError, logger } from "@/services/logger";
 import { useAppLockStore } from "@/stores/appLock.store";
-import { useAuthStore } from "@/stores/auth.store";
+import { signOutFromLock } from "@/stores/auth.store";
 import { LandingIntro } from "@/views/public/landing/LandingIntro";
 
 /** Old iOS app, ticket HAPP-637: the first Face ID prompt fails if asked for as the view appears. */
@@ -20,13 +21,12 @@ const AUTO_PROMPT_DELAY_MS = 500;
 
 /**
  * Looks like the landing page, which the user recognises as the way in: the system prompt opens over it by itself, and
- * passing it uncovers the app where they left it. The full login is the way out, for a failed or cancelled prompt; so is
- * restarting the app, which asks again.
+ * passing it uncovers the app where they left it. After a cancelled prompt, the login button asks again, as ending the login
+ * takes the same prompt, and then signs out to a new login; restarting the app also asks again.
  */
 function LockedView() {
     const unlock = useAppLockStore((s) => s.unlock);
     const authenticating = useAppLockStore((s) => s.authenticating);
-    const signOut = useAuthStore((s) => s.signOut);
     const [signingOut, setSigningOut] = useState(false);
     const loginLabel = useLoginLabel();
 
@@ -44,7 +44,9 @@ function LockedView() {
             timer = setTimeout(() => {
                 if (asked || AppState.currentState !== "active") return;
                 asked = true;
-                void unlock();
+                unlock().catch((error: unknown) =>
+                    logger.warn(`Could not unlock: ${describeError(error)}`)
+                );
             }, AUTO_PROMPT_DELAY_MS);
         };
         askSoon();
@@ -72,10 +74,17 @@ function LockedView() {
                     disabled={signingOut || authenticating}
                     onPress={() => {
                         setSigningOut(true);
-                        useAppLockStore.setState({ beforeUnlock: undefined });
-                        // the lock lifts once the session is gone (useAppLockLifecycle); the guard goes to login
-                        useAuthStore.setState({ loginRequest: {} });
-                        void signOut();
+                        // ending the login takes the same prompt as unlocking; turned down, the lock stays as it was
+                        signOutFromLock()
+                            .then((signedOut) => {
+                                if (!signedOut) setSigningOut(false);
+                            })
+                            .catch((error: unknown) => {
+                                logger.warn(
+                                    `Could not sign out: ${describeError(error)}`
+                                );
+                                setSigningOut(false);
+                            });
                     }}
                 />
             </ScrollView>

@@ -8,6 +8,7 @@ import {
 } from "@jest/globals";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import type { UnsealResult } from "@/services/auth/authService";
 import { services } from "@/services/container";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
@@ -19,6 +20,14 @@ import {
 import { useNotificationStore } from "@/stores/notification.store";
 import { useUserStore } from "@/stores/user.store";
 import { configFixture, resetStores } from "@/test/fixtures";
+
+jest.mock("@/services/vault", () => ({
+    vault: {
+        unlock: jest.fn(async () => "unlocked"),
+        lock: jest.fn(),
+        destroy: jest.fn(async () => undefined),
+    },
+}));
 
 const mockCreateAuth = jest.fn<(config: unknown) => unknown>();
 jest.mock("@/services/auth", () => ({
@@ -204,5 +213,104 @@ describe("native sign-in settings", () => {
             MobileConfigurationError
         );
         expect(mockCreateAuth).not.toHaveBeenCalled();
+    });
+});
+
+describe("device security, a sealed login", () => {
+    const retrieveEssentialData = jest.fn(async () => undefined);
+    const realRetrieve = useUserStore.getState().retrieveEssentialData;
+    const sealedService = (result: UnsealResult) => {
+        let sealed = true;
+        const service = {
+            ...fakeService(
+                Promise.resolve(),
+                Promise.resolve({ hdid: "OLD", idp: "BCSC" })
+            ),
+            init: jest.fn(async (_options?: unknown) => undefined),
+            isSealed: () => sealed,
+            unseal: jest.fn(async (_options?: unknown) => {
+                if (result === "unsealed" || result === "unreadable")
+                    sealed = false;
+                return result;
+            }),
+        };
+        mockCreateAuth.mockReturnValue(service);
+        return service;
+    };
+
+    beforeEach(() => {
+        jest.spyOn(services.config, "getConfiguration").mockResolvedValue(
+            configFixture
+        );
+        jest.spyOn(useAppLockStore.getState(), "hydrate").mockImplementation(
+            async () => useAppLockStore.setState({ enabled: true })
+        );
+        retrieveEssentialData.mockClear();
+        useUserStore.setState({ retrieveEssentialData });
+    });
+    afterEach(() => {
+        clearSession();
+        jest.restoreAllMocks();
+        mockCreateAuth.mockReset();
+        useUserStore.setState({ retrieveEssentialData: realRetrieve });
+        useAppLockStore.setState({
+            enabled: false,
+            locked: false,
+            beforeUnlock: undefined,
+        });
+        resetStores();
+    });
+
+    it("locks at launch, and uses nothing of the login until the prompt passes", async () => {
+        const service = sealedService("unsealed");
+        await expect(bootstrap("/")).resolves.toBe(true);
+        expect(service.init).toHaveBeenCalledWith({
+            keepSessionOnFailure: true,
+            sealed: true,
+        });
+        expect(useAppLockStore.getState().locked).toBe(true);
+        expect(useAppLockStore.getState().beforeUnlock).toBeDefined();
+        expect(service.unseal).not.toHaveBeenCalled();
+        expect(service.getOidcUserInfo).not.toHaveBeenCalled();
+        expect(useAuthStore.getState().isAuthenticated).toBe(false);
+    });
+
+    it("unlocking unseals the login, then signs in and loads it, before the lock lifts", async () => {
+        const service = sealedService("unsealed");
+        await bootstrap("/");
+        await expect(useAppLockStore.getState().unlock()).resolves.toBe(true);
+        expect(service.unseal).toHaveBeenCalledWith({ restore: true });
+        expect(useAuthStore.getState().isAuthenticated).toBe(true);
+        expect(retrieveEssentialData).toHaveBeenCalled();
+        expect(useAppLockStore.getState().locked).toBe(false);
+        expect(useAppLockStore.getState().beforeUnlock).toBeUndefined();
+    });
+
+    it("stays locked when the key's own prompt is turned down", async () => {
+        const service = sealedService("cancelled");
+        await bootstrap("/");
+        await expect(useAppLockStore.getState().unlock()).resolves.toBe(false);
+        expect(useAppLockStore.getState().locked).toBe(true);
+        expect(service.getOidcUserInfo).not.toHaveBeenCalled();
+        // the next unlock tries again
+        expect(useAppLockStore.getState().beforeUnlock).toBeDefined();
+    });
+
+    it("stays locked when the login could not be read this time", async () => {
+        const service = sealedService("unavailable");
+        await bootstrap("/");
+        await expect(useAppLockStore.getState().unlock()).resolves.toBe(false);
+        expect(useAppLockStore.getState().locked).toBe(true);
+        expect(service.getOidcUserInfo).not.toHaveBeenCalled();
+        expect(useAppLockStore.getState().beforeUnlock).toBeDefined();
+    });
+
+    it("lifts the lock onto the login when nothing can read the login", async () => {
+        const service = sealedService("unreadable");
+        await bootstrap("/");
+        await expect(useAppLockStore.getState().unlock()).resolves.toBe(true);
+        expect(service.getOidcUserInfo).not.toHaveBeenCalled();
+        expect(useAuthStore.getState().isAuthenticated).toBe(false);
+        expect(useAppLockStore.getState().locked).toBe(false);
     });
 });

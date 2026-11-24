@@ -53,6 +53,9 @@ private const val KEY_BYTES = 32
 /** A prompt that has just passed covers the read that follows it, so the lock screen doesn't lead to a second one. */
 private const val RECENT_PROMPT_SECONDS = 30
 
+/** The key pair is not in the Keystore: removed, as opposed to one that could not be used this time. */
+private class NoKeyException : GeneralSecurityException("There is no key")
+
 /**
  * The record cache's RSA key pair. The private key lives in StrongBox, or otherwise the Keystore's own hardware, and only
  * works after strong biometrics or the device PIN. Saving needs only the public key: each save makes a new AES key and
@@ -120,6 +123,8 @@ class HgSecureVaultModule : Module() {
       // the device's security was removed and set up again: the old key is gone for good
       deleteKeys()
       promise.reject("ERR_VAULT_INVALIDATED", "The key was invalidated", error)
+    } else if (error is NoKeyException) {
+      promise.reject("ERR_VAULT_NO_KEY", "There is no key", error)
     } else {
       promise.reject("ERR_VAULT_CRYPTO", error.message ?: "Could not decrypt", error)
     }
@@ -153,7 +158,13 @@ class HgSecureVaultModule : Module() {
         activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
       }
     if (!canAuthenticate) {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "Device security is not set up", null)
+      // no screen lock: the key, which needs one, is no good any more. Anything else may pass at the next try.
+      val secure = activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
+      promise.reject(
+        if (secure) "ERR_VAULT_UNAVAILABLE" else "ERR_VAULT_NO_KEY",
+        "Device security is not set up",
+        null
+      )
       return
     }
 
@@ -220,7 +231,7 @@ class HgSecureVaultModule : Module() {
     val sealed = ByteArray(input.remaining()).also { input.get(it) }
     val secret =
       keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
-        ?: throw GeneralSecurityException("There is no key")
+        ?: throw NoKeyException()
     val rsa = Cipher.getInstance(RSA_OAEP)
     rsa.init(Cipher.DECRYPT_MODE, secret, oaep)
     val aesKey = rsa.doFinal(locked)

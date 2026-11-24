@@ -1,0 +1,391 @@
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
+import * as SecureStore from "expo-secure-store";
+
+import { NativeAuthService } from "@/services/auth/authService.impl.native";
+import {
+    SEALED_STORAGE_KEY,
+    STORAGE_KEY,
+} from "@/services/auth/storedSession.native";
+import { vault } from "@/services/vault";
+
+const mockStore = new Map<string, string>();
+const mockRefreshAsync = jest.fn<(...args: unknown[]) => Promise<unknown>>();
+
+jest.mock("expo-auth-session", () => ({
+    makeRedirectUri: () => "healthgateway://x",
+    fetchDiscoveryAsync: async () => ({ userInfoEndpoint: "https://kc/info" }),
+    refreshAsync: (...args: unknown[]) => mockRefreshAsync(...args),
+}));
+jest.mock("expo-web-browser", () => ({}));
+jest.mock("expo-secure-store", () => ({
+    getItemAsync: jest.fn(async (key: string) => mockStore.get(key) ?? null),
+    setItemAsync: jest.fn(async (key: string, value: string) => {
+        mockStore.set(key, value);
+    }),
+    deleteItemAsync: jest.fn(async (key: string) => {
+        mockStore.delete(key);
+    }),
+    WHEN_UNLOCKED_THIS_DEVICE_ONLY: "x",
+}));
+jest.mock("@/services/vault", () => ({
+    vault: {
+        encrypt: jest.fn(async (text: string) => `sealed:${text}`),
+        decrypt: jest.fn(async (text: string) => text.slice("sealed:".length)),
+    },
+    isVaultCancelled: (error: unknown) =>
+        (error as { code?: string } | undefined)?.code ===
+        "ERR_VAULT_CANCELLED",
+    isVaultKeyGone: (error: unknown) =>
+        ["ERR_VAULT_NO_KEY", "ERR_VAULT_INVALIDATED"].includes(
+            (error as { code?: string } | undefined)?.code ?? ""
+        ),
+}));
+
+const encrypt = jest.mocked(vault.encrypt);
+const decrypt = jest.mocked(vault.decrypt);
+
+const inAnHour = () => Math.floor(Date.now() / 1000) + 3600;
+const session = (refreshToken: string, expiresAt = inAnHour()) => ({
+    accessToken: `a-${refreshToken}`,
+    refreshToken,
+    idToken: "i",
+    expiresAt,
+});
+const tokens = { accessToken: "a2", refreshToken: "r2", expiresIn: 300 };
+
+const sealedCopy = () => {
+    const value = mockStore.get(SEALED_STORAGE_KEY);
+    return value
+        ? (JSON.parse(value.slice("sealed:".length)) as {
+              refreshToken: string;
+          })
+        : undefined;
+};
+
+const plainCopy = () => {
+    const value = mockStore.get(STORAGE_KEY);
+    return value ? (JSON.parse(value) as { refreshToken: string }) : undefined;
+};
+
+const service = () =>
+    new NativeAuthService({
+        authority: "https://kc",
+        clientId: "hg",
+        scope: "openid",
+    } as never);
+
+/** A service on a launch with device security on and a sealed login, unsealed. */
+const unsealed = async (stored = session("r1")) => {
+    mockStore.set(SEALED_STORAGE_KEY, `sealed:${JSON.stringify(stored)}`);
+    const auth = service();
+    await auth.init({ keepSessionOnFailure: true, sealed: true });
+    await auth.unseal();
+    return auth;
+};
+
+describe("native session sealed by the vault", () => {
+    beforeEach(() => {
+        mockStore.clear();
+        mockRefreshAsync.mockReset();
+        encrypt.mockClear();
+        decrypt.mockClear();
+    });
+
+    describe("at launch with device security on", () => {
+        it("keeps a sealed login sealed: no token in memory, no refresh, no prompt", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1", 0))}`
+            );
+            const auth = service();
+            await auth.init({ keepSessionOnFailure: true, sealed: true });
+
+            expect(auth.isSealed()).toBe(true);
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            expect(mockRefreshAsync).not.toHaveBeenCalled();
+            expect(decrypt).not.toHaveBeenCalled();
+        });
+
+        it("deletes an unsealed copy left beside the sealed one", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("r0")));
+            await service().init({ sealed: true });
+            expect(mockStore.has(STORAGE_KEY)).toBe(false);
+        });
+
+        it("seals a login kept unsealed by an earlier build, before anything uses it", async () => {
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("r1", 0)));
+            const auth = service();
+            await auth.init({ keepSessionOnFailure: true, sealed: true });
+
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+            expect(mockStore.has(STORAGE_KEY)).toBe(false);
+            expect(auth.isSealed()).toBe(true);
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            expect(mockRefreshAsync).not.toHaveBeenCalled();
+        });
+
+        it("with device security off, a sealed copy is not read", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            const auth = service();
+            await auth.init();
+            expect(auth.isSealed()).toBe(false);
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            expect(decrypt).not.toHaveBeenCalled();
+        });
+    });
+
+    describe("unsealing", () => {
+        it("puts the login back in memory", async () => {
+            const auth = await unsealed();
+            expect(decrypt).toHaveBeenCalledTimes(1);
+            expect(auth.isSealed()).toBe(false);
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r1");
+        });
+
+        it("refreshes an expired login when asked to restore it", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1", 0))}`
+            );
+            const auth = service();
+            await auth.init({ keepSessionOnFailure: true, sealed: true });
+            mockRefreshAsync.mockResolvedValue(tokens);
+
+            expect(await auth.unseal({ restore: true })).toBe("unsealed");
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r2");
+            // the new tokens are sealed too
+            expect(sealedCopy()?.refreshToken).toBe("r2");
+            expect(mockStore.has(STORAGE_KEY)).toBe(false);
+        });
+
+        it("keeps a login that could not refresh for lack of a connection", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1", 0))}`
+            );
+            const auth = service();
+            await auth.init({ keepSessionOnFailure: true, sealed: true });
+            mockRefreshAsync.mockRejectedValue(
+                new TypeError("Network request failed")
+            );
+
+            expect(await auth.unseal({ restore: true })).toBe("unsealed");
+            expect(auth.getRestoreFailure()).toBe("network");
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r1");
+        });
+
+        it("stays sealed when the prompt is turned down", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            const auth = service();
+            await auth.init({ sealed: true });
+            decrypt.mockRejectedValueOnce(
+                Object.assign(new Error("no"), { code: "ERR_VAULT_CANCELLED" })
+            );
+
+            expect(await auth.unseal()).toBe("cancelled");
+            expect(auth.isSealed()).toBe(true);
+            expect(mockStore.has(SEALED_STORAGE_KEY)).toBe(true);
+        });
+
+        it("deletes a login nothing can read any more", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            const auth = service();
+            await auth.init({ sealed: true });
+            decrypt.mockRejectedValueOnce(
+                Object.assign(new Error("gone"), {
+                    code: "ERR_VAULT_INVALIDATED",
+                })
+            );
+
+            expect(await auth.unseal()).toBe("unreadable");
+            expect(auth.isSealed()).toBe(false);
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            expect(mockStore.size).toBe(0);
+        });
+
+        it.each(["ERR_VAULT_UNAVAILABLE", "ERR_VAULT_CRYPTO"])(
+            "keeps a login it could not read this time (%s), for the next try",
+            async (code) => {
+                mockStore.set(
+                    SEALED_STORAGE_KEY,
+                    `sealed:${JSON.stringify(session("r1"))}`
+                );
+                const auth = service();
+                await auth.init({ sealed: true });
+                decrypt.mockRejectedValueOnce(
+                    Object.assign(new Error("not now"), { code })
+                );
+
+                expect(await auth.unseal()).toBe("unavailable");
+                expect(auth.isSealed()).toBe(true);
+                expect(auth.getOidcTokenDetails()).toBeNull();
+                expect(sealedCopy()?.refreshToken).toBe("r1");
+
+                expect(await auth.unseal()).toBe("unsealed");
+                expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r1");
+            }
+        );
+
+        it("keeps a login whose stored copy could not be read this time", async () => {
+            mockStore.set(
+                SEALED_STORAGE_KEY,
+                `sealed:${JSON.stringify(session("r1"))}`
+            );
+            const auth = service();
+            await auth.init({ sealed: true });
+            jest.mocked(SecureStore.getItemAsync).mockRejectedValueOnce(
+                new Error("keychain")
+            );
+
+            expect(await auth.unseal()).toBe("unavailable");
+            expect(auth.isSealed()).toBe(true);
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+        });
+
+        it.each(["not json", JSON.stringify({ refreshToken: "r1" }), "null"])(
+            "deletes a copy that does not hold a session (%s)",
+            async (damaged) => {
+                mockStore.set(SEALED_STORAGE_KEY, `sealed:${damaged}`);
+                const auth = service();
+                await auth.init({ sealed: true });
+
+                expect(await auth.unseal()).toBe("unreadable");
+                expect(auth.getOidcTokenDetails()).toBeNull();
+                expect(mockStore.size).toBe(0);
+            }
+        );
+    });
+
+    it("a new login replaces a sealed one this start did not know of", async () => {
+        // the lock setting could not be read at this start, so the sealed login was not looked for
+        mockStore.set(
+            SEALED_STORAGE_KEY,
+            `sealed:${JSON.stringify(session("old"))}`
+        );
+        const auth = service();
+        await auth.init();
+        expect(auth.getOidcTokenDetails()).toBeNull();
+
+        await (
+            auth as unknown as {
+                storeTokenResponse: (token: unknown) => Promise<void>;
+            }
+        ).storeTokenResponse({ ...tokens, idToken: "i" });
+
+        expect(plainCopy()?.refreshToken).toBe("r2");
+        // or the next start, with device security on, would open the old login and delete this one
+        expect(sealedCopy()).toBeUndefined();
+    });
+
+    describe("sealing as the lock goes on", () => {
+        it("takes the tokens out of memory", async () => {
+            const auth = await unsealed();
+            await auth.seal();
+            expect(auth.isSealed()).toBe(true);
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+        });
+
+        it("waits for a refresh on its way and seals its new tokens", async () => {
+            const auth = await unsealed();
+            let answer: (value: unknown) => void = () => undefined;
+            mockRefreshAsync.mockReturnValue(
+                new Promise((resolve) => {
+                    answer = resolve;
+                })
+            );
+            const refresh = auth.refreshToken(true);
+            await new Promise((resolve) => setImmediate(resolve));
+            const seal = auth.seal();
+            answer(tokens);
+            await Promise.all([refresh, seal]);
+
+            expect(auth.getOidcTokenDetails()).toBeNull();
+            // a rotated refresh token is not lost: the sealed copy has the new one
+            expect(sealedCopy()?.refreshToken).toBe("r2");
+            await auth.unseal();
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r2");
+        });
+
+        it("keeps the tokens when they could only be stored unsealed", async () => {
+            const auth = await unsealed();
+            encrypt.mockRejectedValueOnce(new Error("no vault"));
+            mockRefreshAsync.mockResolvedValue(tokens);
+            await auth.refreshToken(true);
+
+            // the stale sealed copy goes, the new one is stored unsealed and sealed at the next launch
+            expect(mockStore.has(SEALED_STORAGE_KEY)).toBe(false);
+            expect(mockStore.has(STORAGE_KEY)).toBe(true);
+            await auth.seal();
+            expect(auth.isSealed()).toBe(false);
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r2");
+        });
+
+        it("does nothing with device security off", async () => {
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("r1")));
+            const auth = service();
+            await auth.init();
+            await auth.seal();
+            expect(auth.isSealed()).toBe(false);
+            expect(auth.getOidcTokenDetails()?.refreshToken).toBe("r1");
+        });
+    });
+
+    describe("turning device security on and off", () => {
+        it("moves the stored login to the sealed copy and back", async () => {
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("r1")));
+            const auth = service();
+            await auth.init();
+
+            await auth.setSealed(true);
+            expect(sealedCopy()?.refreshToken).toBe("r1");
+            expect(mockStore.has(STORAGE_KEY)).toBe(false);
+
+            await auth.setSealed(false);
+            expect(mockStore.has(SEALED_STORAGE_KEY)).toBe(false);
+            expect(plainCopy()?.refreshToken).toBe("r1");
+        });
+
+        it("rejects, and stays off, when the login could not be sealed", async () => {
+            mockStore.set(STORAGE_KEY, JSON.stringify(session("r1")));
+            const auth = service();
+            await auth.init();
+            encrypt.mockRejectedValueOnce(new Error("no vault"));
+
+            await expect(auth.setSealed(true)).rejects.toThrow("no vault");
+            mockRefreshAsync.mockResolvedValue(tokens);
+            await auth.refreshToken(true);
+            expect(mockStore.has(SEALED_STORAGE_KEY)).toBe(false);
+            expect(plainCopy()?.refreshToken).toBe("r2");
+        });
+
+        it("signed out, only the next login is stored to match", async () => {
+            const auth = service();
+            await auth.init();
+            await auth.setSealed(true);
+            expect(mockStore.size).toBe(0);
+        });
+    });
+
+    it("signing out deletes both copies", async () => {
+        const auth = await unsealed();
+        mockStore.set(STORAGE_KEY, "left over");
+        jest.spyOn(global, "fetch").mockResolvedValue(new Response("{}"));
+        await auth.signOut();
+        expect(mockStore.size).toBe(0);
+        jest.restoreAllMocks();
+    });
+});

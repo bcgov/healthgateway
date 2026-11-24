@@ -12,6 +12,7 @@ import {
 } from "@/navigation/userState";
 import { services } from "@/services/container";
 import { logger } from "@/services/logger";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { selectFeatureToggles, useConfigStore } from "@/stores/config.store";
 import {
@@ -35,6 +36,12 @@ export function useRouteGuard(ready: boolean) {
     const isLoadingUser = useUserStore((s) => s.isLoading);
     const essentialDataLoaded = useUserStore((s) => s.essentialDataLoaded);
     const isValidIdp = useUserStore(selectIsValidIdentityProvider);
+    // Device security: a launch's login opens only after the lock's prompt. Judged before then, a link that started the
+    // app on a signed-in page would look signed out and be sent to the landing page, so the guard waits. The page stays
+    // under the lock meanwhile, with no person to load anything for.
+    const opening = useAppLockStore(
+        (s) => s.locked && s.beforeUnlock !== undefined
+    );
 
     // afterEachHook on the web client: a page view per route change
     useEffect(() => {
@@ -42,7 +49,7 @@ export function useRouteGuard(ready: boolean) {
     }, [pathname]);
 
     useEffect(() => {
-        if (!ready || isLoadingUser) return;
+        if (!ready || isLoadingUser || opening) return;
         // Signed in but patient/profile not loaded yet (login just completed or app just started):
         // wait, otherwise the user briefly looks "not registered" and bounces via /registration.
         if (isAuthenticated && isValidIdp && !essentialDataLoaded) return;
@@ -99,6 +106,7 @@ export function useRouteGuard(ready: boolean) {
         }
     }, [
         ready,
+        opening,
         pathname,
         isAuthenticated,
         user,

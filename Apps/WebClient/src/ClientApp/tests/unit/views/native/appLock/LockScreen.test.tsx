@@ -166,7 +166,24 @@ describe("LockScreen", () => {
         expect(authenticate).toHaveBeenCalledTimes(1);
     });
 
-    it("the full login signs out first", async () => {
+    it("the full login asks for the prompt, then signs out first", async () => {
+        const signOut = jest.fn(async () => undefined);
+        useAuthStore.setState({ signOut });
+        authenticate.mockResolvedValue("cancelled");
+        await render(<LockScreen />);
+        await advanceTimers(500);
+
+        // ending the login takes the same prompt as unlocking
+        authenticate.mockResolvedValue("unlocked");
+        await press(screen.getByTestId("lockLogInAgainBtn"));
+        expect(authenticate).toHaveBeenCalledTimes(2);
+        expect(signOut).toHaveBeenCalledTimes(1);
+        // a tap on this button is a request to log in, unlike a session that just ended
+        expect(useAuthStore.getState().loginRequest).toEqual({});
+        useAuthStore.setState({ loginRequest: undefined });
+    });
+
+    it("the full login does nothing when its prompt is turned down", async () => {
         const signOut = jest.fn(async () => undefined);
         useAuthStore.setState({ signOut });
         authenticate.mockResolvedValue("cancelled");
@@ -174,10 +191,44 @@ describe("LockScreen", () => {
         await advanceTimers(500);
 
         await press(screen.getByTestId("lockLogInAgainBtn"));
+        expect(authenticate).toHaveBeenCalledTimes(2);
+        expect(signOut).not.toHaveBeenCalled();
+        expect(useAuthStore.getState().loginRequest).toBeUndefined();
+        expect(useAppLockStore.getState().locked).toBe(true);
+        // and the button works again
+        const { props } = screen.getByTestId("lockLogInAgainBtn") as {
+            props: { accessibilityState?: { disabled?: boolean } };
+        };
+        expect(props.accessibilityState?.disabled).toBeFalsy();
+    });
+
+    it("the full login still signs out with no device security left to ask", async () => {
+        const signOut = jest.fn(async () => undefined);
+        useAuthStore.setState({ signOut });
+        authenticate.mockResolvedValue("cancelled");
+        await render(<LockScreen />);
+        await advanceTimers(500);
+
+        // the key went with the device's security: nothing can read the login, so it only goes from the device
+        authenticate.mockResolvedValue("keyGone");
+        await press(screen.getByTestId("lockLogInAgainBtn"));
         expect(signOut).toHaveBeenCalledTimes(1);
-        // a tap on this button is a request to log in, unlike a session that just ended
-        expect(useAuthStore.getState().loginRequest).toEqual({});
         useAuthStore.setState({ loginRequest: undefined });
+    });
+
+    it("the full login does nothing when the prompt could not be shown this time", async () => {
+        const signOut = jest.fn(async () => undefined);
+        useAuthStore.setState({ signOut });
+        authenticate.mockResolvedValue("cancelled");
+        await render(<LockScreen />);
+        await advanceTimers(500);
+
+        // device security is still there: skipping its prompt would end the login for anyone holding the phone
+        authenticate.mockResolvedValue("unavailable");
+        await press(screen.getByTestId("lockLogInAgainBtn"));
+        expect(signOut).not.toHaveBeenCalled();
+        expect(useAuthStore.getState().loginRequest).toBeUndefined();
+        expect(useAppLockStore.getState().locked).toBe(true);
     });
 
     it("hides the app from screen readers while locked", async () => {

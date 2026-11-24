@@ -9,7 +9,12 @@ import { COPY_DECLINED, recordCache } from "@/services/recordCache";
 import { sessionGeneration } from "@/services/sessionFence";
 
 import { useAppLockStore } from "./appLock.store";
-import { useAuthStore } from "./auth.store";
+import {
+    isSessionSealed,
+    refreshTokenIfDue,
+    sealed,
+    useAuthStore,
+} from "./auth.store";
 import { useClinicalDocumentStore } from "./clinicalDocument.store";
 import { useCommentStore } from "./comment.store";
 import { getConfigUrl, useConfigStore } from "./config.store";
@@ -259,6 +264,34 @@ export function prepareLocalSession(): boolean {
         // no session to open it for: it stays for that person's next login
         return false;
     }
+    const status = localSessionStatus(details.expired);
+    if (!status) return false;
+    useAppLockStore.setState({
+        locked: true,
+        beforeUnlock: () => restoreLocalSession(details.hdid, status),
+    });
+    return true;
+}
+
+/**
+ * Passing the lock's prompt at launch with a sealed login that, once unsealed, cannot work right now: opens the saved copy.
+ * Returns whether that is what happened.
+ */
+export async function openLocalSession(): Promise<boolean> {
+    if (!useAppLockStore.getState().enabled || !services.isInitialized)
+        return false;
+    const details = services.auth.getOidcTokenDetails();
+    if (!details) return false;
+    const status = localSessionStatus(details.expired);
+    if (!status) return false;
+    await restoreLocalSession(details.hdid, status);
+    return true;
+}
+
+/** Why the login can't work right now, if it can't; a lost connection also marks Health Gateway as unreachable. */
+function localSessionStatus(
+    expired: boolean
+): Exclude<SessionStatus, "live"> | undefined {
     const failure = services.auth.getRestoreFailure?.();
     const { isOnline } = useConnectivityStore.getState();
     // a refresh that got no answer says nothing about the login, however old the access token is
@@ -267,16 +300,43 @@ export function prepareLocalSession(): boolean {
             ? "expired"
             : failure === "network" || !isOnline
               ? "offline"
-              : details.expired
+              : expired
                 ? "expired"
                 : undefined;
-    if (!status) return false;
     if (status === "offline" && isOnline)
         useConnectivityStore.getState().setServiceUnavailable(true);
-    useAppLockStore.setState({
-        locked: true,
-        beforeUnlock: () => restoreLocalSession(details.hdid, status),
-    });
+    return status;
+}
+
+/**
+ * Passing the prompt after the lock went on while the app was open: the tokens come back, and are refreshed if due.
+ * False when the key's own prompt was turned down, or the login could not be read this time, which keeps the lock on.
+ */
+export async function unsealSession(): Promise<boolean> {
+    await sealed();
+    if (!services.isInitialized || !useAuthStore.getState().isAuthenticated)
+        return true;
+    // not sealed when the stored copy couldn't be: the tokens stayed, and only go back to work
+    if (services.auth.isSealed?.() && services.auth.unseal) {
+        const session = sessionGeneration();
+        const result = await services.auth.unseal();
+        if (session !== sessionGeneration()) return true;
+        if (result === "cancelled" || result === "unavailable") return false;
+        if (result === "unreadable") {
+            // the key went with the device's security, and the saved records with it: a new login is the way back in
+            useAuthStore.getState().clearStorage();
+            return true;
+        }
+    }
+    const details = services.auth.getOidcTokenDetails();
+    if (!details) return true;
+    // a login on hold stays so: coming back online picks it up, or it turns out to have expired
+    if (useConnectivityStore.getState().sessionStatus !== "live") {
+        void recoverSession();
+        return true;
+    }
+    useAuthStore.getState().handleSuccessfulAuthentication(details);
+    await refreshTokenIfDue();
     return true;
 }
 
@@ -298,6 +358,8 @@ export async function recoverSession(): Promise<void> {
     const ended = () => session !== sessionGeneration();
     const connectivity = useConnectivityStore.getState();
     const hdid = useUserStore.getState().user.hdid;
+    // locked: the tokens are sealed, and unlocking calls this again
+    if (isSessionSealed()) return;
     if (connectivity.sessionStatus === "expired") return;
     if (connectivity.sessionStatus === "offline") {
         try {

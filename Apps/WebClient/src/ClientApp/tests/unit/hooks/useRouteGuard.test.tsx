@@ -11,6 +11,7 @@ import { Platform } from "react-native";
 import { Path } from "@/constants/path";
 import { useRouteGuard } from "@/hooks/useRouteGuard";
 import { services } from "@/services/container";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useConfigStore } from "@/stores/config.store";
 import { useUserStore } from "@/stores/user.store";
@@ -98,6 +99,68 @@ describe("useRouteGuard (beforeEachGuard port)", () => {
         resetRouter(Path.Registration);
         await renderHook(() => useRouteGuard(true));
         expect(router.replace).not.toHaveBeenCalled();
+    });
+
+    describe("a launch locked by device security", () => {
+        afterEach(() => {
+            updateStores(() =>
+                useAppLockStore.setState({
+                    locked: false,
+                    beforeUnlock: undefined,
+                })
+            );
+        });
+
+        it("keeps a link into a signed-in page until the login opens after the prompt", async () => {
+            resetRouter(Path.Timeline);
+            useAppLockStore.setState({
+                locked: true,
+                beforeUnlock: async () => undefined,
+            });
+            await renderHook(() => useRouteGuard(true));
+            expect(router.replace).not.toHaveBeenCalled();
+
+            // the prompt passed and the login opened: the page it was opened on is kept
+            updateStores(() => {
+                signInRegistered();
+                useAppLockStore.setState({
+                    locked: false,
+                    beforeUnlock: undefined,
+                });
+            });
+            expect(router.replace).not.toHaveBeenCalled();
+        });
+
+        it("goes to the landing page once the login turns out to be gone", async () => {
+            resetRouter(Path.Timeline);
+            useAppLockStore.setState({
+                locked: true,
+                beforeUnlock: async () => undefined,
+            });
+            await renderHook(() => useRouteGuard(true));
+            updateStores(() =>
+                useAppLockStore.setState({
+                    locked: false,
+                    beforeUnlock: undefined,
+                })
+            );
+            expect(router.replace).toHaveBeenCalledWith(
+                Platform.OS === "web"
+                    ? {
+                          pathname: Path.Login,
+                          params: { redirect: Path.Timeline },
+                      }
+                    : Path.Root
+            );
+        });
+
+        it("a lock with the app already open doesn't hold it", async () => {
+            signInRegistered();
+            resetRouter(Path.Registration);
+            useAppLockStore.setState({ locked: true });
+            await renderHook(() => useRouteGuard(true));
+            expect(router.replace).toHaveBeenCalledWith(Path.Home);
+        });
     });
 
     it("sends a not-registered user to registration and an invalid provider to the IDIR page", async () => {
