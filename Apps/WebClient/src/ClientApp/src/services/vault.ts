@@ -32,6 +32,10 @@ export const isVaultKeyGone = (error: unknown) => {
     return code === "ERR_VAULT_NO_KEY" || code === "ERR_VAULT_INVALIDATED";
 };
 
+/** What it was asked to decrypt is damaged: no later try will read it. */
+export const isVaultCorrupt = (error: unknown) =>
+    errorCode(error) === "ERR_VAULT_CORRUPT";
+
 /**
  * The device-protected key pair (`modules/hg-secure-vault`), in native code: JavaScript only hands over text. Encrypting
  * never asks and no key is kept in memory; decrypting makes the OS ask for biometrics or the device PIN / passcode, unless

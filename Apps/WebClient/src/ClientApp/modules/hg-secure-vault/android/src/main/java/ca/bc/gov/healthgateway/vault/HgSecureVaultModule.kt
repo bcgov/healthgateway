@@ -31,6 +31,7 @@ import java.security.PublicKey
 import java.security.SecureRandom
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.X509EncodedKeySpec
+import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.OAEPParameterSpec
@@ -52,6 +53,9 @@ private const val KEY_BYTES = 32
 
 /** A prompt that has just passed covers the read that follows it, so the lock screen doesn't lead to a second one. */
 private const val RECENT_PROMPT_SECONDS = 30
+
+/** What was handed over to open is damaged: no later try will read it. */
+private class CorruptException(cause: Throwable) : GeneralSecurityException("The copy is damaged", cause)
 
 /** The key pair is not in the Keystore: removed, as opposed to one that could not be used this time. */
 private class NoKeyException : GeneralSecurityException("There is no key")
@@ -125,6 +129,8 @@ class HgSecureVaultModule : Module() {
       promise.reject("ERR_VAULT_INVALIDATED", "The key was invalidated", error)
     } else if (error is NoKeyException) {
       promise.reject("ERR_VAULT_NO_KEY", "There is no key", error)
+    } else if (error is CorruptException) {
+      promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged", error)
     } else {
       promise.reject("ERR_VAULT_CRYPTO", error.message ?: "Could not decrypt", error)
     }
@@ -225,10 +231,20 @@ class HgSecureVaultModule : Module() {
 
   /** Throws `UserNotAuthenticatedException` when the OS wants a prompt first. */
   private fun open(ciphertext: String): String {
-    val input = ByteBuffer.wrap(Base64.decode(ciphertext, Base64.NO_WRAP))
-    val locked = ByteArray(input.int).also { input.get(it) }
-    val iv = ByteArray(IV_BYTES).also { input.get(it) }
-    val sealed = ByteArray(input.remaining()).also { input.get(it) }
+    // not base64, or cut short: damaged, which is told apart from a key that could not be used this time
+    val (locked, iv, sealed) =
+      try {
+        val input = ByteBuffer.wrap(Base64.decode(ciphertext, Base64.NO_WRAP))
+        val lockedSize = input.int
+        require(lockedSize > 0 && lockedSize <= input.remaining() - IV_BYTES)
+        Triple(
+          ByteArray(lockedSize).also { input.get(it) },
+          ByteArray(IV_BYTES).also { input.get(it) },
+          ByteArray(input.remaining()).also { input.get(it) }
+        )
+      } catch (error: RuntimeException) {
+        throw CorruptException(error)
+      }
     val secret =
       keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
         ?: throw NoKeyException()
@@ -239,6 +255,9 @@ class HgSecureVaultModule : Module() {
       val aes = Cipher.getInstance(AES_GCM)
       aes.init(Cipher.DECRYPT_MODE, SecretKeySpec(aesKey, "AES"), GCMParameterSpec(TAG_BITS, iv))
       return String(aes.doFinal(sealed))
+    } catch (error: AEADBadTagException) {
+      // the records were changed after they were sealed
+      throw CorruptException(error)
     } finally {
       aesKey.fill(0)
     }

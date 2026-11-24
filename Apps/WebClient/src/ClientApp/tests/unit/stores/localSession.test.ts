@@ -11,10 +11,12 @@ import { LoadStatus } from "@/models/datasetState";
 import type { UnsealResult } from "@/services/auth/authService";
 import { services } from "@/services/container";
 import { recordCache } from "@/services/recordCache";
+import { vault } from "@/services/vault";
 import { useAppLockStore } from "@/stores/appLock.store";
 import {
     refreshTokenIfDue,
     sealSession,
+    signOutFromLock,
     useAuthStore,
 } from "@/stores/auth.store";
 import { useConnectivityStore } from "@/stores/connectivity.store";
@@ -536,6 +538,77 @@ describe("local session", () => {
             await sealSession();
             await expect(unsealSession()).resolves.toBe(true);
             expect(useAuthStore.getState().isAuthenticated).toBe(false);
+        });
+
+        it("a lock still taking the tokens away does not hold up the next login", async () => {
+            const { seal } = sealable();
+            let finish: () => void = () => undefined;
+            seal.mockReturnValue(
+                new Promise<void>((resolve) => {
+                    finish = resolve;
+                })
+            );
+            const sealing = sealSession();
+
+            // signed out, and logged in again, while that lock still waits on a refresh
+            await useAuthStore.getState().signOut();
+            const setHeader = jest.spyOn(
+                services.http,
+                "setAuthorizationHeader"
+            );
+            useAuthStore.getState().handleSuccessfulAuthentication(live);
+            expect(setHeader).toHaveBeenCalledWith("a");
+            expect(useAuthStore.getState().tokenDetails).toBeDefined();
+
+            finish();
+            await sealing;
+        });
+
+        describe("signing out from the lock screen", () => {
+            beforeEach(() => {
+                jest.mocked(vault.unlock).mockResolvedValue("unlocked");
+            });
+
+            it("unseals the login first, so Keycloak hears of it", async () => {
+                const { auth, unseal } = sealable();
+                await sealSession();
+                await expect(signOutFromLock()).resolves.toBe(true);
+                expect(unseal).toHaveBeenCalledTimes(1);
+                expect(auth.signOut).toHaveBeenCalledTimes(1);
+            });
+
+            it("waits for a lock still taking the tokens away", async () => {
+                const { seal, unseal } = sealable();
+                let finish: () => void = () => undefined;
+                seal.mockReturnValue(
+                    new Promise<void>((resolve) => {
+                        finish = resolve;
+                    })
+                );
+                void sealSession();
+                const signingOut = signOutFromLock();
+                await new Promise((resolve) => setImmediate(resolve));
+                expect(unseal).not.toHaveBeenCalled();
+
+                finish();
+                await expect(signingOut).resolves.toBe(true);
+                expect(unseal).toHaveBeenCalledTimes(1);
+            });
+
+            it("does nothing when the key's own prompt is turned down", async () => {
+                const { auth } = sealable("cancelled");
+                await sealSession();
+                await expect(signOutFromLock()).resolves.toBe(false);
+                expect(auth.signOut).not.toHaveBeenCalled();
+                expect(useAuthStore.getState().isAuthenticated).toBe(true);
+            });
+
+            it("still signs out a login that could not be unsealed: the only way off the lock screen", async () => {
+                const { auth } = sealable("unavailable");
+                await sealSession();
+                await expect(signOutFromLock()).resolves.toBe(true);
+                expect(auth.signOut).toHaveBeenCalledTimes(1);
+            });
         });
 
         it("a login on hold is picked up again once unsealed, not while sealed", async () => {

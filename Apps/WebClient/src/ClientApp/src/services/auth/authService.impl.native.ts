@@ -6,7 +6,12 @@ import type { OpenIdConnectConfiguration } from "@/models/configData";
 import { HttpError, SessionEndedError } from "@/models/errors";
 import type { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { describeError, logger } from "@/services/logger";
-import { isVaultCancelled, isVaultKeyGone, vault } from "@/services/vault";
+import {
+    isVaultCancelled,
+    isVaultCorrupt,
+    isVaultKeyGone,
+    vault,
+} from "@/services/vault";
 
 import { classifyAuthFailure } from "./authFailure";
 import {
@@ -149,9 +154,13 @@ export class NativeAuthService implements IAuthService {
         await this.restore(options?.keepSessionOnFailure);
     }
 
-    /** Device security on: a sealed session is there to unseal. A copy left unsealed beside it is from a move that stopped. */
+    /**
+     * Device security on: a sealed session is there to unseal. A copy left unsealed beside it is from a move that stopped.
+     * Rejects when the store could not be read: taken as "none", a sealed login would look signed out, and the next login
+     * would replace it. Start-up stops instead, and can be tried again.
+     */
     private async findSealedCopy(login: number): Promise<boolean> {
-        let sealed: string | null = null;
+        let sealed: string | null;
         try {
             sealed = await inOrder(() =>
                 SecureStore.getItemAsync(SEALED_STORAGE_KEY)
@@ -160,6 +169,7 @@ export class NativeAuthService implements IAuthService {
             logger.warn(
                 `Unable to read the sealed session: ${describeError(error)}`
             );
+            throw error;
         }
         if (!sealed || login !== this.login) return false;
         this.sealedCopy = true;
@@ -212,8 +222,10 @@ export class NativeAuthService implements IAuthService {
             );
             // signed out or reset while the prompt was open
             if (login !== this.login) return "unreadable";
-            // only a key gone for good ends the login: anything else may pass at the next try, and it stays sealed
-            if (!isVaultKeyGone(error)) return "unavailable";
+            // only a key gone for good, or a damaged copy, ends the login: anything else may pass at the next try, and
+            // it stays sealed
+            if (!isVaultKeyGone(error) && !isVaultCorrupt(error))
+                return "unavailable";
         }
         if (login !== this.login) return "unreadable";
         const session = text === undefined ? undefined : parseSession(text);
@@ -229,7 +241,12 @@ export class NativeAuthService implements IAuthService {
         return "unsealed";
     }
 
-    async seal(): Promise<void> {
+    seal(): Promise<void> {
+        return this.sealFor(this.login);
+    }
+
+    /** `login`: the one the lock went on over. Signed out while this waited, the next login is not its to seal. */
+    private async sealFor(login: number): Promise<void> {
         // a refresh on its way: its tokens are saved before they go, or a rotated refresh token would be lost with them
         while (this.refreshing) {
             try {
@@ -240,7 +257,8 @@ export class NativeAuthService implements IAuthService {
         }
         // and any save still running has finished
         await inOrder(() => Promise.resolve());
-        if (this.refreshing) return this.seal();
+        if (login !== this.login) return;
+        if (this.refreshing) return this.sealFor(login);
         if (!this.protect || !this.session || !this.storedSealed) return;
         this.dropFromMemory();
     }

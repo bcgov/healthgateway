@@ -223,7 +223,8 @@ public class HgSecureVaultModule: Module {
 
   private func decrypt(_ ciphertext: String, prompt: String, promise: Promise) {
     guard let sealed = Data(base64Encoded: ciphertext) else {
-      promise.reject("ERR_VAULT_CRYPTO", "Could not decrypt")
+      // damaged, as opposed to a key that could not be used this time: no later try will read it
+      promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged")
       return
     }
     let context: LAContext
@@ -248,7 +249,13 @@ public class HgSecureVaultModule: Module {
     var error: Unmanaged<CFError>?
     guard let opened = SecKeyCreateDecryptedData(secret, algorithm, sealed as CFData, &error) as Data?
     else {
-      rejectStatus(error.map { CFErrorGetCode($0.takeRetainedValue()) } ?? 0, promise: promise)
+      let code = error.map { CFErrorGetCode($0.takeRetainedValue()) } ?? 0
+      // the key was used and refused the bytes (too short, or changed since they were sealed): they are damaged
+      if code == Int(errSecParam) || code == Int(errSecDecode) {
+        promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged (\(code))")
+      } else {
+        rejectStatus(code, promise: promise)
+      }
       return
     }
     promise.resolve(String(decoding: opened, as: UTF8.self))

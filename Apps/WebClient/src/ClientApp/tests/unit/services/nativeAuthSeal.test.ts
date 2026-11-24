@@ -35,6 +35,8 @@ jest.mock("@/services/vault", () => ({
     isVaultCancelled: (error: unknown) =>
         (error as { code?: string } | undefined)?.code ===
         "ERR_VAULT_CANCELLED",
+    isVaultCorrupt: (error: unknown) =>
+        (error as { code?: string } | undefined)?.code === "ERR_VAULT_CORRUPT",
     isVaultKeyGone: (error: unknown) =>
         ["ERR_VAULT_NO_KEY", "ERR_VAULT_INVALIDATED"].includes(
             (error as { code?: string } | undefined)?.code ?? ""
@@ -267,6 +269,68 @@ describe("native session sealed by the vault", () => {
                 expect(mockStore.size).toBe(0);
             }
         );
+    });
+
+    it("deletes a login whose stored copy the vault calls damaged", async () => {
+        mockStore.set(SEALED_STORAGE_KEY, "sealed:x");
+        const auth = service();
+        await auth.init({ sealed: true });
+        decrypt.mockRejectedValueOnce(
+            Object.assign(new Error("damaged"), { code: "ERR_VAULT_CORRUPT" })
+        );
+
+        // or every unlock would try the same bytes again, and the lock would never lift
+        expect(await auth.unseal()).toBe("unreadable");
+        expect(auth.isSealed()).toBe(false);
+        expect(mockStore.size).toBe(0);
+    });
+
+    it("start-up stops when the store cannot say whether a sealed login is there", async () => {
+        mockStore.set(
+            SEALED_STORAGE_KEY,
+            `sealed:${JSON.stringify(session("r1"))}`
+        );
+        jest.mocked(SecureStore.getItemAsync).mockRejectedValueOnce(
+            new Error("keychain")
+        );
+        const auth = service();
+
+        // taken as "none", the login would look signed out, and the next login would replace it
+        await expect(auth.init({ sealed: true })).rejects.toThrow("keychain");
+        expect(sealedCopy()?.refreshToken).toBe("r1");
+
+        // the next try finds it
+        const retry = service();
+        await retry.init({ sealed: true });
+        expect(retry.isSealed()).toBe(true);
+    });
+
+    it("a lock still waiting on a refresh leaves the next login alone", async () => {
+        const auth = await unsealed(session("r1", 0));
+        let finish: (token: unknown) => void = () => undefined;
+        mockRefreshAsync.mockReturnValue(
+            new Promise((resolve) => {
+                finish = resolve;
+            })
+        );
+        const refreshing = auth.refreshToken(true).catch(() => undefined);
+        const sealing = auth.seal();
+
+        // signed out from the lock screen, and logged in again, before the refresh answers
+        jest.spyOn(global, "fetch").mockResolvedValue(new Response("{}"));
+        await auth.signOut();
+        await (
+            auth as unknown as {
+                storeTokenResponse: (token: unknown) => Promise<void>;
+            }
+        ).storeTokenResponse({ ...tokens, refreshToken: "new", idToken: "i" });
+
+        finish(tokens);
+        await refreshing;
+        await sealing;
+        expect(auth.isSealed()).toBe(false);
+        expect(auth.getOidcTokenDetails()?.refreshToken).toBe("new");
+        jest.restoreAllMocks();
     });
 
     it("a new login replaces a sealed one this start did not know of", async () => {

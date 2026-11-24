@@ -10,9 +10,15 @@ import { Alert, Platform } from "react-native";
 
 import { Path } from "@/constants/path";
 import { services } from "@/services/container";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { useConfigStore } from "@/stores/config.store";
 import { resetRouter, router } from "@/test/expoRouterMock";
-import { configFixture, fakeAuth, resetStores } from "@/test/fixtures";
+import {
+    configFixture,
+    fakeAuth,
+    resetStores,
+    updateStores,
+} from "@/test/fixtures";
 import { idOf, inAct, render, screen, textOf, waitFor } from "@/test/ui";
 import { LoginView } from "@/views/auth/LoginView";
 import { LOGIN_FAILED_MESSAGE } from "@/views/auth/useProviderSignIn";
@@ -81,6 +87,19 @@ describe("LoginView provider rules (LoginView.vue port)", () => {
     });
 
     if (Platform.OS !== "web") {
+        it("under the lock nothing starts, until it lifts", async () => {
+            withProviders([configFixture.identityProviders[0]]);
+            // a launch on this page with a sealed login: the provider's sheet must not open over the lock screen
+            useAppLockStore.setState({ locked: true });
+            await render(<LoginView />);
+            expect(auth.signIn).not.toHaveBeenCalled();
+
+            // the sealed login turned out to be gone: now the login starts
+            updateStores(() => useAppLockStore.setState({ locked: false }));
+            await waitFor(() => expect(auth.signIn).toHaveBeenCalledTimes(1));
+            useAppLockStore.setState({ locked: false });
+        });
+
         it("one provider, cancelled: back to the landing page", async () => {
             withProviders([configFixture.identityProviders[0]]);
             const cancelled = new Error("cancelled");

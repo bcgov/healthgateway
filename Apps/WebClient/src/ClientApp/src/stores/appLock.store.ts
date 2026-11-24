@@ -187,17 +187,46 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
             try {
                 // before the key goes, or nothing could read the login after
                 await sessionLock?.protect(false);
+            } catch (error) {
+                logger.warn(
+                    `Could not unseal the login: ${describeError(error)}`
+                );
+                return false;
+            }
+            try {
                 await SecureStore.deleteItemAsync(ENABLED_KEY);
-                await recordCache.remove();
-                await vault.destroy();
-                set({ enabled: false });
-                return true;
             } catch (error) {
                 logger.warn(
                     `Could not save the app lock setting: ${describeError(error)}`
                 );
+                // still on: the login goes back under the key, or the setting would promise a protection it doesn't have
+                try {
+                    await sessionLock?.protect(true);
+                } catch (sealError) {
+                    logger.error(
+                        `Could not seal the login again: ${describeError(sealError)}`
+                    );
+                }
                 return false;
             }
+            // off from here: the setting is gone and the login is unsealed, so what is left is only cleared away
+            set({ enabled: false });
+            try {
+                await recordCache.remove();
+            } catch (error) {
+                logger.warn(
+                    `Could not remove the saved records: ${describeError(error)}`
+                );
+            }
+            try {
+                // without the key, records that could not be removed can't be read either
+                await vault.destroy();
+            } catch (error) {
+                logger.warn(
+                    `Could not remove the vault key: ${describeError(error)}`
+                );
+            }
+            return true;
         },
 
         lock: () => {

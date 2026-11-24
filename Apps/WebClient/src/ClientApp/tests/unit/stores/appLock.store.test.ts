@@ -317,6 +317,28 @@ describe("app lock store", () => {
             expect(vault.destroy).toHaveBeenCalled();
         });
 
+        it("seals the login again when the setting could not be turned off", async () => {
+            useAppLockStore.setState({ enabled: true });
+            secure.deleteItemAsync.mockRejectedValueOnce(new Error("locked"));
+            await expect(store().disable()).resolves.toBe(false);
+            // still on: the login must not be left unsealed behind a switch that says it is protected
+            expect(hooks.protect.mock.calls).toEqual([[false], [true]]);
+            expect(store().enabled).toBe(true);
+            expect(vault.destroy).not.toHaveBeenCalled();
+        });
+
+        it("is off once the setting is gone, even if the saved records could not be removed", async () => {
+            useAppLockStore.setState({ enabled: true });
+            jest.mocked(recordCache.remove).mockRejectedValueOnce(
+                new Error("disk")
+            );
+            await expect(store().disable()).resolves.toBe(true);
+            expect(store().enabled).toBe(false);
+            expect(hooks.protect.mock.calls).toEqual([[false]]);
+            // without the key, what could not be removed can't be read
+            expect(vault.destroy).toHaveBeenCalled();
+        });
+
         it("stays on, key and all, when the login can't be unsealed", async () => {
             useAppLockStore.setState({ enabled: true });
             hooks.protect.mockRejectedValue(new Error("locked"));
