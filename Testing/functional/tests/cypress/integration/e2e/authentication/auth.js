@@ -107,7 +107,9 @@ describe("Authentication", () => {
             .should("not.be.disabled");
     });
 
-    it("IDIR Blocked", () => {
+    // Disabled: logontest7 rejects the IDIR test account's credentials and the
+    // rejection page's script error leaves cy.origin hanging. Re-enable once fixed.
+    it.skip("IDIR Blocked", () => {
         skipOnLocalhost();
         cy.logout();
         cy.visit("/login");

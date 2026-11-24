@@ -132,8 +132,9 @@ Cypress.Commands.add(
                     );
                     // within Cypress v14.0+, the idtest login page will load with display: none
                     // requiring { force: true } to interact with any elements on that page
+                    // The device tile (role=button) no longer wraps its label in an <h2>.
                     cy.get(
-                        "#tile_btn_test_with_username_password_device_div_id > h2"
+                        "#tile_test_with_username_password_device_div_id"
                     ).click({ force: true });
                     cy.get("#username").type(username, { force: true });
                     cy.get("#password").type(password, {
