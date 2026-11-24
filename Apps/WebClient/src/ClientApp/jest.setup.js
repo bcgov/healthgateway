@@ -18,6 +18,10 @@ jest.mock("react-native-worklets", () =>
 jest.mock("react-native-reanimated", () =>
     require("./tests/unit/support/reanimatedMock")
 );
+// The keyboard module is native too; its mock renders plain views and never shows the keyboard.
+jest.mock("react-native-keyboard-controller", () =>
+    require("react-native-keyboard-controller/jest")
+);
 // react-native-gesture-handler uses Reanimated when it finds it; in Jest, have it behave as if it isn't there.
 jest.mock(
     "react-native-gesture-handler/lib/module/handlers/gestures/reanimatedWrapper",

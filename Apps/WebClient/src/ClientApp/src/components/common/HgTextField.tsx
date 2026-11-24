@@ -4,6 +4,7 @@ import {
     Pressable,
     TextInput,
     type TextInputProps,
+    useWindowDimensions,
     View,
 } from "react-native";
 
@@ -35,6 +36,8 @@ interface Props extends TextInputProps {
     compact?: boolean;
     /** v-textarea `auto-grow`: on web a multiline field grows with its content (global.css, .hg-field-auto-grow) */
     autoGrow?: boolean;
+    /** Native: a multiline field grows to at most this many lines, then scrolls inside */
+    maxLines?: number;
 }
 
 /**
@@ -59,6 +62,7 @@ export function HgTextField({
     compact = false,
     floatingLabel = false,
     autoGrow = false,
+    maxLines,
     testID,
     autoComplete = "off",
     ...rest
@@ -89,11 +93,17 @@ export function HgTextField({
     const errorHint = hasError ? errorMessages.join(". ") : undefined;
     // multiline: the side content sits on the bottom line (py-3 plus a 24px line) as the field grows
     const sideClass = rest.multiline ? "h-12 justify-center" : undefined;
+    // text-body-large's 24px line, which native text scales with the system font size, plus py-3
+    const { fontScale } = useWindowDimensions();
+    const linesHeight = (lines: number) => lines * 24 * fontScale + 24;
     // numberOfLines only affects the field height on Android, so web and iOS set a minimum height with CSS
-    // (text-body-large's 24px line height, plus py-3)
     const minLinesStyle =
         rest.multiline && rest.numberOfLines && Platform.OS !== "android"
-            ? { minHeight: rest.numberOfLines * 24 + 24 }
+            ? { minHeight: linesHeight(rest.numberOfLines) }
+            : undefined;
+    const maxLinesStyle =
+        rest.multiline && maxLines && !web
+            ? { maxHeight: linesHeight(maxLines) }
             : undefined;
     return (
         <View
@@ -151,7 +161,8 @@ export function HgTextField({
                             : {})}
                         testID={web ? undefined : testID}
                         className={cn(
-                            "hg-field-focus-target flex-1 min-w-0 font-sans text-body-large text-bc-black px-3",
+                            "hg-field-focus-target min-w-0 font-sans text-body-large text-bc-black px-3",
+                            rest.multiline ? "grow" : "flex-1",
                             floatingLabel
                                 ? "min-h-[28px]"
                                 : compact
@@ -161,7 +172,7 @@ export function HgTextField({
                             rest.multiline && autoGrow && "hg-field-auto-grow"
                         )}
                         textAlignVertical={rest.multiline ? "top" : undefined}
-                        style={[minLinesStyle, rest.style]}
+                        style={[minLinesStyle, maxLinesStyle, rest.style]}
                     />
                 </View>
                 {appendInner ? (

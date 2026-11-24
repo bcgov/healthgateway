@@ -314,14 +314,8 @@ export function TimelineEntryCard({
                     </View>
                 </View>
                 {detailsVisible ? (
-                    // v-expansion-panel-text: 8px 24px 16px; my-2 and the indent past the icon on desktop
-                    <View className="px-6 pt-2 pb-4">
-                        <View
-                            className={cn(
-                                "my-2",
-                                !isMobileDetails && "ml-[88px]"
-                            )}
-                        >
+                    <View className="px-6 py-3">
+                        <View className={cn(!isMobileDetails && "ml-[88px]")}>
                             {children}
                             {allowComment ? (
                                 <CommentSection

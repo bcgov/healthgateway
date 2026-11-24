@@ -100,6 +100,20 @@ export const changeText = async (el: UiElement, text: string) => {
     fireEvent.change(input, { target: { value: text } });
     await settle();
 };
+export const focus = async (el: UiElement) => {
+    const input = el.matches("input, textarea")
+        ? el
+        : (el.querySelector("input, textarea") as HTMLElement);
+    fireEvent.focus(input);
+    await settle();
+};
+// No-op: react-native-web measures with a ResizeObserver, which jsdom lacks
+export const fireLayout = async (
+    _el: UiElement,
+    _layout: { x?: number; y?: number; width?: number; height: number }
+) => {
+    await settle();
+};
 /** Switch state (the `<input type="checkbox" role="switch">` inside HgSwitch). */
 export const isOn = (el: UiElement) =>
     (el as HTMLInputElement).checked === true;
@@ -131,6 +145,8 @@ export const headingLevelOf = (el: UiElement): number | undefined => {
 /** Whether the element contains an `<input>` (a wrapper, as Cypress `[data-testid=x] input` expects). */
 export const containsInput = (el: UiElement) =>
     el.querySelector("input, textarea") !== null;
+export const isWithin = (el: UiElement, ancestor: UiElement): boolean =>
+    ancestor.contains(el);
 /** The current text of a text field (its wrapper carries the test id on web). */
 export const inputValue = (el: UiElement): string => {
     const input = el.matches("input, textarea")

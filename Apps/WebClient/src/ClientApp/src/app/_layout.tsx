@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import { Appearance, Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { Announcer } from "@/components/common/Announcer";
@@ -135,61 +136,71 @@ export default function RootLayout() {
     return (
         // Native gestures anywhere in the app: the dependent tab swipes and the drawer's swipe to close
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaProvider>
-                {/* Splash is always dark navy; afterwards the bar follows the palette. */}
-                <StatusBar
-                    style={ready && scheme === "light" ? "dark" : "light"}
-                />
-                <View style={themeVars} className="flex-1">
-                    <LoadingScope>
-                        {!ready ? (
-                            // Web: plain white while config/fonts load (a few hundred ms), no splash flash.
-                            // Native: a React twin of the launch screen covers the hand-off from the native splash.
-                            Platform.OS === "web" ? (
-                                <View className="flex-1 bg-background" />
+            {/* Keyboard height and motion for KeyboardAwareScrollView, as edge-to-edge Android no longer resizes the window */}
+            <KeyboardProvider>
+                <SafeAreaProvider>
+                    {/* Splash is always dark navy; afterwards the bar follows the palette. */}
+                    <StatusBar
+                        style={ready && scheme === "light" ? "dark" : "light"}
+                    />
+                    <View style={themeVars} className="flex-1">
+                        <LoadingScope>
+                            {!ready ? (
+                                // Web: plain white while config/fonts load (a few hundred ms), no splash flash.
+                                // Native: a React twin of the launch screen covers the hand-off from the native splash.
+                                Platform.OS === "web" ? (
+                                    <View className="flex-1 bg-background" />
+                                ) : (
+                                    <SplashView />
+                                )
+                            ) : updateRequired && !isAuthenticated ? (
+                                // Update required, signed out (start-up stops before sign-in): no page of the app is
+                                // mounted, so none can start a login or load anything; the dialog goes over this
+                                <View
+                                    className="flex-1"
+                                    accessibilityElementsHidden
+                                    importantForAccessibility="no-hide-descendants"
+                                >
+                                    <UpdateRequiredLanding />
+                                </View>
+                            ) : boot.status === "error" && !updateRequired ? (
+                                <AppErrorView
+                                    type={boot.type}
+                                    onRetry={retry}
+                                />
                             ) : (
-                                <SplashView />
+                                // update required while signed in: the user's page stays, under the dialog
+                                <LockGate
+                                    covered={
+                                        onboardingPending || updateRequired
+                                    }
+                                >
+                                    <AppShell>
+                                        <RootNavigator />
+                                    </AppShell>
+                                </LockGate>
+                            )}
+                        </LoadingScope>
+                        <LoadingOverlay />
+                        <Announcer />
+                        <NewTabHint />
+                        {/* Over the loading overlay too. Overlays, so the routes stay mounted: remounting them restarts at Home. */}
+                        {/* update required: the dialog, drawn over the page and under the lock screen (UpdateRequiredView) */}
+                        {ready && updateRequired ? (
+                            <UpdateRequiredView />
+                        ) : null}
+                        {ready && boot.status === "ready" ? (
+                            onboardingPending && !updateRequired ? (
+                                <View className="absolute inset-0 z-50 bg-background">
+                                    <OnboardingView />
+                                </View>
+                            ) : (
+                                <LockScreen />
                             )
-                        ) : updateRequired && !isAuthenticated ? (
-                            // Update required, signed out (start-up stops before sign-in): no page of the app is
-                            // mounted, so none can start a login or load anything; the dialog goes over this
-                            <View
-                                className="flex-1"
-                                accessibilityElementsHidden
-                                importantForAccessibility="no-hide-descendants"
-                            >
-                                <UpdateRequiredLanding />
-                            </View>
-                        ) : boot.status === "error" && !updateRequired ? (
-                            <AppErrorView type={boot.type} onRetry={retry} />
-                        ) : (
-                            // update required while signed in: the user's page stays, under the dialog
-                            <LockGate
-                                covered={onboardingPending || updateRequired}
-                            >
-                                <AppShell>
-                                    <RootNavigator />
-                                </AppShell>
-                            </LockGate>
-                        )}
-                    </LoadingScope>
-                    <LoadingOverlay />
-                    <Announcer />
-                    <NewTabHint />
-                    {/* Over the loading overlay too. Overlays, so the routes stay mounted: remounting them restarts at Home. */}
-                    {/* update required: the dialog, drawn over the page and under the lock screen (UpdateRequiredView) */}
-                    {ready && updateRequired ? <UpdateRequiredView /> : null}
-                    {ready && boot.status === "ready" ? (
-                        onboardingPending && !updateRequired ? (
-                            <View className="absolute inset-0 z-50 bg-background">
-                                <OnboardingView />
-                            </View>
-                        ) : (
-                            <LockScreen />
-                        )
-                    ) : null}
-                </View>
-            </SafeAreaProvider>
+                        ) : null}
+                    </View>
+                </SafeAreaProvider>
+            </KeyboardProvider>
         </GestureHandlerRootView>
     );
 }
