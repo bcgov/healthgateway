@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { Pressable, View } from "react-native";
 
 import { Icon, ModalSafeArea } from "@/components/common";
 import { AppModal } from "@/components/common/AppModal";
@@ -9,6 +9,7 @@ import { useThemeColors } from "@/hooks/useTheme";
 import { useTimelineStore } from "@/stores/timeline.store";
 
 import { TimelineEntryView } from "./entries";
+import { EntryDetailsLayout } from "./EntryDetailsLayout";
 
 /**
  * Port of FullscreenTimelineEntryComponent.vue: on mobile an entry opens full screen with a back button. The dialog
@@ -79,10 +80,7 @@ export function FullscreenTimelineEntry({
                             </Pressable>
                         </View>
                         {entry ? (
-                            <ScrollView
-                                className="flex-1"
-                                contentContainerClassName="flex-grow"
-                            >
+                            <EntryDetailsLayout>
                                 <View className="mx-2">
                                     <ErrorAlert />
                                 </View>
@@ -93,7 +91,7 @@ export function FullscreenTimelineEntry({
                                     isMobileDetails
                                     commentsAreEnabled={commentsAreEnabled}
                                 />
-                            </ScrollView>
+                            </EntryDetailsLayout>
                         ) : null}
                     </View>
                 </ModalSafeArea>

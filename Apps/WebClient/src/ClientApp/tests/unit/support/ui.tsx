@@ -142,6 +142,20 @@ export const changeText = async (el: UiElement, text: string) => {
     await fireEvent.changeText(el, text);
     await settle();
 };
+export const focus = async (el: UiElement) => {
+    await fireEvent(el, "focus");
+    await settle();
+};
+// Jest lays nothing out, so tests fire onLayout themselves
+export const fireLayout = async (
+    el: UiElement,
+    layout: { x?: number; y?: number; width?: number; height: number }
+) => {
+    await fireEvent(el, "layout", {
+        nativeEvent: { layout: { x: 0, y: 0, width: 0, ...layout } },
+    });
+    await settle();
+};
 /** Switch state (RN Switch: `value`). */
 export const isOn = (el: UiElement) => el.props.value === true;
 /** Flip a switch as a user would. */
@@ -189,6 +203,11 @@ export const textOf = (el: UiElement): string => {
 /** Whether the element (or, on web, its subtree) contains a native input. */
 export const containsInput = (el: UiElement) =>
     typeof el.props.onChangeText === "function";
+export const isWithin = (el: UiElement, ancestor: UiElement): boolean => {
+    for (let node: UiElement | null = el; node; node = node.parent)
+        if (node === ancestor) return true;
+    return false;
+};
 /** The current text of a text field (the input itself carries the test id on native). */
 export const inputValue = (el: UiElement): string =>
     String(el.props.value ?? "");

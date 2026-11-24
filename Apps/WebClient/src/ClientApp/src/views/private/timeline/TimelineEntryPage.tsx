@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useNavigation } from "expo-router/react-navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ErrorAlert } from "@/components/site/ErrorAlert";
@@ -11,6 +11,7 @@ import { toHref } from "@/navigation/href";
 import { useTimelineStore } from "@/stores/timeline.store";
 
 import { TimelineEntryView } from "./entries";
+import { EntryDetailsLayout } from "./EntryDetailsLayout";
 
 /**
  * iOS and Android: a timeline entry on a page of its own, pushed on the tab's stack over the timeline that opened it
@@ -89,12 +90,9 @@ export function TimelineEntryPage({ timelinePath }: { timelinePath: string }) {
     if (!opened) return null;
     const { entry, owner } = opened;
     return (
-        <ScrollView
+        <EntryDetailsLayout
             testID="entryDetailsPage"
-            className="flex-1 bg-surface"
-            contentContainerClassName="flex-grow"
             contentInsetAdjustmentBehavior="automatic"
-            keyboardShouldPersistTaps="handled"
         >
             {/* landscape: the content keeps clear of the notch and the home indicator's sides */}
             <SafeAreaView edges={["left", "right"]} style={{ flexGrow: 1 }}>
@@ -109,6 +107,6 @@ export function TimelineEntryPage({ timelinePath }: { timelinePath: string }) {
                     commentsAreEnabled={owner.commentsAreEnabled}
                 />
             </SafeAreaView>
-        </ScrollView>
+        </EntryDetailsLayout>
     );
 }

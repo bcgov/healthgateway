@@ -19,6 +19,8 @@ import { cn } from "@/utils/cn";
 import { confirmAction } from "@/utils/confirm";
 import { formatDate, fromIso, isPacificTime } from "@/utils/dateUtil";
 
+import { useKeyboardClearanceBelowField } from "../EntryDetailsLayout";
+
 const formatCommentDate = (date: string) =>
     formatDate(
         fromIso(date),
@@ -41,6 +43,15 @@ export function CommentItem({
     const [commentInput, setCommentInput] = useState("");
     const [isEditMode, setIsEditMode] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    // While editing in full screen, everything from the field's top to this box's bottom (Save and Cancel included) stays
+    // above the keyboard in the native apps. The offsets are measured, so padding and margins here can change freely.
+    const [boxHeight, setBoxHeight] = useState(0);
+    const [editRowTop, setEditRowTop] = useState(0);
+    const [fieldTop, setFieldTop] = useState(0);
+    const keepEditRowInSight = useKeyboardClearanceBelowField(
+        boxHeight - editRowTop - fieldTop,
+        isEditMode
+    );
 
     function handleCommentError(error: unknown) {
         if (isSessionEnded(error)) return;
@@ -83,7 +94,11 @@ export function CommentItem({
 
     return (
         // v-sheet grey-lighten-5
-        <View className="px-4 py-2 mt-2 bg-table-header rounded">
+        <View
+            testID="commentBox"
+            className="px-4 py-2 mt-3 bg-table-header rounded"
+            onLayout={(e) => setBoxHeight(e.nativeEvent.layout.height)}
+        >
             {!isEditMode ? (
                 <View className="flex-row items-start">
                     <View className="flex-1 py-3">
@@ -133,8 +148,20 @@ export function CommentItem({
                     </HgMenu>
                 </View>
             ) : (
-                <View className={cn(isMobile ? "" : "flex-row items-center")}>
-                    <View className="flex-1 py-2">
+                <View
+                    className={cn(
+                        "py-2",
+                        isMobile ? "" : "flex-row items-center"
+                    )}
+                    onLayout={(e) => setEditRowTop(e.nativeEvent.layout.y)}
+                >
+                    <View
+                        testID="editCommentFieldArea"
+                        // at mobile sizes, the input takes up the whole width; otherwise the buttons appear to the right
+                        className={cn(!isMobile && "flex-1")}
+                        // the text box starts at this wrapper's top, so anything added above it will skew the measurement
+                        onLayout={(e) => setFieldTop(e.nativeEvent.layout.y)}
+                    >
                         <HgTextField
                             testID="editCommentInput"
                             nativeID="comment-input"
@@ -144,14 +171,19 @@ export function CommentItem({
                             placeholder="Editing a comment"
                             multiline
                             autoGrow
+                            // With the keyboard up on a small phone, a taller field won't fit above it with Save and
+                            // Cancel visible, so the field would scroll partly off screen
+                            maxLines={6}
                             maxLength={1000}
                             editable={!isUpdating}
+                            {...keepEditRowInSight}
                         />
                     </View>
                     <View
                         className={cn(
                             "flex-row items-center",
-                            !isMobile && "ml-3"
+                            // Under the field: mt-2 plus the field's mb-2 gives 16px
+                            isMobile ? "mt-2" : "ml-3"
                         )}
                     >
                         <HgButton

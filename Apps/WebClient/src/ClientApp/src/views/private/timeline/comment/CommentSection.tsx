@@ -8,15 +8,12 @@ import { getEntryTypeDetails } from "@/constants/entryType";
 import type { TimelineEntry } from "@/models/timeline/timelineEntry";
 import { useCommentStore } from "@/stores/comment.store";
 import { useUserStore } from "@/stores/user.store";
-import { cn } from "@/utils/cn";
 
+import { usePinnedFooter } from "../EntryDetailsLayout";
 import { AddComment } from "./AddComment";
 import { CommentItem } from "./CommentItem";
 
-/**
- * Port of timeline/comment/CommentSectionComponent.vue: "N Comments" toggles the list; the add-comment field
- * follows. (The web client pins the field to the bottom of the full-screen details; here it ends the details.)
- */
+/** Port of timeline/comment/CommentSectionComponent.vue */
 export function CommentSection({
     parentEntry,
     isMobileDetails = false,
@@ -49,8 +46,18 @@ export function CommentSection({
         // eslint-disable-next-line react-hooks/exhaustive-deps -- once, when the section is created
     }, []);
 
+    const addComment = (
+        <AddComment
+            parentEntryId={parentEntry.id}
+            entryTypeCode={entryTypeCode}
+            onCommentAdded={() => setShowComments(true)}
+            onError={scrollToTop}
+        />
+    );
+    const pinned = usePinnedFooter(isMobileDetails ? addComment : undefined);
+
     return (
-        <View className={cn("mt-6", isMobileDetails && "pb-4")}>
+        <View>
             {commentCount > 0 ? (
                 <View className="items-end">
                     <HgButton
@@ -73,14 +80,11 @@ export function CommentSection({
                     ))}
                 </View>
             ) : null}
-            <View className={isMobileDetails ? "p-4" : "mt-4"}>
-                <AddComment
-                    parentEntryId={parentEntry.id}
-                    entryTypeCode={entryTypeCode}
-                    onCommentAdded={() => setShowComments(true)}
-                    onError={scrollToTop}
-                />
-            </View>
+            {pinned ? null : (
+                <View className={isMobileDetails ? "p-4" : "mt-3 py-3"}>
+                    {addComment}
+                </View>
+            )}
         </View>
     );
 }

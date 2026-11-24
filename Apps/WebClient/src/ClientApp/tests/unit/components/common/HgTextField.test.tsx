@@ -1,5 +1,5 @@
-import { describe, expect, it, jest } from "@jest/globals";
-import { Platform, StyleSheet, Text } from "react-native";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import { Dimensions, Platform, StyleSheet, Text } from "react-native";
 
 import { HgTextField } from "@/components/common/HgTextField";
 import { expectNoAxeViolations } from "@/test/axe";
@@ -12,7 +12,20 @@ import {
     screen,
 } from "@/test/ui";
 
+// React Native's Jest setup reports a fontScale of 2 unless told otherwise
+const scaleText = (fontScale: number) =>
+    jest.spyOn(Dimensions, "get").mockReturnValue({
+        width: 390,
+        height: 844,
+        scale: 3,
+        fontScale,
+    });
+
 describe("HgTextField", () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it("labels the input and passes typed text up", async () => {
         const onChangeText = jest.fn();
         await render(
@@ -140,7 +153,8 @@ describe("HgTextField", () => {
         expect(screen.getByLabelText("Your email address")).toBeTruthy();
     });
 
-    it("multiline numberOfLines is a minimum height on web and iOS (24px a line plus padding)", async () => {
+    it("multiline numberOfLines is a minimum height on web and iOS (24px a line, scaled on native, plus padding)", async () => {
+        if (Platform.OS !== "web") scaleText(1.5);
         await render(
             <HgTextField
                 accessibilityLabel="Note"
@@ -161,7 +175,48 @@ describe("HgTextField", () => {
                     StyleSheet.flatten(input.props.style as never) as
                         { minHeight?: number } | undefined
                 )?.minHeight
-            ).toBe(96);
+            ).toBe(132);
+    });
+
+    it("native: a multiline field starts from its content's height, so it grows wherever it is placed", async () => {
+        if (Platform.OS === "web") return;
+        await render(
+            <HgTextField
+                accessibilityLabel="Comment"
+                value=""
+                onChangeText={() => undefined}
+                multiline
+            />
+        );
+        const classes = String(
+            screen.getByLabelText("Comment").props.className
+        );
+        expect(classes).toMatch(/\bgrow\b/);
+        expect(classes).not.toMatch(/\bflex-1\b/);
+    });
+
+    it("maxLines caps a multiline field's height on native, its lines scaled with the text, then it scrolls inside; web keeps growing", async () => {
+        if (Platform.OS !== "web") scaleText(1.5);
+        await render(
+            <HgTextField
+                accessibilityLabel="Note"
+                value=""
+                onChangeText={() => undefined}
+                multiline
+                autoGrow
+                maxLines={5}
+            />
+        );
+        const input = screen.getByLabelText("Note");
+        if (Platform.OS === "web")
+            expect((input as unknown as HTMLElement).style.maxHeight).toBe("");
+        else
+            expect(
+                (
+                    StyleSheet.flatten(input.props.style as never) as
+                        { maxHeight?: number } | undefined
+                )?.maxHeight
+            ).toBe(204);
     });
 
     it("android: numberOfLines is left to the platform, without a minimum height", async () => {

@@ -5,7 +5,7 @@
 /* global jest */
 const { ScrollView, View } = require("react-native");
 
-const { useState } = require("react");
+const { useRef, useState } = require("react");
 
 // one value for the life of the component, as in Reanimated
 const useSharedValue = (initial) =>
@@ -34,6 +34,9 @@ module.exports = {
         return to;
     },
     useAnimatedScrollHandler: (handler) => handler,
+    useAnimatedRef: () => useRef(null),
+    // Jest lays nothing out
+    measure: () => null,
     // tests flip it with jest.mocked(useReducedMotion).mockReturnValue(true)
     useReducedMotion: jest.fn(() => false),
 };
