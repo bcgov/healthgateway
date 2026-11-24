@@ -79,6 +79,20 @@ function resetRecordStores() {
 
 let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
+/**
+ * The lock went on and the tokens are on their way out of memory (`sealSession`). `session`: the login it is for. One
+ * still waiting on a refresh when that login ends (sign-out, reset) says nothing about the next login.
+ */
+let sealing: { run: Promise<void>; session: number } | undefined;
+
+const isSealing = () =>
+    sealing !== undefined && sealing.session === sessionGeneration();
+
+/** Locked with device security: nothing may use the tokens, or put them back in the HTTP client, until unsealed. */
+export const isSessionSealed = () =>
+    isSealing() ||
+    (services.isInitialized && services.auth.isSealed?.() === true);
+
 function clearRefreshTimer() {
     unexpectedFailures = 0;
     if (refreshTimer !== undefined) {
@@ -93,6 +107,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     loginRequest: undefined,
 
     handleSuccessfulAuthentication: (details) => {
+        // a refresh that finished as the lock went on: its tokens are sealed, not put back to work
+        if (isSessionSealed()) return;
         useConnectivityStore.getState().setSessionStatus("live");
         services.http.setAuthorizationHeader(details.accessToken);
         set({
@@ -185,7 +201,7 @@ async function refresh() {
     const session = sessionGeneration();
     try {
         const refreshed = await services.auth.refreshToken();
-        if (session !== sessionGeneration()) return;
+        if (session !== sessionGeneration() || isSessionSealed()) return;
         unexpectedFailures = 0;
         if (refreshed) {
             const details = services.auth.getOidcTokenDetails();
@@ -206,7 +222,7 @@ async function refresh() {
                 );
         }
     } catch (error) {
-        if (session !== sessionGeneration()) return;
+        if (session !== sessionGeneration() || isSessionSealed()) return;
         logger.warn(
             `Could not refresh the access token: ${describeError(error)}`
         );
@@ -255,6 +271,7 @@ export async function refreshTokenIfDue(): Promise<void> {
     if (
         !auth.isAuthenticated ||
         !services.isInitialized ||
+        isSessionSealed() ||
         !selectCanFetch(useConnectivityStore.getState())
     )
         return;
@@ -263,4 +280,69 @@ export async function refreshTokenIfDue(): Promise<void> {
     if (refreshTimer !== undefined) clearTimeout(refreshTimer);
     refreshTimer = undefined;
     await refresh();
+}
+
+/**
+ * Device security, the lock going on: the tokens leave memory, sealed by the vault until the prompt passes again
+ * (`unsealSession`, which is in `localSession.ts` as it may go on to recover the session). The signed-in screens and
+ * records stay under the lock.
+ */
+export function sealSession(): Promise<void> {
+    if (
+        !services.isInitialized ||
+        !services.auth.seal ||
+        !useAuthStore.getState().isAuthenticated
+    )
+        return Promise.resolve();
+    clearRefreshTimer();
+    services.http.unsetAuthorizationHeader();
+    useAuthStore.setState({ tokenDetails: undefined });
+    const run: Promise<void> = services.auth
+        .seal()
+        .catch((error: unknown) =>
+            logger.warn(`Could not seal the login: ${describeError(error)}`)
+        )
+        .finally(() => {
+            if (sealing?.run === run) sealing = undefined;
+        });
+    sealing = { run, session: sessionGeneration() };
+    return run;
+}
+
+/** Resolves once a lock that went on has finished taking this login's tokens out of memory. */
+export async function whenSealed(): Promise<void> {
+    if (isSealing()) await sealing?.run;
+}
+
+/** Device security turned on or off: the stored login is sealed by the vault, or no longer. */
+export async function setSessionSealed(sealed: boolean): Promise<void> {
+    if (services.isInitialized) await services.auth.setSealed?.(sealed);
+}
+
+/**
+ * The lock screen's way to a new login. Ending the login takes the same prompt as unlocking: turned down, or not shown for a
+ * reason that may pass, nothing changes. Passed, the login is unsealed first, so Keycloak hears of the sign-out. With no
+ * device security left on the device the key has gone with it and nothing can read the login, so it is only deleted here.
+ * So is one that could not be unsealed for another reason: the prompt has passed, and this is the only way off the lock
+ * screen for a login that never unseals.
+ */
+export async function signOutFromLock(): Promise<boolean> {
+    const result = await useAppLockStore.getState().authenticate();
+    if (result === "cancelled" || result === "unavailable") return false;
+    if (result === "unlocked" && services.isInitialized) {
+        // a lock still taking the tokens out of memory would take them from under the sign-out
+        await whenSealed();
+        const unsealed = await services.auth.unseal?.();
+        // the key's own prompt was turned down: the login and the lock stay as they were
+        if (unsealed === "cancelled") return false;
+        if (unsealed === "unavailable")
+            logger.warn(
+                "Signing out a login that could not be unsealed: Keycloak is not told"
+            );
+    }
+    useAppLockStore.setState({ beforeUnlock: undefined });
+    // the lock lifts once the session is gone (useAppLockLifecycle); the guard goes to login
+    useAuthStore.setState({ loginRequest: {} });
+    await useAuthStore.getState().signOut();
+    return true;
 }

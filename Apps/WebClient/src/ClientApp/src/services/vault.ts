@@ -4,7 +4,11 @@ import { logger } from "@/services/logger";
 
 import NativeVault from "../../modules/hg-secure-vault";
 
-export type VaultUnlock = "unlocked" | "cancelled" | "unavailable";
+/**
+ * "cancelled": the prompt was turned down or failed. "keyGone": the device has no security set up any more, and the key
+ * went with it. "unavailable": anything else, which may pass at the next try.
+ */
+export type VaultUnlock = "unlocked" | "cancelled" | "unavailable" | "keyGone";
 
 const errorCode = (error: unknown) =>
     (error as { code?: string } | undefined)?.code;
@@ -20,6 +24,19 @@ export const isVaultCancelled = (error: unknown) =>
     errorCode(error) === "ERR_VAULT_CANCELLED";
 
 /**
+ * The key is gone for good, and nothing it encrypted can be read again: the device's security was removed, or removed and
+ * set up again. Any other failure may pass at the next try.
+ */
+export const isVaultKeyGone = (error: unknown) => {
+    const code = errorCode(error);
+    return code === "ERR_VAULT_NO_KEY" || code === "ERR_VAULT_INVALIDATED";
+};
+
+/** What it was asked to decrypt is damaged: no later try will read it. */
+export const isVaultCorrupt = (error: unknown) =>
+    errorCode(error) === "ERR_VAULT_CORRUPT";
+
+/**
  * The device-protected key pair (`modules/hg-secure-vault`), in native code: JavaScript only hands over text. Encrypting
  * never asks and no key is kept in memory; decrypting makes the OS ask for biometrics or the device PIN / passcode, unless
  * `unlock` has just passed. A dev client built before the module was added has none, which reads as "unavailable".
@@ -32,7 +49,8 @@ export const vault = {
             return "unlocked";
         } catch (error) {
             logger.warn(`Vault did not unlock: ${errorCode(error)}`);
-            return isVaultCancelled(error) ? "cancelled" : "unavailable";
+            if (isVaultCancelled(error)) return "cancelled";
+            return isVaultKeyGone(error) ? "keyGone" : "unavailable";
         }
     },
     lock: () => NativeVault?.lock(),

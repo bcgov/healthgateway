@@ -108,7 +108,12 @@ public class HgSecureVaultModule: Module {
     let context = LAContext()
     var canError: NSError?
     guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &canError) else {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "Device security is not set up")
+      // no passcode: the key, kept only while one is set, went with it
+      if canError?.code == LAError.Code.passcodeNotSet.rawValue {
+        promise.reject("ERR_VAULT_NO_KEY", "Device security is not set up")
+      } else {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "Could not ask (\(canError?.code ?? 0))")
+      }
       return
     }
     context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: prompt) { passed, error in
@@ -152,13 +157,15 @@ public class HgSecureVaultModule: Module {
     return SecKeyCreateRandomKey(attributes as CFDictionary, nil)
   }
 
-  private func privateKey(context: LAContext) -> SecKey? {
+  /** `status`: why there is no key, so a key that is gone can be told from one that could not be read this time. */
+  private func privateKey(context: LAContext) -> (key: SecKey?, status: OSStatus) {
     var query = privateKeyQuery()
     query[kSecReturnRef as String] = true
     query[kSecUseAuthenticationContext as String] = context
     var item: CFTypeRef?
-    guard SecItemCopyMatching(query as CFDictionary, &item) == errSecSuccess else { return nil }
-    return (item as! SecKey)
+    let status = SecItemCopyMatching(query as CFDictionary, &item)
+    guard status == errSecSuccess else { return (nil, status) }
+    return ((item as! SecKey), status)
   }
 
   private func storedPublicKey() -> SecKey? {
@@ -181,7 +188,10 @@ public class HgSecureVaultModule: Module {
     if let key = storedPublicKey() { return key }
     let context = LAContext()
     context.interactionNotAllowed = true
-    guard let secret = privateKey(context: context) ?? createPrivateKey(),
+    // A new key only when there is none. One that could not be read this time (the device is locked) is still the key
+    // the stored copies were sealed with: a second under the same tag would leave them unreadable.
+    let (existing, status) = privateKey(context: context)
+    guard let secret = existing ?? (status == errSecItemNotFound ? createPrivateKey() : nil),
       let key = SecKeyCopyPublicKey(secret),
       let data = SecKeyCopyExternalRepresentation(key, nil) as Data?
     else { return nil }
@@ -215,7 +225,8 @@ public class HgSecureVaultModule: Module {
 
   private func decrypt(_ ciphertext: String, prompt: String, promise: Promise) {
     guard let sealed = Data(base64Encoded: ciphertext) else {
-      promise.reject("ERR_VAULT_CRYPTO", "Could not decrypt")
+      // damaged, as opposed to a key that could not be used this time: no later try will read it
+      promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged")
       return
     }
     let context: LAContext
@@ -226,15 +237,27 @@ public class HgSecureVaultModule: Module {
       context = LAContext()
       context.localizedReason = prompt
     }
-    guard let secret = privateKey(context: context) else {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "There is no key")
+    let (found, status) = privateKey(context: context)
+    guard let secret = found else {
+      // gone with the passcode it was kept under, as opposed to a Keychain that could not be read this time
+      if status == errSecItemNotFound {
+        promise.reject("ERR_VAULT_NO_KEY", "There is no key")
+      } else {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "Could not read the key (\(status))")
+      }
       return
     }
     // This is the step the OS guards: it asks for biometrics or the passcode here, unless a prompt has just passed.
     var error: Unmanaged<CFError>?
     guard let opened = SecKeyCreateDecryptedData(secret, algorithm, sealed as CFData, &error) as Data?
     else {
-      rejectStatus(error.map { CFErrorGetCode($0.takeRetainedValue()) } ?? 0, promise: promise)
+      let code = error.map { CFErrorGetCode($0.takeRetainedValue()) } ?? 0
+      // the key was used and refused the bytes (too short, or changed since they were sealed): they are damaged
+      if code == Int(errSecParam) || code == Int(errSecDecode) {
+        promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged (\(code))")
+      } else {
+        rejectStatus(code, promise: promise)
+      }
       return
     }
     promise.resolve(String(decoding: opened, as: UTF8.self))

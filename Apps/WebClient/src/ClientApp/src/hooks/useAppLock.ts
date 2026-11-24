@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { AppState, Platform } from "react-native";
 
-import { useAppLockStore } from "@/stores/appLock.store";
-import { refreshTokenIfDue, useAuthStore } from "@/stores/auth.store";
+import {
+    selectOpensOnUnlock,
+    setSessionLock,
+    useAppLockStore,
+} from "@/stores/appLock.store";
+import {
+    refreshTokenIfDue,
+    sealSession,
+    setSessionSealed,
+    useAuthStore,
+} from "@/stores/auth.store";
 import { selectIdleTimeout, useConfigStore } from "@/stores/config.store";
 import {
     selectIsUnreachable,
@@ -13,6 +22,7 @@ import {
     probeService,
     recoverSession,
     startRecordCacheSync,
+    unsealSession,
 } from "@/stores/localSession";
 import { getLocalAuthMethod, type LocalAuthMethod } from "@/utils/localAuth";
 import { recordLastActive } from "@/utils/sessionExpiry";
@@ -36,8 +46,17 @@ export function useAppLockLifecycle() {
     const locked = useAppLockStore((s) => s.locked);
     const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
     // a locked launch that opens the saved copy only signs in after the prompt
-    const opening = useAppLockStore((s) => s.beforeUnlock !== undefined);
+    const opening = useAppLockStore(selectOpensOnUnlock);
     const isOnline = useConnectivityStore((s) => s.isOnline);
+
+    useEffect(() => {
+        if (Platform.OS === "web") return startNothing();
+        return setSessionLock({
+            seal: sealSession,
+            unseal: unsealSession,
+            setSealed: setSessionSealed,
+        });
+    }, []);
 
     useEffect(() => {
         if (Platform.OS === "web") return startNothing();
@@ -78,12 +97,14 @@ export function useAppLockLifecycle() {
                 lock.appBackgrounded(Date.now());
                 void recordLastActive(Date.now());
             } else if (state === "active") {
-                void refreshTokenIfDue();
                 lock.appActivated(
                     useAuthStore.getState().isAuthenticated,
                     Date.now(),
                     selectIdleTimeout(useConfigStore.getState())
                 );
+                // locked, the tokens are sealed: unlocking refreshes them
+                if (!useAppLockStore.getState().locked)
+                    void refreshTokenIfDue();
                 if (useConnectivityStore.getState().serviceUnavailable)
                     void probeService();
                 // a running app must hear about a required update too: an hour after the last read, start-up's included

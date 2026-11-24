@@ -8,6 +8,7 @@ import { Path } from "@/constants/path";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import type { IdentityProviderConfiguration } from "@/models/configData";
 import { toHref } from "@/navigation/href";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { selectIdentityProviders, useConfigStore } from "@/stores/config.store";
 
@@ -88,10 +89,15 @@ export function LoginView() {
         setIsLoading(false);
     }
 
+    // Native, device security: under the lock nothing starts. A launch on this page (healthgateway://login?idp=…) with a
+    // sealed login would open the provider's sheet over the lock screen, and cancelling it would delete the login unread.
+    const locked = useAppLockStore((s) => s.locked);
+
     useEffect(() => {
-        if (autoStarted.current) return;
+        if (locked || autoStarted.current) return;
         autoStarted.current = true;
-        if (isAuthenticated) {
+        // read now: the lock's prompt may have just opened the login
+        if (useAuthStore.getState().isAuthenticated) {
             void completeLogin(redirectPath).then((t) =>
                 router.replace(toHref(t))
             );
@@ -101,7 +107,7 @@ export function LoginView() {
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [locked]);
 
     return (
         <View className="items-center">

@@ -1,11 +1,15 @@
 import * as AuthSession from "expo-auth-session";
-import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 
 import type { OpenIdConnectConfiguration } from "@/models/configData";
 import { HttpError, SessionEndedError } from "@/models/errors";
 import type { OidcTokenDetails, OidcUserInfo } from "@/models/user";
 import { describeError, logger } from "@/services/logger";
+import {
+    isVaultCancelled,
+    isVaultCorrupt,
+    isVaultKeyGone,
+} from "@/services/vault";
 
 import { classifyAuthFailure } from "./authFailure";
 import {
@@ -13,24 +17,14 @@ import {
     type IAuthService,
     REFRESH_CUSHION,
     type RestoreFailure,
+    type UnsealOptions,
+    type UnsealResult,
 } from "./authService";
 import { decodeJwtPayload } from "./jwt";
-import {
-    clearStoredSession,
-    inOrder,
-    STORAGE_KEY,
-} from "./storedSession.native";
+import { StoredCopies, type StoredSession } from "./storedCopies.native";
+import { clearStoredSession, inOrder } from "./storedSession.native";
 
 const SCHEME = "healthgateway";
-
-interface StoredSession {
-    accessToken: string;
-    refreshToken?: string;
-    idToken: string;
-    /** Unix seconds. */
-    expiresAt: number;
-    sessionState?: string;
-}
 
 const DEFAULT_LIFETIME_SECONDS = 300;
 
@@ -54,7 +48,9 @@ export class AuthCancelledError extends Error {
  * - The auth sheet is opened with `preferEphemeralSession: true`, so iOS does not show the
  *   "wants to use … to sign in" consent sheet and no cookies are shared with Safari.
  * - Logout is done server-side (POST end_session with the refresh token); no browser is opened.
- * - Tokens live in expo-secure-store (Keychain / Keystore).
+ * - Tokens live in expo-secure-store (Keychain / Keystore). With device security on they are first encrypted by the vault,
+ *   the key that seals the saved records, so reading them takes the same prompt; and while the app is locked they are
+ *   not in memory either (`seal` / `unseal`).
  */
 export class NativeAuthService implements IAuthService {
     private discovery?: AuthSession.DiscoveryDocument;
@@ -64,6 +60,12 @@ export class NativeAuthService implements IAuthService {
     private refreshing?: Promise<boolean>;
     /** Raised when the session goes, so what a call started under it comes back to can be told apart. */
     private login = 0;
+    /** Device security is on: the session is to be stored sealed by the vault. */
+    private sealStored = false;
+    /** The stored session is sealed and not in memory: `unseal` brings it back. */
+    private awaitingUnseal = false;
+    /** What is stored, and how: the session in memory may only leave it when it is stored sealed. */
+    private readonly copies = new StoredCopies();
     private readonly redirectUri = AuthSession.makeRedirectUri({
         scheme: SCHEME,
         path: "loginCallback",
@@ -80,23 +82,38 @@ export class NativeAuthService implements IAuthService {
     }
 
     async init(options?: AuthInitOptions): Promise<void> {
+        this.sealStored = options?.sealed === true;
         const login = this.login;
-        try {
-            const raw = await inOrder(() =>
-                SecureStore.getItemAsync(STORAGE_KEY)
-            );
-            if (raw && login === this.login)
-                this.session = JSON.parse(raw) as StoredSession;
-        } catch (error) {
-            logger.warn(
-                `Unable to read stored session: ${describeError(error)}`
-            );
+        const stored = await this.copies.readAtLaunch(
+            this.sealStored,
+            () => login !== this.login
+        );
+        if (login !== this.login) return;
+        if (stored.sealed) {
+            this.awaitingUnseal = true;
+            return;
         }
+        this.session = stored.session;
+        if (this.session && this.sealStored) {
+            // kept unsealed by an earlier build, or newer than the sealed copy: sealed now, and opened after the prompt
+            // like any other
+            await this.persist(this.session, login);
+            if (login !== this.login) return;
+            if (this.copies.isSealed) {
+                this.dropFromMemory();
+                return;
+            }
+        }
+        await this.restore(options?.keepSessionOnFailure);
+    }
+
+    /** An expired access token is refreshed straight away. */
+    private async restore(keepSessionOnFailure?: boolean): Promise<void> {
         if (this.session && this.isExpired() && this.session.refreshToken) {
             try {
                 await this.refreshToken(true);
             } catch (error) {
-                if (options?.keepSessionOnFailure) {
+                if (keepSessionOnFailure) {
                     // only a lost connection may keep a login going; a response that makes no sense must not
                     this.restoreFailure =
                         classifyAuthFailure(error) === "connection"
@@ -106,6 +123,85 @@ export class NativeAuthService implements IAuthService {
                     await this.clearSession();
                 }
             }
+        }
+    }
+
+    isSealed(): boolean {
+        return this.awaitingUnseal;
+    }
+
+    async unseal(options?: UnsealOptions): Promise<UnsealResult> {
+        if (!this.awaitingUnseal)
+            return this.session ? "unsealed" : "unreadable";
+        const login = this.login;
+        let session: StoredSession | undefined;
+        try {
+            session = await this.copies.unseal();
+        } catch (error) {
+            if (isVaultCancelled(error)) return "cancelled";
+            logger.warn(
+                `Unable to unseal the stored session: ${describeError(error)}`
+            );
+            // signed out or reset while the prompt was open
+            if (login !== this.login) return "unreadable";
+            // only a key gone for good, or a damaged copy, ends the login: anything else may pass at the next try, and
+            // it stays sealed
+            if (!isVaultKeyGone(error) && !isVaultCorrupt(error))
+                return "unavailable";
+        }
+        if (login !== this.login) return "unreadable";
+        if (!session) {
+            // nothing will ever read it: the key went with the device's security, or the copy is missing or damaged
+            await this.clearSession();
+            return "unreadable";
+        }
+        this.session = session;
+        this.awaitingUnseal = false;
+        await this.copies.unsealed();
+        if (login !== this.login) return "unreadable";
+        if (options?.restore) await this.restore(true);
+        return "unsealed";
+    }
+
+    seal(): Promise<void> {
+        return this.sealFor(this.login);
+    }
+
+    /** `login`: the one the lock went on over. Signed out while this waited, the next login is not its to seal. */
+    private async sealFor(login: number): Promise<void> {
+        // A refresh on its way: its tokens are saved before they go, or a rotated refresh token would be lost with them.
+        // Then any save still running finishes. Another refresh may have started by then, so both are waited for until
+        // neither is left.
+        do {
+            // its caller hears of a failure
+            await this.refreshing?.catch(() => undefined);
+            await inOrder(() => Promise.resolve());
+            if (login !== this.login) return;
+        } while (this.refreshing);
+        if (!this.sealStored || !this.session || !this.copies.isSealed) return;
+        this.dropFromMemory();
+    }
+
+    private dropFromMemory() {
+        this.session = undefined;
+        this.userInfo = undefined;
+        this.awaitingUnseal = true;
+    }
+
+    async setSealed(sealed: boolean): Promise<void> {
+        const previous = this.sealStored;
+        this.sealStored = sealed;
+        const session = this.session;
+        if (!session) return;
+        const login = this.login;
+        try {
+            await inOrder(async () => {
+                if (login === this.login)
+                    await this.copies.write(session, sealed, true);
+            });
+        } catch (error) {
+            this.sealStored = previous;
+            throw error;
         }
     }
 
@@ -307,24 +403,37 @@ export class NativeAuthService implements IAuthService {
             refreshToken: token.refreshToken ?? previous?.refreshToken,
             idToken,
             expiresAt: issuedAt + lifetime,
+            issuedAt,
             sessionState:
                 (token as { sessionState?: string }).sessionState ??
                 previous?.sessionState,
         };
         this.session = session;
-        const login = this.login;
+        await this.persist(session, this.login);
+    }
+
+    /** Stores the session, sealed when device security is on. A failure is logged: the session still works in memory. */
+    private async persist(session: StoredSession, login: number) {
         await inOrder(async () => {
             if (login !== this.login) return;
             try {
-                await SecureStore.setItemAsync(
-                    STORAGE_KEY,
-                    JSON.stringify(session),
-                    // each device logs in for itself: never restored onto another from a backup
-                    {
-                        keychainAccessible:
-                            SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-                    }
-                );
+                await this.copies.write(session, this.sealStored);
+                return;
+            } catch (error) {
+                if (this.sealStored)
+                    // an error, not a warning: device security is on, and the login is about to be stored without it
+                    logger.error(
+                        `Unable to seal session: ${describeError(error)}`
+                    );
+                else
+                    logger.warn(
+                        `Unable to persist session: ${describeError(error)}`
+                    );
+            }
+            if (!this.sealStored) return;
+            // still there at the next start, which seals it then; until then it can't leave memory (`seal`)
+            try {
+                await this.copies.write(session, false);
             } catch (error) {
                 logger.warn(
                     `Unable to persist session: ${describeError(error)}`
@@ -337,6 +446,8 @@ export class NativeAuthService implements IAuthService {
         this.login += 1;
         this.session = undefined;
         this.userInfo = undefined;
+        this.awaitingUnseal = false;
+        this.copies.forget();
         // logout and expiry still end the session in memory; Reset App deletes the stored copy itself and stops on
         // a failure (resetApp)
         try {

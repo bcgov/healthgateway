@@ -4,9 +4,32 @@ import { create } from "zustand";
 
 import { describeError, logger } from "@/services/logger";
 import { recordCache } from "@/services/recordCache";
-import { vault } from "@/services/vault";
+import { vault, type VaultUnlock } from "@/services/vault";
 
 const ENABLED_KEY = "hg.appLock.enabled";
+
+/**
+ * What the lock does to the login, given by the auth side (`useAppLockLifecycle`), which this store can't import.
+ * The tokens are sealed by the vault, like the saved records, and only in memory while the app is unlocked.
+ */
+export interface SessionLock {
+    /** The lock went on: the login's tokens leave memory. */
+    seal: () => Promise<void>;
+    /** The prompt passed: the tokens come back. False keeps the lock on. */
+    unseal: () => Promise<boolean>;
+    /** Device security turned on or off: the stored login moves to match. Rejects when it could not. */
+    setSealed: (sealed: boolean) => Promise<void>;
+}
+
+let sessionLock: SessionLock | undefined;
+
+/** Returns the way to take them back off. */
+export function setSessionLock(hooks: SessionLock): () => void {
+    sessionLock = hooks;
+    return () => {
+        if (sessionLock === hooks) sessionLock = undefined;
+    };
+}
 
 interface AppLockState {
     /** The user opted in (device preference, kept across sign-outs). */
@@ -15,8 +38,11 @@ interface AppLockState {
     locked: boolean;
     /** A system prompt is open; a second one would cancel it. */
     authenticating: boolean;
-    /** Runs after the prompt passes and before the lock lifts: opening the saved copy on a launch with no login. */
-    beforeUnlock?: () => Promise<void>;
+    /**
+     * Runs after the prompt passes and before the lock lifts: opening the sealed login, or the saved copy on a launch with
+     * no working login. Resolving false keeps the lock on, and it runs again at the next unlock.
+     */
+    beforeUnlock?: () => Promise<boolean>;
     backgroundedAt?: number;
     hydrate: () => Promise<void>;
     /** Cold start: a saved session must be unlocked before the app shows. */
@@ -24,6 +50,8 @@ interface AppLockState {
     appBackgrounded: (now: number) => void;
     /** `idleMs`: away this long or less does not ask again. */
     appActivated: (signedIn: boolean, now: number, idleMs: number) => void;
+    /** Only the system prompt: what came of it. */
+    authenticate: () => Promise<VaultUnlock>;
     /** Each of these asks for the system prompt and reports whether it passed. */
     unlock: () => Promise<boolean>;
     enable: () => Promise<boolean>;
@@ -35,18 +63,39 @@ interface AppLockState {
     reset: () => Promise<void>;
 }
 
+/** A launch's login, or its saved copy, opens after the lock's prompt: until then nobody is signed in. */
+export const selectOpensOnUnlock = (state: AppLockState) =>
+    state.beforeUnlock !== undefined;
+
 let revision = 0;
 
+/** Runs `work`, logging what could not be done instead of throwing. Resolves whether it worked. */
+async function attempt(
+    what: string,
+    work: () => Promise<unknown>,
+    level: "warn" | "error" = "warn"
+): Promise<boolean> {
+    try {
+        await work();
+        return true;
+    } catch (error) {
+        logger[level](`Could not ${what}: ${describeError(error)}`);
+        return false;
+    }
+}
+
 export const useAppLockStore = create<AppLockState>((set, get) => {
-    const prompt = async () => {
-        if (get().authenticating) return false;
+    /** One system prompt at a time, as a second would cancel the first: `busy` is the answer while one is open. */
+    const exclusive = async <T>(busy: T, work: () => Promise<T>) => {
+        if (get().authenticating) return busy;
         set({ authenticating: true });
         try {
-            return (await vault.unlock()) === "unlocked";
+            return await work();
         } finally {
             set({ authenticating: false });
         }
     };
+    const prompt = async () => (await get().authenticate()) === "unlocked";
 
     return {
         enabled: false,
@@ -57,17 +106,13 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
 
         hydrate: async () => {
             if (Platform.OS === "web") return;
-            try {
-                revision += 1;
-                const started = revision;
+            revision += 1;
+            const started = revision;
+            await attempt("read the app lock setting", async () => {
                 const stored = await SecureStore.getItemAsync(ENABLED_KEY);
                 // reset, or turned on or off, while this waited: this answer is out of date
                 if (started === revision) set({ enabled: stored === "true" });
-            } catch (error) {
-                logger.warn(
-                    `Could not read the app lock setting: ${describeError(error)}`
-                );
-            }
+            });
         },
 
         lockOnLaunch: (signedIn) => {
@@ -91,57 +136,90 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
             if (away > idleMs || away < 0) get().lock();
         },
 
-        unlock: async () => {
-            const passed = await prompt();
-            if (!passed) return false;
-            const { beforeUnlock } = get();
-            if (beforeUnlock) {
-                set({ beforeUnlock: undefined });
-                await beforeUnlock();
-            }
-            set({ locked: false });
-            return true;
-        },
+        authenticate: () => exclusive("cancelled", () => vault.unlock()),
+
+        // Still authenticating while `beforeUnlock` runs: it may wait on the network, and a second prompt meanwhile
+        // would run it twice. It stays set until done, so the lock isn't dropped for want of a login meanwhile.
+        unlock: () =>
+            exclusive(false, async () => {
+                if ((await vault.unlock()) !== "unlocked") return false;
+                const { beforeUnlock } = get();
+                // a lock that went on while the app was open: the login's tokens come back
+                const opening = beforeUnlock ?? sessionLock?.unseal;
+                if (opening && !(await opening())) return false;
+                // done, unless signing out meanwhile replaced it
+                const done = get().beforeUnlock === beforeUnlock;
+                set(
+                    done
+                        ? { locked: false, beforeUnlock: undefined }
+                        : { locked: false }
+                );
+                return true;
+            }),
 
         enable: async () => {
             revision += 1;
             if (!(await prompt())) return false;
-            try {
-                await SecureStore.setItemAsync(ENABLED_KEY, "true", {
+            const saved = await attempt("save the app lock setting", () =>
+                SecureStore.setItemAsync(ENABLED_KEY, "true", {
                     keychainAccessible:
                         SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
-                });
-                set({ enabled: true });
-                return true;
-            } catch (error) {
-                logger.warn(
-                    `Could not save the app lock setting: ${describeError(error)}`
+                })
+            );
+            if (!saved) return false;
+            if (
+                !(await attempt("seal the login", async () =>
+                    sessionLock?.setSealed(true)
+                ))
+            ) {
+                // on without it would promise the login a protection it doesn't have
+                await attempt("remove the app lock setting", () =>
+                    SecureStore.deleteItemAsync(ENABLED_KEY)
                 );
                 return false;
             }
+            set({ enabled: true });
+            return true;
         },
 
         // Asks first: otherwise anyone holding an unlocked phone could switch the lock off.
         disable: async () => {
             revision += 1;
             if (!(await prompt())) return false;
-            try {
-                await SecureStore.deleteItemAsync(ENABLED_KEY);
-                await recordCache.remove();
-                await vault.destroy();
-                set({ enabled: false });
-                return true;
-            } catch (error) {
-                logger.warn(
-                    `Could not save the app lock setting: ${describeError(error)}`
+            // before the key goes, or nothing could read the login after
+            if (
+                !(await attempt("unseal the login", async () =>
+                    sessionLock?.setSealed(false)
+                ))
+            )
+                return false;
+            if (
+                !(await attempt("save the app lock setting", () =>
+                    SecureStore.deleteItemAsync(ENABLED_KEY)
+                ))
+            ) {
+                // still on: the login goes back under the key, or the setting would promise a protection it doesn't have
+                await attempt(
+                    "seal the login again",
+                    async () => sessionLock?.setSealed(true),
+                    "error"
                 );
                 return false;
             }
+            // off from here: the setting is gone and the login is unsealed, so what is left is only cleared away
+            set({ enabled: false });
+            await attempt("remove the saved records", () =>
+                recordCache.remove()
+            );
+            // without the key, records that could not be removed can't be read either
+            await attempt("remove the vault key", () => vault.destroy());
+            return true;
         },
 
         lock: () => {
             vault.lock();
             set({ locked: true });
+            void sessionLock?.seal();
         },
 
         clearLock: () => {
@@ -158,13 +236,13 @@ export const useAppLockStore = create<AppLockState>((set, get) => {
             });
             await recordCache.remove();
             await vault.destroy();
-            try {
-                await SecureStore.deleteItemAsync(ENABLED_KEY);
-            } catch (error) {
-                logger.warn(
-                    `Could not remove the app lock setting: ${describeError(error)}`
-                );
-            }
+            // signed out by now: only the next login is stored unsealed
+            await attempt("store the next login unsealed", async () =>
+                sessionLock?.setSealed(false)
+            );
+            await attempt("remove the app lock setting", () =>
+                SecureStore.deleteItemAsync(ENABLED_KEY)
+            );
         },
     };
 });

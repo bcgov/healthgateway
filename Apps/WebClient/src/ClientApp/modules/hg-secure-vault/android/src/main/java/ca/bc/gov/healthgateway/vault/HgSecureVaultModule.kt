@@ -29,8 +29,11 @@ import java.security.PrivateKey
 import java.security.ProviderException
 import java.security.PublicKey
 import java.security.SecureRandom
+import java.security.UnrecoverableKeyException
 import java.security.spec.MGF1ParameterSpec
 import java.security.spec.X509EncodedKeySpec
+import javax.crypto.AEADBadTagException
+import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.OAEPParameterSpec
@@ -52,6 +55,12 @@ private const val KEY_BYTES = 32
 
 /** A prompt that has just passed covers the read that follows it, so the lock screen doesn't lead to a second one. */
 private const val RECENT_PROMPT_SECONDS = 30
+
+/** What was handed over to open is damaged: no later try will read it. */
+private class CorruptException(cause: Throwable) : GeneralSecurityException("The copy is damaged", cause)
+
+/** The key pair is not in the Keystore: removed, as opposed to one that could not be used this time. */
+private class NoKeyException : GeneralSecurityException("There is no key")
 
 /**
  * The record cache's RSA key pair. The private key lives in StrongBox, or otherwise the Keystore's own hardware, and only
@@ -120,6 +129,10 @@ class HgSecureVaultModule : Module() {
       // the device's security was removed and set up again: the old key is gone for good
       deleteKeys()
       promise.reject("ERR_VAULT_INVALIDATED", "The key was invalidated", error)
+    } else if (error is NoKeyException) {
+      promise.reject("ERR_VAULT_NO_KEY", "There is no key", error)
+    } else if (error is CorruptException) {
+      promise.reject("ERR_VAULT_CORRUPT", "The copy is damaged", error)
     } else {
       promise.reject("ERR_VAULT_CRYPTO", error.message ?: "Could not decrypt", error)
     }
@@ -145,15 +158,21 @@ class HgSecureVaultModule : Module() {
       promise.reject("ERR_VAULT_UNAVAILABLE", "No activity to show the prompt", null)
       return
     }
+    val secure = activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
     val canAuthenticate =
       if (credentialsPerUse) {
         BiometricManager.from(context).canAuthenticate(allowedAuthenticators()) ==
           BiometricManager.BIOMETRIC_SUCCESS
       } else {
-        activity.getSystemService(KeyguardManager::class.java).isDeviceSecure
+        secure
       }
     if (!canAuthenticate) {
-      promise.reject("ERR_VAULT_UNAVAILABLE", "Device security is not set up", null)
+      // no screen lock: the key, which needs one, is no good any more. Anything else may pass at the next try.
+      if (secure) {
+        promise.reject("ERR_VAULT_UNAVAILABLE", "The prompt is not available", null)
+      } else {
+        promise.reject("ERR_VAULT_NO_KEY", "Device security is not set up", null)
+      }
       return
     }
 
@@ -214,20 +233,46 @@ class HgSecureVaultModule : Module() {
 
   /** Throws `UserNotAuthenticatedException` when the OS wants a prompt first. */
   private fun open(ciphertext: String): String {
-    val input = ByteBuffer.wrap(Base64.decode(ciphertext, Base64.NO_WRAP))
-    val locked = ByteArray(input.int).also { input.get(it) }
-    val iv = ByteArray(IV_BYTES).also { input.get(it) }
-    val sealed = ByteArray(input.remaining()).also { input.get(it) }
+    // not base64, or cut short: damaged, which is told apart from a key that could not be used this time
+    val (locked, iv, sealed) =
+      try {
+        val input = ByteBuffer.wrap(Base64.decode(ciphertext, Base64.NO_WRAP))
+        val lockedSize = input.int
+        // the AES key locked with this module's RSA key is always the key's size
+        require(lockedSize == RSA_BITS / 8 && lockedSize <= input.remaining() - IV_BYTES)
+        Triple(
+          ByteArray(lockedSize).also { input.get(it) },
+          ByteArray(IV_BYTES).also { input.get(it) },
+          ByteArray(input.remaining()).also { input.get(it) }
+        )
+      } catch (error: RuntimeException) {
+        throw CorruptException(error)
+      }
     val secret =
-      keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
-        ?: throw GeneralSecurityException("There is no key")
+      try {
+        keyStore().getKey(KEY_ALIAS, null) as? PrivateKey
+      } catch (error: UnrecoverableKeyException) {
+        // How the Keystore reports a key invalidated for good when it is found so on loading, not on use
+        // (AndroidKeyStoreSpi.engineGetKey): with no cause. A Keystore that could not be asked this time has one.
+        throw if (error.cause == null) KeyPermanentlyInvalidatedException(error.message) else error
+      } ?: throw NoKeyException()
     val rsa = Cipher.getInstance(RSA_OAEP)
     rsa.init(Cipher.DECRYPT_MODE, secret, oaep)
-    val aesKey = rsa.doFinal(locked)
+    val aesKey =
+      try {
+        rsa.doFinal(locked)
+      } catch (error: BadPaddingException) {
+        // the locked AES key was changed after it was sealed, or was locked with another key. A key that could not be
+        // used this time (not authenticated, a Keystore failure) arrives as another exception, and may pass later.
+        throw CorruptException(error)
+      }
     try {
       val aes = Cipher.getInstance(AES_GCM)
       aes.init(Cipher.DECRYPT_MODE, SecretKeySpec(aesKey, "AES"), GCMParameterSpec(TAG_BITS, iv))
       return String(aes.doFinal(sealed))
+    } catch (error: AEADBadTagException) {
+      // the records were changed after they were sealed
+      throw CorruptException(error)
     } finally {
       aesKey.fill(0)
     }
