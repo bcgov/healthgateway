@@ -9,9 +9,10 @@
     <!-- Local orchestration project only; solution-wide analyzers are not applied. -->
     <AnalysisMode>None</AnalysisMode>
     <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
-    <!-- ASPIRE010: the Aspire CLI bundle is only needed for `aspire` CLI features; `dotnet run` works without it.
+    <!-- C# AppHosts need the Aspire CLI bundle (dashboard and DCP; ASPIRE013 if it is turned off). `dotnet run` runs
+         the host through the Aspire CLI: the `aspire` command on PATH, or else the matching aspire.cli package via dnx.
          CA1506 (class coupling): an orchestration composition root wires many types by design. -->
-    <NoWarn>$(NoWarn);ASPIRE010;CA1506</NoWarn>
+    <NoWarn>$(NoWarn);CA1506</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Remove="StyleCop.Analyzers" />

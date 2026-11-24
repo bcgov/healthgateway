@@ -75,6 +75,12 @@ still comes from user secrets as before.
 
 - Docker Desktop running
 - `dotnet-ef` global tool (`dotnet tool install --global dotnet-ef`)
+- The Aspire CLI, which supplies the dashboard and the developer control plane (DCP). There is
+  nothing to install: when there's no `aspire` command on `PATH`, `dotnet run` fetches the
+  Aspire CLI matching the AppHost's Aspire version from NuGet with `dnx` (part of the .NET 10+
+  SDK), so the first run needs NuGet access. A CLI installed from https://get.aspire.dev is
+  used instead if it's on `PATH`; keep it on the AppHost's Aspire version. The CLI writes
+  `aspire.config.json` beside the project, which names the AppHost for `aspire` commands.
 - Stop the old compose stack first if it's running, since both use ports 5432/6379:
   `docker compose -f Tools/Dev/Postgres/docker-compose.yml down`
 
@@ -108,10 +114,11 @@ the native build starts clean.
 dotnet run --project Apps/AspireHost
 ```
 
-The console prints a dashboard login link, e.g.
+The Aspire CLI starts the host and prints a dashboard login link, e.g.
 
 ```console
-Login to the dashboard at https://localhost:17100/login?t=<token>
+   AppHost:  AspireHost.csproj
+ Dashboard:  https://localhost:17100/login?t=<token>
 ```
 
 Open that link (the token logs you in automatically). The dashboard at
