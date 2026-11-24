@@ -5,7 +5,8 @@ export const STORAGE_KEY = "hg.oidc.session";
 
 /**
  * SecureStore key of the session with device security on: encrypted by the vault, so reading it takes the same prompt as
- * the saved records. Its being there is all the app knows of the login before that prompt.
+ * the saved records. Stored as `{ issuedAt, data }`: `data` is the vault's ciphertext, and `issuedAt`, in the clear, is
+ * all the app knows of the login before that prompt (that it is there, and how new it is).
  */
 export const SEALED_STORAGE_KEY = "hg.oidc.session.sealed";
 

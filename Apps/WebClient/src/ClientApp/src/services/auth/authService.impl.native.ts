@@ -38,7 +38,21 @@ interface StoredSession {
     idToken: string;
     /** Unix seconds. */
     expiresAt: number;
+    /**
+     * Unix seconds, when the tokens were issued: which of two stored copies is newer (`findSealedCopy`). Not `expiresAt`,
+     * which Keycloak can bring forward to the end of its session. Missing from a login stored by an earlier build.
+     */
+    issuedAt?: number;
     sessionState?: string;
+}
+
+/**
+ * What is stored under `SEALED_STORAGE_KEY`: the session encrypted by the vault, and when its tokens were issued, in
+ * the clear, so it can be compared with an unsealed copy without the prompt.
+ */
+interface SealedCopy {
+    issuedAt?: number;
+    data: string;
 }
 
 const DEFAULT_LIFETIME_SECONDS = 300;
@@ -63,11 +77,40 @@ function parseSession(text: string): StoredSession | undefined {
         typeof value.idToken !== "string" ||
         !value.idToken ||
         typeof value.expiresAt !== "number" ||
+        (value.issuedAt !== undefined && typeof value.issuedAt !== "number") ||
         (value.refreshToken !== undefined &&
             typeof value.refreshToken !== "string")
     )
         return undefined;
     return value as StoredSession;
+}
+
+/** The stored sealed copy, if it is one: a damaged one has nothing to decrypt. */
+function parseSealedCopy(text: string): SealedCopy | undefined {
+    let value: Partial<SealedCopy> | null;
+    try {
+        value = JSON.parse(text) as Partial<SealedCopy> | null;
+    } catch {
+        return undefined;
+    }
+    if (
+        !value ||
+        typeof value.data !== "string" ||
+        (value.issuedAt !== undefined && typeof value.issuedAt !== "number")
+    )
+        return undefined;
+    return value as SealedCopy;
+}
+
+/**
+ * The unsealed copy left beside a sealed one holds newer tokens: sealing them failed, and so did removing the sealed
+ * copy (`persist`). Otherwise it is left over from a move, or from a save the sealed copy has since replaced. Without
+ * a time to go by, or with a damaged sealed copy, it is not taken for newer.
+ */
+function isNewerThan(unsealed: StoredSession, sealed?: SealedCopy): boolean {
+    if (unsealed.issuedAt === undefined || !sealed) return false;
+    // only a login stored by an earlier build has no time, and every save of new tokens since has one
+    return sealed.issuedAt === undefined || unsealed.issuedAt > sealed.issuedAt;
 }
 
 /** Keycloak answered, but the answer holds no usable tokens. Classified as unexpected: see `authFailure.ts`. */
@@ -133,16 +176,19 @@ export class NativeAuthService implements IAuthService {
         this.protect = options?.sealed === true;
         const login = this.login;
         if (this.protect && (await this.findSealedCopy(login))) return;
-        try {
-            const raw = await inOrder(() =>
-                SecureStore.getItemAsync(STORAGE_KEY)
-            );
-            if (raw && login === this.login)
-                this.session = JSON.parse(raw) as StoredSession;
-        } catch (error) {
-            logger.warn(
-                `Unable to read stored session: ${describeError(error)}`
-            );
+        // already read when it was found newer than a sealed copy
+        if (!this.session) {
+            try {
+                const raw = await inOrder(() =>
+                    SecureStore.getItemAsync(STORAGE_KEY)
+                );
+                if (raw && login === this.login)
+                    this.session = JSON.parse(raw) as StoredSession;
+            } catch (error) {
+                logger.warn(
+                    `Unable to read stored session: ${describeError(error)}`
+                );
+            }
         }
         if (this.session && this.protect) {
             // kept unsealed by an earlier build: sealed now, and opened after the prompt like any other
@@ -157,7 +203,9 @@ export class NativeAuthService implements IAuthService {
     }
 
     /**
-     * Device security on: a sealed session is there to unseal. A copy left unsealed beside it is from a move that stopped.
+     * Device security on: a sealed session is there to unseal. A copy left unsealed beside it is usually older, and goes;
+     * one with newer tokens is the login (`isNewerThan`): it is taken into memory instead, and `init` seals it in place of
+     * the old one, or the refresh token it holds would be lost.
      * Rejects when the store could not be read: taken as "none", a sealed login would look signed out, and the next login
      * would replace it. Start-up stops instead, and can be tried again.
      */
@@ -174,9 +222,30 @@ export class NativeAuthService implements IAuthService {
             throw error;
         }
         if (!sealed || login !== this.login) return false;
+        const unsealed = await this.readUnsealedCopy();
+        if (login !== this.login) return false;
+        if (unsealed && isNewerThan(unsealed, parseSealedCopy(sealed))) {
+            this.session = unsealed;
+            return false;
+        }
         this.sealedCopy = true;
         await this.removeUnsealedCopy();
         return true;
+    }
+
+    /** The unsealed copy beside a sealed one, if it holds a session. One that could not be read is taken as older. */
+    private async readUnsealedCopy(): Promise<StoredSession | undefined> {
+        try {
+            const raw = await inOrder(() =>
+                SecureStore.getItemAsync(STORAGE_KEY)
+            );
+            return raw ? parseSession(raw) : undefined;
+        } catch (error) {
+            logger.warn(
+                `Unable to read the unsealed session: ${describeError(error)}`
+            );
+            return undefined;
+        }
     }
 
     /**
@@ -226,7 +295,8 @@ export class NativeAuthService implements IAuthService {
             const stored = await inOrder(() =>
                 SecureStore.getItemAsync(SEALED_STORAGE_KEY)
             );
-            if (stored) text = await vault.decrypt(stored);
+            const copy = stored ? parseSealedCopy(stored) : undefined;
+            if (copy) text = await vault.decrypt(copy.data);
         } catch (error) {
             if (isVaultCancelled(error)) return "cancelled";
             logger.warn(
@@ -498,6 +568,7 @@ export class NativeAuthService implements IAuthService {
             refreshToken: token.refreshToken ?? previous?.refreshToken,
             idToken,
             expiresAt: issuedAt + lifetime,
+            issuedAt,
             sessionState:
                 (token as { sessionState?: string }).sessionState ??
                 previous?.sessionState,
@@ -539,8 +610,9 @@ export class NativeAuthService implements IAuthService {
     /**
      * Call in order (`inOrder`). The other copy goes once this one is saved, so a failure between never leaves neither.
      * It must not leave both for long either: an unsealed copy beside a sealed one is a login on disk without the
-     * protection the setting promises, and a sealed one left beside a newer unsealed one would be taken for the login at
-     * the next start. So an other copy that could not be removed is remembered, and removed at the next save.
+     * protection the setting promises, and a sealed one left beside a newer unsealed one is older than the login (the next
+     * start tells them apart by `issuedAt`: `findSealedCopy`). So an other copy that could not be removed is remembered,
+     * and removed at the next save.
      *
      * `move`: Device Security is being turned on or off, and the caller must know whether it worked. The session is the
      * same in both copies, so a move that can't finish is undone and rejects. A save of new tokens is never undone,
@@ -549,10 +621,13 @@ export class NativeAuthService implements IAuthService {
     private async write(session: StoredSession, sealed: boolean, move = false) {
         const text = JSON.stringify(session);
         if (sealed) {
-            const encrypted = await vault.encrypt(text);
+            const copy: SealedCopy = {
+                issuedAt: session.issuedAt,
+                data: await vault.encrypt(text),
+            };
             await SecureStore.setItemAsync(
                 SEALED_STORAGE_KEY,
-                encrypted,
+                JSON.stringify(copy),
                 STORE_OPTIONS
             );
         } else {
