@@ -358,6 +358,14 @@ describeWeb("HomeView Get the App card (web on a phone or tablet)", () => {
         expect(Linking.openURL).toHaveBeenCalledWith(APP_STORE_URL);
     });
 
+    it("in Chrome's iPad Pro 13 emulation (a Mac user agent with 1 touch point) it opens the App Store", async () => {
+        browserOn(iPadSafari, 1);
+        signInRegistered();
+        await render(<HomeView />);
+        await press(screen.getByTestId("get-the-app-card"));
+        expect(Linking.openURL).toHaveBeenCalledWith(APP_STORE_URL);
+    });
+
     it("on Android it opens Google Play and tracks the tile", async () => {
         browserOn(androidChrome, 5);
         signInRegistered();

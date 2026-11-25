@@ -12,7 +12,8 @@ export function mobileBrowserOs(): MobileBrowserOs | undefined {
     const ua = navigator.userAgent;
     if (/Android/i.test(ua)) return "android";
     if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
-    // iPadOS Safari asks for the desktop site by default, so it reports itself as a Mac; a Mac has no touch screen
-    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 1) return "ios";
+    // iPadOS Safari asks for the desktop site by default, so it reports itself as a Mac; a Mac has no touch screen (0
+    // touch points). An iPad reports 5, Chrome's device emulation (iPad Pro 13) 1.
+    if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 0) return "ios";
     return undefined;
 }
