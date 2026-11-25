@@ -6,7 +6,7 @@ import {
 } from "@/models/patientData";
 import { fromIso } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 const programResultTitleMap: Record<string, string> = {
     "cervical cancer": "Cervix Screening Result Letter",
@@ -43,13 +43,9 @@ export class BcCancerScreeningTimelineEntry extends TimelineEntry {
     public programName: string;
     public bcCancerDestination: string;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
     private readonly programKey: string;
 
-    public constructor(
-        model: BcCancerScreening,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: BcCancerScreening) {
         const isResult = model.eventType === BcCancerScreeningType.Result;
         const dateTime = isResult ? model.resultDateTime : model.eventDateTime;
         super(
@@ -69,7 +65,6 @@ export class BcCancerScreeningTimelineEntry extends TimelineEntry {
         this.subtitle = `Program: ${program} Screening`;
         this.screeningType = model.eventType;
         this.setEntryProperties();
-        this.getComments = getComments;
         this.bcCancerDestination = isBcCancerProgram(program)
             ? BcCancerDestination[program]
             : "";
@@ -93,10 +88,6 @@ export class BcCancerScreeningTimelineEntry extends TimelineEntry {
             this.fileName = "bc_cancer_screening";
             this.eventText = "BC Cancer Screening PDF";
         }
-    }
-
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
     }
 
     protected containsText(keyword: string): boolean {

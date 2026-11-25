@@ -19,7 +19,6 @@ describe("MedicationTimelineEntry (medicationTimelineEntry.ts port)", () => {
         expect(e.pharmacy.address).toBe("1 Main St Unit 2, Victoria BC");
         expect(e.directions).toBe("Take one daily");
         expect(e.isPharmacistAssessment).toBe(false);
-        expect(e.comments).toBeNull();
     });
 
     it("a pharmacist assessment: N/A practitioner and directions, outcome flags", () => {
@@ -35,12 +34,12 @@ describe("MedicationTimelineEntry (medicationTimelineEntry.ts port)", () => {
         const e = new MedicationTimelineEntry(rx);
         for (const k of ["smith", "AMOXI", "capsule"])
             expect(
-                e.filterApplies(
+                e.matchesFilter(
                     TimelineFilterBuilder.create().withKeyword(k).build()
                 )
             ).toBe(true);
         expect(
-            e.filterApplies(
+            e.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("pharmacy").build()
             )
         ).toBe(false);

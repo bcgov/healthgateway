@@ -2,7 +2,7 @@ import { EntryType } from "@/constants/entryType";
 import type { Clinic, Encounter } from "@/models/encounter";
 import { fromIsoDate, today } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 class ClinicViewModel {
     public id: string;
@@ -22,12 +22,7 @@ export class HealthVisitTimelineEntry extends TimelineEntry {
     /** visits 6 or more years old roll off at the next calendar year */
     public showRollOffWarning: boolean;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: Encounter,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: Encounter) {
         super(
             model.id,
             EntryType.HealthVisit,
@@ -38,14 +33,9 @@ export class HealthVisitTimelineEntry extends TimelineEntry {
         this.specialtyDescription = model.specialtyDescription ?? "";
         this.clinic = new ClinicViewModel(model.clinic);
         this.showRollOffWarning = this.date <= today().minus({ years: 6 });
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return (
             this.practitionerName +
             this.specialtyDescription +

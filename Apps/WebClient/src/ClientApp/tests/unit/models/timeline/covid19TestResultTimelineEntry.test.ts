@@ -19,17 +19,17 @@ describe("Covid19TestResultTimelineEntry (covid19TestResultTimelineEntry.ts port
     it("keyword search covers the summary title and test type", () => {
         const e = new Covid19TestResultTimelineEntry(covid19OrdersFixture()[0]);
         expect(
-            e.filterApplies(
+            e.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("pcr").build()
             )
         ).toBe(true);
         expect(
-            e.filterApplies(
+            e.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("nat").build()
             )
         ).toBe(true);
         expect(
-            e.filterApplies(
+            e.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("lifelabs").build()
             )
         ).toBe(false);

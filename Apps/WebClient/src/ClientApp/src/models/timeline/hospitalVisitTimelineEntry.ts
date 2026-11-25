@@ -4,7 +4,7 @@ import { EntryType } from "@/constants/entryType";
 import type { HospitalVisit } from "@/models/encounter";
 import { fromIso } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** Port of models/timeline/hospitalVisitTimelineEntry.ts */
 export class HospitalVisitTimelineEntry extends TimelineEntry {
@@ -17,12 +17,7 @@ export class HospitalVisitTimelineEntry extends TimelineEntry {
     public admitDateTime: DateTime;
     public endDateTime?: DateTime;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: HospitalVisit,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: HospitalVisit) {
         super(
             model.encounterId,
             EntryType.HospitalVisit,
@@ -38,14 +33,9 @@ export class HospitalVisitTimelineEntry extends TimelineEntry {
             ? fromIso(model.endDateTime)
             : undefined;
         this.provider = model.provider;
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return [
             this.facility,
             this.healthService,

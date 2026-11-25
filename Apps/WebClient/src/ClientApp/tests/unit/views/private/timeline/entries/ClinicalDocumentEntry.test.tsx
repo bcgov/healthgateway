@@ -60,7 +60,7 @@ describe("ClinicalDocumentEntry (ClinicalDocumentTimelineComponent.vue port)", (
     it("name and type in the header; discipline and facility; Download Full Report saves Clinical_Document_<date>.pdf", async () => {
         const entry = new ClinicalDocumentTimelineEntry(doc);
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("vgh").build()
             )
         ).toBe(true);

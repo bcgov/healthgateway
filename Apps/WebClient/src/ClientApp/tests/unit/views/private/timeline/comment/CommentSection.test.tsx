@@ -13,7 +13,7 @@ import { CommentEntryType } from "@/constants/commentEntryType";
 import { SpecialAuthorityRequestTimelineEntry } from "@/models/timeline/specialAuthorityRequestTimelineEntry";
 import type { UserComment } from "@/models/userComment";
 import { services } from "@/services/container";
-import { entryCommentsGetter, useCommentStore } from "@/stores/comment.store";
+import { useCommentStore } from "@/stores/comment.store";
 import { setBreakpoint } from "@/test/breakpointMock";
 import {
     configFixture,
@@ -63,17 +63,10 @@ const request = {
     referenceNumber: "SA-1",
 };
 
-/** The card renders with the store's comments, as the timeline builds it */
 function Card({ isMobileDetails = false }: { isMobileDetails?: boolean }) {
-    const comments = useCommentStore((s) => s.comments);
     return (
         <SpecialAuthorityRequestEntry
-            entry={
-                new SpecialAuthorityRequestTimelineEntry(
-                    request,
-                    entryCommentsGetter(comments)
-                )
-            }
+            entry={new SpecialAuthorityRequestTimelineEntry(request)}
             hdid="HDID1"
             commentsAreEnabled
             isMobileDetails={isMobileDetails}
@@ -218,6 +211,63 @@ describe("comments on a timeline entry (CommentSection / Comment / AddComment po
         );
         await focus(screen.getByTestId("editCommentInput"));
         expect(bottomOffset()).toBe(withoutButtons + 120 - 48);
+    });
+
+    it("full screen: an entry held since it opened shows comments added, edited and deleted, with the count", async () => {
+        jest.spyOn(services.userComment, "createComment").mockImplementation(
+            async (_h, c) => ({
+                ...c,
+                id: "c2",
+                createdDateTime: "2024-01-13T10:00:00",
+            })
+        );
+        jest.spyOn(services.userComment, "updateComment").mockImplementation(
+            async (_h, c) => c
+        );
+        jest.spyOn(services.userComment, "deleteComment").mockResolvedValue(
+            undefined
+        );
+        setBreakpoint(390);
+        const heldEntry = new SpecialAuthorityRequestTimelineEntry(request);
+        await render(
+            <EntryDetailsLayout>
+                <SpecialAuthorityRequestEntry
+                    entry={heldEntry}
+                    hdid="HDID1"
+                    commentsAreEnabled
+                    isMobileDetails
+                />
+            </EntryDetailsLayout>
+        );
+        await changeText(
+            screen.getByTestId("add-comment-text-area"),
+            "Approved for a year"
+        );
+        await press(screen.getByTestId("post-comment-btn"));
+        await waitFor(() =>
+            expect(screen.getAllByTestId("commentText")).toHaveLength(2)
+        );
+        expect(textOf(screen.getByTestId("commentCount"))).toBe("2");
+
+        await press(screen.getAllByTestId("commentMenuBtn")[0]);
+        await press(screen.getByTestId("commentMenuEditBtn"));
+        await changeText(screen.getByTestId("editCommentInput"), "Edited");
+        await press(screen.getByTestId("saveCommentBtn"));
+        await waitFor(() =>
+            expect(textOf(screen.getAllByTestId("commentText")[0])).toBe(
+                "Edited"
+            )
+        );
+
+        await press(screen.getAllByTestId("commentMenuBtn")[0]);
+        await press(screen.getByTestId("commentMenuDeleteBtn"));
+        await waitFor(() =>
+            expect(screen.getAllByTestId("commentText")).toHaveLength(1)
+        );
+        expect(textOf(screen.getByTestId("commentText"))).toBe(
+            "Approved for a year"
+        );
+        expect(screen.queryByTestId("commentCount")).toBeNull();
     });
 
     it("Edit saves the new text; Delete asks first", async () => {

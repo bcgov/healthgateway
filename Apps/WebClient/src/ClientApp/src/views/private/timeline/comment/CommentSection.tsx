@@ -6,7 +6,7 @@ import { useScrollToTop } from "@/components/site/PageScrollContext";
 import { CommentEntryType } from "@/constants/commentEntryType";
 import { getEntryTypeDetails } from "@/constants/entryType";
 import type { TimelineEntry } from "@/models/timeline/timelineEntry";
-import { useCommentStore } from "@/stores/comment.store";
+import { selectEntryComments, useCommentStore } from "@/stores/comment.store";
 import { useUserStore } from "@/stores/user.store";
 
 import { usePinnedFooter } from "../EntryDetailsLayout";
@@ -28,14 +28,14 @@ export function CommentSection({
     const entryTypeCode =
         getEntryTypeDetails(parentEntry.type)?.commentType ??
         CommentEntryType.None;
-    const comments = parentEntry.comments ?? [];
+    const comments = useCommentStore(selectEntryComments(parentEntry.id)) ?? [];
     const commentCount = comments.length;
     const commentButtonText =
         commentCount === 1 ? "1 Comment" : `${commentCount} Comments`;
 
     // backfill comments saved without an entry type
     useEffect(() => {
-        for (const c of parentEntry.comments ?? [])
+        for (const c of comments)
             if (c.entryTypeCode === CommentEntryType.None) {
                 updateComment(hdid, {
                     ...c,
