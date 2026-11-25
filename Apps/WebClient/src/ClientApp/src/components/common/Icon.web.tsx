@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment -- @expo/vector-icons does not type its props */
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import type { IconDefinition } from "@fortawesome/fontawesome-common-types";
+import { faApple } from "@fortawesome/free-brands-svg-icons/faApple";
+import { faGooglePlay } from "@fortawesome/free-brands-svg-icons/faGooglePlay";
 import { faCircleQuestion as faCircleQuestionRegular } from "@fortawesome/free-regular-svg-icons/faCircleQuestion";
 import { faComment as faCommentRegular } from "@fortawesome/free-regular-svg-icons/faComment";
 import { faSquare as faSquareRegular } from "@fortawesome/free-regular-svg-icons/faSquare";
@@ -85,6 +87,8 @@ type Props = Omit<ComponentProps<typeof FontAwesome6>, "name"> & {
      * so a wide one (cloud-arrow-down, pills) draws shorter.
      */
     fixedWidth?: boolean;
+    /** A Font Awesome brands icon (apple, google-play) rather than a solid or regular one. */
+    brand?: boolean;
 };
 
 /**
@@ -170,9 +174,15 @@ const regular: Record<string, IconDefinition> = {
     star: faStarRegular,
 };
 
+const brands: Record<string, IconDefinition> = {
+    apple: faApple,
+    "google-play": faGooglePlay,
+};
+
 export const webIconNames = {
     solid: Object.keys(solid),
     regular: Object.keys(regular),
+    brands: Object.keys(brands),
 };
 
 export function Icon({
@@ -182,10 +192,11 @@ export function Icon({
     color = "black",
     style,
     fixedWidth,
+    brand,
     accessibilityLabel,
     ...rest
 }: Props) {
-    const def = (isSolid ? solid : regular)[name];
+    const def = (brand ? brands : isSolid ? solid : regular)[name];
     // decorative unless named: the text or labelled button beside it says what it means (WCAG 1.1.1)
     const semantics = accessibilityLabel
         ? { role: "img", "aria-label": accessibilityLabel }
@@ -197,7 +208,8 @@ export function Icon({
         return (
             <FontAwesome6
                 name={name}
-                solid={isSolid}
+                solid={!brand && isSolid}
+                brand={brand}
                 size={size}
                 color={color}
                 style={style}

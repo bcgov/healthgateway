@@ -33,6 +33,13 @@ function iconNamesInSource(): string[] {
                     /\bquickLinkIcon\("([a-z0-9-]+)"\)/g
                 ))
                     names.add(m[1]);
+                // brand icons: quickLinkIcon(c ? "x" : "y", true)
+                for (const m of s.matchAll(
+                    /\bquickLinkIcon\([^)]*?"([a-z0-9-]+)"[^)]*?:[^)]*?"([a-z0-9-]+)"/g
+                )) {
+                    names.add(m[1]);
+                    names.add(m[2]);
+                }
             }
         }
     };
@@ -53,9 +60,11 @@ describe("web icons", () => {
         "maps %s to an SVG so the icon font is not needed",
         (name) => {
             // regular-style icons (e.g. `far fa-comment`) are drawn from the regular set
-            expect([...webIconNames.solid, ...webIconNames.regular]).toContain(
-                name
-            );
+            expect([
+                ...webIconNames.solid,
+                ...webIconNames.regular,
+                ...webIconNames.brands,
+            ]).toContain(name);
         }
     );
 

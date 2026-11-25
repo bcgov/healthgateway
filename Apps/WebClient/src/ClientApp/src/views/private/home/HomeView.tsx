@@ -18,6 +18,7 @@ import {
     PageTitle,
 } from "@/components/common";
 import { AppTourDialog } from "@/components/site/AppTourDialog";
+import { APP_STORE_URL, PLAY_STORE_URL } from "@/config/storeListings";
 import {
     EntryType,
     entryTypes,
@@ -49,6 +50,7 @@ import { useErrorStore } from "@/stores/error.store";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { useQuickLinks, useUserStore } from "@/stores/user.store";
 import { ConfigUtil } from "@/utils/configUtil";
+import { mobileBrowserOs } from "@/utils/mobileBrowser";
 import { openExternal } from "@/utils/openExternal";
 import { RecommendationsDialog } from "@/views/private/reports/RecommendationsDialog";
 
@@ -92,6 +94,10 @@ export function HomeView() {
         !hidden(UserPreferenceType.HideOrganDonorQuickLink);
     const showOtherRecordSources =
         ConfigUtil.isOtherRecordSourcesFeatureEnabled();
+    // web on a phone or tablet: a card to the app's store listing, first on the page (not removable)
+    const browserOs = ConfigUtil.showGetTheAppLink()
+        ? mobileBrowserOs()
+        : undefined;
 
     const enabledQuickLinks = (quickLinks ?? []).filter((q) =>
         q.filter.modules.every((m) => {
@@ -147,13 +153,14 @@ export function HomeView() {
     // for v-icons and images alike; the Health Link logo (.quick-link-icon-large) is 2.1em tall
     const iconSize = 27.5;
     const svgIconSize = 34.375;
-    const quickLinkIcon = (name: string) => (
+    const quickLinkIcon = (name: string, brand = false) => (
         <View
             className="items-center justify-center"
             style={{ width: svgIconSize, height: svgIconSize }}
         >
             <Icon
                 name={name}
+                brand={brand}
                 size={iconSize}
                 color={colors.primary}
                 fixedWidth
@@ -184,6 +191,36 @@ export function HomeView() {
             />
         ),
     ];
+    // ahead of Health Records
+    if (browserOs) {
+        const ios = browserOs === "ios";
+        const storeUrl = ios ? APP_STORE_URL : PLAY_STORE_URL;
+        cards.unshift(
+            cell(
+                "get-the-app",
+                <HgCard
+                    compact={compact}
+                    title="Get the App"
+                    testID="get-the-app-card"
+                    description={`Download the Health Gateway app from ${ios ? "the App Store" : "Google Play"}.`}
+                    icon={quickLinkIcon(ios ? "apple" : "google-play", true)}
+                    onPress={() => {
+                        track({
+                            action: Action.ExternalLink,
+                            text: Text.GetTheApp,
+                            origin: Origin.Home,
+                            destination: ios
+                                ? Destination.AppStore
+                                : Destination.GooglePlay,
+                            type: Type.HomeTile,
+                            url: storeUrl,
+                        });
+                        void openExternal(storeUrl);
+                    }}
+                />
+            )
+        );
+    }
     if (showImmunizationRecord)
         cards.push(
             cell(

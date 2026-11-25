@@ -70,6 +70,7 @@ export const configFixture: ExternalConfiguration = {
             homepage: {
                 showRecommendationsLink: true,
                 showImmunizationRecordLink: true,
+                showGetTheAppLink: true,
                 otherRecordSources: {
                     enabled: true,
                     sources: [{ name: "Fraser", enabled: true }],

@@ -10,6 +10,8 @@ type Props = Omit<ComponentProps<typeof FontAwesome6>, "name"> & {
      * fixed width), as the web client draws a Font Awesome icon in a v-icon.
      */
     fixedWidth?: boolean;
+    /** A Font Awesome brands icon (apple, google-play) rather than a solid or regular one. */
+    brand?: boolean;
 };
 
 /**
@@ -20,13 +22,15 @@ type Props = Omit<ComponentProps<typeof FontAwesome6>, "name"> & {
 export function Icon({
     solid = true,
     fixedWidth,
+    brand,
     size = 12,
     accessibilityLabel,
     ...rest
 }: Props) {
     const glyph = (
         <FontAwesome6
-            solid={solid}
+            solid={!brand && solid}
+            brand={brand}
             size={size}
             {...rest}
             {...(accessibilityLabel

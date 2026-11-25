@@ -48,6 +48,7 @@ export const ConfigUtil = {
         toggles()?.homepage?.showImmunizationRecordLink ?? false,
     showRecommendationsLink: () =>
         toggles()?.homepage?.showRecommendationsLink ?? false,
+    showGetTheAppLink: () => toggles()?.homepage?.showGetTheAppLink ?? false,
     isProfileNotificationsFeatureEnabled: () =>
         toggles()?.profile?.notifications?.enabled ?? false,
     /** Matches the configured type name case-insensitively, like the web client. */

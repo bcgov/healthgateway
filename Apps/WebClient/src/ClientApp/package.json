@@ -4,6 +4,7 @@
     "dependencies": {
         "@expo/ui": "~58.0.27",
         "@expo/vector-icons": "^15.0.2",
+        "@fortawesome/free-brands-svg-icons": "^7.3.1",
         "@fortawesome/free-regular-svg-icons": "^7.3.1",
         "@fortawesome/free-solid-svg-icons": "^7.3.1",
         "@react-native-async-storage/async-storage": "2.2.0",
@@ -86,7 +87,7 @@
         "web": "expo start --web --port 5002",
         "ios": "expo run:ios --port 5002",
         "android": "expo run:android --port 5002",
-        "ios:release":"expo run:ios --configuration Release --device",
+        "ios:release": "expo run:ios --configuration Release --device",
         "android:release": "expo run:android --variant release --device",
         "native:prebuild": "expo prebuild",
         "e2e:ios": "scripts/maestro-all.sh ios",

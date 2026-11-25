@@ -100,6 +100,8 @@ export interface NamedToggle {
 export interface HomepageSettings {
     showRecommendationsLink: boolean;
     showImmunizationRecordLink: boolean;
+    /** The Get the App card, in a phone or tablet browser; off when the server's config does not have it */
+    showGetTheAppLink?: boolean;
     otherRecordSources: { enabled: boolean; sources: NamedToggle[] };
 }
 
