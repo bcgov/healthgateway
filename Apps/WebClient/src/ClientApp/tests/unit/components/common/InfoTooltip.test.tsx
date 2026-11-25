@@ -3,9 +3,15 @@ import { fireEvent } from "@testing-library/react";
 import { Platform } from "react-native";
 
 import { InfoTooltip } from "@/components/common/InfoTooltip";
-import { tooltipPosition } from "@/components/common/infoTooltipPosition";
 import { expectNoAxeViolations } from "@/test/axe";
 import { inAct, press, render, screen, settle, waitFor } from "@/test/ui";
+
+// the click that pins it starts listening for the next click on the next tick
+const nextTick = () => new Promise((resolve) => setTimeout(resolve, 0));
+const click = async (el: HTMLElement) => {
+    fireEvent.click(el);
+    await settle();
+};
 
 describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
     it("a press opens the tooltip text and a second press closes it", async () => {
@@ -45,7 +51,7 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         expect(screen.queryByText("Hover text")).toBeNull();
     });
 
-    it("web: focus shows it, Escape dismisses it, and the trigger is described by it while it shows", async () => {
+    it("web: focus alone does not show it; a press shows it as the trigger's description and Escape dismisses it", async () => {
         if (Platform.OS !== "web") return;
         await render(
             <InfoTooltip
@@ -55,8 +61,10 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             />
         );
         const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
-        expect(trigger.getAttribute("aria-expanded")).toBe("false");
         await inAct(() => trigger.focus());
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
+        expect(trigger.getAttribute("aria-expanded")).toBe("false");
+        await click(trigger);
         const bubble = screen.getByTestId(
             "tip-popover"
         ) as unknown as HTMLElement;
@@ -72,6 +80,46 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         );
         expect(screen.queryByTestId("tip-popover")).toBeNull();
         expect(trigger.getAttribute("aria-describedby")).toBeNull();
+    });
+
+    it("web: a click pins it after the pointer leaves; the next click anywhere hides it", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Pinned text"
+            />
+        );
+        const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+        fireEvent.mouseEnter(trigger);
+        await click(trigger);
+        fireEvent.mouseLeave(trigger);
+        await nextTick();
+        expect(screen.getByText("Pinned text")).toBeTruthy();
+        await click(document.body);
+        expect(screen.queryByText("Pinned text")).toBeNull();
+    });
+
+    it("web: after a click, hovering is ignored until the pointer leaves and returns", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Hover text"
+            />
+        );
+        const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+        fireEvent.mouseEnter(trigger);
+        await click(trigger);
+        await nextTick();
+        await click(trigger);
+        expect(screen.queryByText("Hover text")).toBeNull();
+        fireEvent.mouseLeave(trigger);
+        fireEvent.mouseEnter(trigger);
+        await settle();
+        expect(screen.getByText("Hover text")).toBeTruthy();
     });
 
     it("web: the pointer can move onto the bubble and read it; leaving the bubble hides it", async () => {
@@ -97,29 +145,5 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         fireEvent.mouseLeave(hoverable);
         await settle();
         expect(screen.queryByText("Hover text")).toBeNull();
-    });
-});
-
-describe("tooltipPosition (location end center, offset 10)", () => {
-    it("right of the anchor and centred; flips left at the window edge", () => {
-        expect(
-            tooltipPosition(
-                { x: 100, y: 100, width: 20, height: 20 },
-                { width: 200, height: 40 },
-                1000,
-                800
-            )
-        ).toEqual({
-            left: 130,
-            top: 90,
-        });
-        expect(
-            tooltipPosition(
-                { x: 900, y: 100, width: 20, height: 20 },
-                { width: 200, height: 40 },
-                1000,
-                800
-            ).left
-        ).toBe(690);
     });
 });

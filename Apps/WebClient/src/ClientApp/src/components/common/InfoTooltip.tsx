@@ -1,39 +1,32 @@
-import { useState } from "react";
-import { Pressable, useWindowDimensions, View } from "react-native";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { Pressable, View } from "react-native";
 
-import { useThemeColors } from "@/hooks/useTheme";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 
-import { AppModal } from "./AppModal";
-import { AppText } from "./AppText";
-import { Backdrop } from "./Backdrop";
-import { Icon } from "./Icon";
-import { tooltipPosition } from "./infoTooltipPosition";
+import {
+    InfoTooltipContent,
+    InfoTooltipIcon,
+    type InfoTooltipProps,
+} from "./infoTooltip.shared";
 
-export interface InfoTooltipProps {
-    text?: string;
-    children?: React.ReactNode;
-    /** icon size in px (v-icon small 1.25em ≈ 20, x-small 1em ≈ 14-16) */
-    size?: number;
-    maxWidth?: number;
-    testID?: string;
-    nativeID?: string;
-    tooltipTestID?: string;
-    /** the activator icon (default: the regular circle-question) */
-    icon?: string;
-    /** default: primary */
-    color?: string;
-    /** the trigger's name: say what it explains, e.g. "More information about the test status" */
-    accessibilityLabel?: string;
-}
+export type { InfoTooltipProps } from "./infoTooltip.shared";
+
+// the space between the icon and the bubble: the popover's padding, so the pointer can cross it onto the bubble
+const GAP = 10;
+
+const supportsAnchorPositioning = () =>
+    typeof CSS !== "undefined" && CSS.supports("position-area", "right");
 
 /**
- * Port of InfoTooltipComponent.vue on native: a primary "?" icon; a tap opens the tooltip bubble beside it,
- * a tap anywhere closes it.
+ * Web: hovering the "?" icon shows the tooltip; a click (or Enter / Space) pins it open until the next click anywhere,
+ * and hovering is ignored after that click until the pointer leaves the icon and returns. The bubble is a popover in
+ * the top layer, placed beside the icon by CSS anchor positioning and flipped to its other side when it does not fit.
+ * iOS: `InfoTooltip.ios.tsx`; Android: `InfoTooltip.android.tsx`.
  */
 export function InfoTooltip({
     text,
     children,
-    size = 20,
+    size,
     maxWidth = 300,
     testID,
     nativeID,
@@ -42,84 +35,111 @@ export function InfoTooltip({
     color,
     accessibilityLabel = "More information",
 }: InfoTooltipProps) {
-    const colors = useThemeColors();
-    const { width, height } = useWindowDimensions();
-    const [activator, setActivator] = useState<React.ComponentRef<
-        typeof View
-    > | null>(null);
-    const [anchor, setAnchor] = useState<{
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    }>();
-    const [bubble, setBubble] = useState<{ width: number; height: number }>();
-    const [open, setOpen] = useState(false);
-
-    const show = () => {
-        setOpen(true);
-        activator?.measureInWindow((x, y, w, h) =>
-            setAnchor({ x, y, width: w, height: h })
-        );
+    const [pinned, setPinned] = useState(false);
+    const [hovered, setHovered] = useState(false);
+    // the pointer may move onto the bubble and read it (WCAG 1.4.13)
+    const [overBubble, setOverBubble] = useState(false);
+    const bubbleRef = useRef<HTMLDivElement | null>(null);
+    const bubbleId = useId();
+    const anchorName = `--info-tooltip-${bubbleId.replace(/[^\w-]/g, "")}`;
+    const open = pinned || hovered || overBubble;
+    const closeAll = () => {
+        setPinned(false);
+        setHovered(false);
+        setOverBubble(false);
     };
-    const position =
-        anchor && bubble
-            ? tooltipPosition(anchor, bubble, width, height)
-            : undefined;
+    // Escape dismisses it without moving the pointer or the focus (WCAG 1.4.13)
+    useEscapeKey(open, closeAll);
+
+    // a click anywhere unpins it (the next tick, so the pinning click does not)
+    useEffect(() => {
+        if (!pinned) return;
+        const unpin = () => {
+            setPinned(false);
+            setOverBubble(false);
+        };
+        const t = setTimeout(() =>
+            document.addEventListener("click", unpin, { once: true })
+        );
+        return () => {
+            clearTimeout(t);
+            document.removeEventListener("click", unpin);
+        };
+    }, [pinned]);
+
+    const showBubble = useCallback(
+        (node: HTMLDivElement | null) => {
+            bubbleRef.current = node;
+            if (!node) return;
+            // without anchor positioning the popover keeps its default place, the middle of the window
+            if (supportsAnchorPositioning()) {
+                node.style.setProperty("position-anchor", anchorName);
+                node.style.setProperty("position-area", "right");
+                node.style.setProperty("position-try-fallbacks", "flip-inline");
+                node.style.setProperty("margin", "0");
+            }
+            if ("showPopover" in node) node.showPopover();
+        },
+        [anchorName]
+    );
 
     return (
         <>
-            <View ref={setActivator} collapsable={false}>
-                <Pressable
-                    testID={testID}
-                    nativeID={nativeID}
-                    accessibilityRole="button"
-                    accessibilityLabel={accessibilityLabel}
-                    hitSlop={8}
-                    onPress={() => (open ? setOpen(false) : show())}
-                >
-                    <Icon
-                        name={icon ?? "circle-question"}
-                        solid={icon !== undefined}
-                        size={size}
-                        color={color ?? colors.primary}
-                    />
-                </Pressable>
-            </View>
-            <AppModal
-                supportedOrientations={["portrait", "landscape"]}
-                transparent
-                visible={open}
-                animationType="fade"
-                onRequestClose={() => setOpen(false)}
+            <Pressable
+                ref={(node) => {
+                    (node as unknown as HTMLElement | null)?.style.setProperty(
+                        "anchor-name",
+                        anchorName
+                    );
+                }}
+                testID={testID}
+                nativeID={nativeID}
+                accessibilityRole="button"
+                accessibilityLabel={accessibilityLabel}
+                aria-expanded={open}
+                {...(open ? ({ "aria-describedby": bubbleId } as object) : {})}
+                onPress={() => {
+                    setPinned((v) => !v);
+                    setHovered(false);
+                }}
+                onHoverIn={() => setHovered(true)}
+                onHoverOut={(event) => {
+                    // leaving towards the bubble keeps it open
+                    const to = (event as unknown as MouseEvent).relatedTarget;
+                    if (to instanceof Node && bubbleRef.current?.contains(to))
+                        setOverBubble(true);
+                    setHovered(false);
+                }}
+                className="cursor-pointer"
             >
-                <Backdrop className="flex-1" onPress={() => setOpen(false)}>
+                <InfoTooltipIcon icon={icon} size={size} color={color} />
+            </Pressable>
+            {open ? (
+                <div
+                    ref={showBubble}
+                    popover="manual"
+                    onMouseEnter={() => setOverBubble(true)}
+                    onMouseLeave={() => setOverBubble(false)}
+                    style={{
+                        border: "none",
+                        padding: GAP,
+                        background: "transparent",
+                        overflow: "visible",
+                    }}
+                >
                     <View
                         testID={tooltipTestID}
-                        onLayout={(e) =>
-                            setBubble({
-                                width: e.nativeEvent.layout.width,
-                                height: e.nativeEvent.layout.height,
-                            })
-                        }
-                        className="absolute bg-tooltip-background rounded px-4 py-[5px]"
-                        style={{
-                            maxWidth,
-                            left: position?.left ?? 0,
-                            top: position?.top ?? 0,
-                            opacity: position ? 1 : 0,
-                        }}
+                        nativeID={bubbleId}
+                        role="tooltip"
+                        className="bg-tooltip-background rounded px-4 py-[5px]"
+                        style={{ maxWidth }}
                     >
-                        {text ? (
-                            <AppText className="text-tooltip-text text-body-medium leading-[1.6]">
-                                {text}
-                            </AppText>
-                        ) : (
-                            children
-                        )}
+                        <InfoTooltipContent text={text}>
+                            {children}
+                        </InfoTooltipContent>
                     </View>
-                </Backdrop>
-            </AppModal>
+                </div>
+            ) : null}
         </>
     );
 }

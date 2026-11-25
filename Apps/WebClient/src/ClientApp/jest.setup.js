@@ -22,6 +22,10 @@ jest.mock("react-native-reanimated", () =>
 jest.mock("react-native-keyboard-controller", () =>
     require("react-native-keyboard-controller/jest")
 );
+// SwiftUI's popover shows its content only while presented: see tests/unit/support/expoUiSwiftUiMock.
+jest.mock("@expo/ui/swift-ui", () =>
+    require("./tests/unit/support/expoUiSwiftUiMock")
+);
 // react-native-gesture-handler uses Reanimated when it finds it; in Jest, have it behave as if it isn't there.
 jest.mock(
     "react-native-gesture-handler/lib/module/handlers/gestures/reanimatedWrapper",
