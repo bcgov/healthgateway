@@ -6,9 +6,11 @@ import {
     it,
     jest,
 } from "@jest/globals";
-import { Dimensions, Platform } from "react-native";
+import { Dimensions, Linking, Platform } from "react-native";
 
+import { APP_STORE_URL, PLAY_STORE_URL } from "@/config/storeListings";
 import { EntryType } from "@/constants/entryType";
+import { Action, Destination, Origin, Text, Type } from "@/constants/tracking";
 import { services } from "@/services/container";
 import { useConfigStore } from "@/stores/config.store";
 import { useTimelineStore } from "@/stores/timeline.store";
@@ -26,6 +28,7 @@ import {
 import {
     attrOf,
     idOf,
+    isWithin,
     press,
     render,
     screen,
@@ -280,5 +283,155 @@ describe("HomeView quick-access grid by width", () => {
         await render(<HomeView />);
         expect(isCompact()).toBe(false);
         expect(screen.getByText(healthRecordsDescription)).toBeTruthy();
+    });
+});
+
+const describeWeb = Platform.OS === "web" ? describe : describe.skip;
+
+const iPhoneSafari =
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1";
+const iPadSafari =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Safari/605.1.15";
+const androidChrome =
+    "Mozilla/5.0 (Linux; Android 16; Pixel 9) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36";
+const macChrome =
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36";
+
+/** The browser's user agent and touch points (jsdom has no `maxTouchPoints`, so it is defined for the test). */
+function browserOn(userAgent: string, maxTouchPoints = 0) {
+    jest.spyOn(navigator, "userAgent", "get").mockReturnValue(userAgent);
+    Object.defineProperty(navigator, "maxTouchPoints", {
+        value: maxTouchPoints,
+        configurable: true,
+    });
+}
+
+describeWeb("HomeView Get the App card (web on a phone or tablet)", () => {
+    beforeEach(() => {
+        setBreakpoint(1366);
+        resetRouter("/home");
+        services.initialize(configFixture, fakeAuth());
+        jest.spyOn(services.tracking, "trackEvent").mockImplementation(
+            () => undefined
+        );
+        jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+    });
+    afterEach(() => {
+        delete (navigator as { maxTouchPoints?: number }).maxTouchPoints;
+        resetStores();
+        jest.restoreAllMocks();
+    });
+
+    it("on an iPhone it opens the App Store and tracks the tile", async () => {
+        browserOn(iPhoneSafari, 5);
+        signInRegistered();
+        await render(<HomeView />);
+        const card = screen.getByTestId("get-the-app-card");
+        expect(screen.getByText("Get the App")).toBeTruthy();
+        expect(
+            screen.getByText(
+                "Download the Health Gateway app from the App Store."
+            )
+        ).toBeTruthy();
+        expect(
+            document.querySelector(
+                '[data-testid="get-the-app-card"] [data-icon="apple"]'
+            )
+        ).not.toBeNull();
+        await press(card);
+        expect(Linking.openURL).toHaveBeenCalledWith(APP_STORE_URL);
+        expect(services.tracking.trackEvent).toHaveBeenCalledWith({
+            action: Action.ExternalLink,
+            text: Text.GetTheApp,
+            origin: Origin.Home,
+            destination: Destination.AppStore,
+            type: Type.HomeTile,
+            url: APP_STORE_URL,
+        });
+    });
+
+    it("on an iPad asking for the desktop site it still opens the App Store", async () => {
+        browserOn(iPadSafari, 5);
+        signInRegistered();
+        await render(<HomeView />);
+        await press(screen.getByTestId("get-the-app-card"));
+        expect(Linking.openURL).toHaveBeenCalledWith(APP_STORE_URL);
+    });
+
+    it("on Android it opens Google Play and tracks the tile", async () => {
+        browserOn(androidChrome, 5);
+        signInRegistered();
+        await render(<HomeView />);
+        expect(
+            screen.getByText(
+                "Download the Health Gateway app from Google Play."
+            )
+        ).toBeTruthy();
+        expect(
+            document.querySelector(
+                '[data-testid="get-the-app-card"] [data-icon="google-play"]'
+            )
+        ).not.toBeNull();
+        await press(screen.getByTestId("get-the-app-card"));
+        expect(Linking.openURL).toHaveBeenCalledWith(PLAY_STORE_URL);
+        expect(services.tracking.trackEvent).toHaveBeenCalledWith(
+            expect.objectContaining({
+                text: Text.GetTheApp,
+                destination: Destination.GooglePlay,
+                url: PLAY_STORE_URL,
+            })
+        );
+    });
+
+    it("cannot be removed", async () => {
+        browserOn(androidChrome, 5);
+        signInRegistered();
+        await render(<HomeView />);
+        const card = screen.getByTestId("get-the-app-card");
+        expect(
+            screen
+                .getAllByTestId("card-menu-button")
+                .some((menu) => isWithin(menu, card))
+        ).toBe(false);
+    });
+
+    it("comes first, ahead of Health Records", async () => {
+        browserOn(iPhoneSafari, 5);
+        signInRegistered();
+        await render(<HomeView />);
+        expect(titles().slice(0, 2)).toEqual(["Get the App", "Health Records"]);
+    });
+
+    it("not when the showGetTheAppLink feature toggle is off", async () => {
+        browserOn(iPhoneSafari, 5);
+        signInRegistered();
+        const base = configFixture.webClient.featureToggleConfiguration;
+        updateStores(() =>
+            useConfigStore.setState({
+                config: {
+                    ...configFixture,
+                    webClient: {
+                        ...configFixture.webClient,
+                        featureToggleConfiguration: {
+                            ...base,
+                            homepage: {
+                                ...base.homepage,
+                                showGetTheAppLink: false,
+                            },
+                        },
+                    },
+                },
+            })
+        );
+        await render(<HomeView />);
+        expect(screen.queryByTestId("get-the-app-card")).toBeNull();
+        expect(titles()[0]).toBe("Health Records");
+    });
+
+    it("not on a desktop browser", async () => {
+        browserOn(macChrome, 0);
+        signInRegistered();
+        await render(<HomeView />);
+        expect(screen.queryByTestId("get-the-app-card")).toBeNull();
     });
 });

@@ -42,10 +42,12 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="ShowRecommendationsLink">Toggles vaccination recommendation link.</param>
     /// <param name="ShowImmunizationRecordLink">Toggles immunization record link.</param>
     /// <param name="OtherRecordSources">Settings for other record sources features.</param>
+    /// <param name="ShowGetTheAppLink">Toggles the Get the App card, shown in a phone or tablet browser.</param>
     public record HomepageSettings(
         bool ShowRecommendationsLink,
         bool ShowImmunizationRecordLink,
-        OtherRecordSourcesSettings OtherRecordSources);
+        OtherRecordSourcesSettings OtherRecordSources,
+        bool ShowGetTheAppLink = false);
 
     /// <summary>
     /// Settings for the notification centre.

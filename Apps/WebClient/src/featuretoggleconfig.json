@@ -2,6 +2,7 @@
     "homepage": {
         "showRecommendationsLink": false,
         "showImmunizationRecordLink": true,
+        "showGetTheAppLink": true,
         "otherRecordSources": {
             "enabled": true,
             "sources": [
