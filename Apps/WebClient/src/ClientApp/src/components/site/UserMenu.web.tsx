@@ -2,6 +2,7 @@ import { Pressable, View } from "react-native";
 
 import { AppText, AppVersion, Icon } from "@/components/common";
 import { useThemeColors } from "@/hooks/useTheme";
+import { selectIsDarkModeEnabled, useConfigStore } from "@/stores/config.store";
 import { selectUserName, useUserStore } from "@/stores/user.store";
 
 import { DarkModeMenuItem } from "./DarkModeMenuItem";
@@ -16,7 +17,7 @@ interface Props {
 }
 
 /**
- * Web: the v-menu under the avatar button: user name, Profile, Dark Mode, Log Out. Native draws its account menu in the
+ * Web: the v-menu under the avatar button: user name, Profile, Dark Mode (when its toggle is on), Log Out. Native draws its account menu in the
  * navigation bar (`useHeaderMenu`).
  */
 export function UserMenu({
@@ -28,6 +29,7 @@ export function UserMenu({
 }: Props) {
     const colors = useThemeColors();
     const userName = useUserStore(selectUserName);
+    const darkModeEnabled = useConfigStore(selectIsDarkModeEnabled);
     return (
         <HeaderMenu visible={visible} onClose={onClose}>
             <View className="px-4 py-2">
@@ -53,7 +55,7 @@ export function UserMenu({
                 </Pressable>
             ) : null}
             {/* Health Gateway UI only: the web client has no theme switch. */}
-            <DarkModeMenuItem />
+            {darkModeEnabled ? <DarkModeMenuItem /> : null}
             <Pressable
                 testID="logoutBtn"
                 accessibilityRole="menuitem"

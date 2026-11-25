@@ -205,6 +205,10 @@ export const selectWebConfig = (s: ConfigState) => s.config?.webClient;
 export const selectFeatureToggles = (s: ConfigState) =>
     s.config?.webClient?.featureToggleConfiguration;
 
+/** The Dark Mode toggle. */
+export const selectIsDarkModeEnabled = (s: ConfigState) =>
+    selectFeatureToggles(s)?.darkMode?.enabled ?? false;
+
 /** `webClient.mobile.timeouts.idle` when the configuration does not set a usable one. */
 export const DEFAULT_MOBILE_IDLE_MS = 20 * 60 * 1000;
 

@@ -27,6 +27,7 @@ namespace HealthGateway.WebClient.Server.Models
     /// <param name="Dependents">Settings for dependents features.</param>
     /// <param name="Services">Settings for services features.</param>
     /// <param name="Profile">Settings for profile features.</param>
+    /// <param name="DarkMode">Settings for dark mode.</param>
     public record FeatureToggleConfiguration(
         HomepageSettings Homepage,
         NotificationCentreSettings NotificationCentre,
@@ -34,7 +35,8 @@ namespace HealthGateway.WebClient.Server.Models
         DatasetSettings[] Datasets,
         DependentsSettings Dependents,
         ServicesSettings Services,
-        ProfileSettings Profile);
+        ProfileSettings Profile,
+        DarkModeSettings DarkMode);
 
     /// <summary>
     /// Settings for the home page.
@@ -52,6 +54,13 @@ namespace HealthGateway.WebClient.Server.Models
     /// </summary>
     /// <param name="Enabled">Toggles notification centre.</param>
     public record NotificationCentreSettings(
+        bool Enabled);
+
+    /// <summary>
+    /// Settings for dark mode.
+    /// </summary>
+    /// <param name="Enabled">Toggles the dark mode choice; while off the client shows the light appearance.</param>
+    public record DarkModeSettings(
         bool Enabled);
 
     /// <summary>

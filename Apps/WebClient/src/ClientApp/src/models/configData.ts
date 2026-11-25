@@ -83,6 +83,8 @@ export interface WebClientConfiguration {
 export interface FeatureToggleConfiguration {
     homepage: HomepageSettings;
     notificationCentre: { enabled: boolean };
+    /** Off: the menu has no Dark Mode entry and the app shows light. */
+    darkMode: { enabled: boolean };
     timeline: { comment: boolean };
     datasets: NamedToggle[];
     dependents: DependentsSettings;

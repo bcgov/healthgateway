@@ -29,6 +29,7 @@ import { resetRouter, router } from "@/test/expoRouterMock";
 import {
     bcscUserInfo,
     configFixture,
+    loadConfigWithDarkMode,
     resetStores,
     signInRegistered,
     updateStores,
@@ -90,6 +91,21 @@ describe("useHeaderMenu", () => {
                 expect(version.disabled).toBe(true);
             }
         });
+
+        it.each([
+            ["off", false],
+            ["left out", undefined],
+        ] as const)(
+            "has no Dark Mode while its toggle is %s",
+            async (_name, enabled) => {
+                loadConfigWithDarkMode(enabled);
+                const { result } = await renderHook(() => useHeaderMenu());
+                expect(keys(result.current.menu)[0]).toEqual([
+                    "menu-btn-security-link",
+                    "menu-btn-support-link",
+                ]);
+            }
+        );
 
         it("lists every footer link under Support, the email last", async () => {
             const { result } = await renderHook(() => useHeaderMenu());
@@ -255,6 +271,15 @@ describe("useHeaderMenu", () => {
             endSessionGeneration();
             await advanceTimers(MENU_DISMISS_MS);
             expect(useHeaderMenuStore.getState().dialog).toBeUndefined();
+        });
+
+        it("has no Dark Mode while its toggle is off", async () => {
+            loadConfigWithDarkMode(false);
+            const { result } = await renderHook(() => useHeaderMenu());
+            expect(keys(result.current.menu)[0]).toEqual([
+                "profileBtn",
+                "menu-btn-security-link",
+            ]);
         });
 
         it("leaves out Profile and Feedback while the patient cannot be found", async () => {

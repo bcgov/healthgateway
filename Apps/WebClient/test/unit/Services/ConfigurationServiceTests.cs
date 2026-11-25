@@ -210,7 +210,8 @@ namespace HealthGateway.WebClientTests.Services
                             GetFeatureDatasetSettings(),
                             new DependentsSettings(true, true, [new("note", false)]),
                             new ServicesSettings(true, [new("organDonorRegistration", true), new("healthConnectRegistry", true)]),
-                            GetDefaultProfileSettings())
+                            GetDefaultProfileSettings(),
+                            new DarkModeSettings(true))
                         : null,
                     Cache = new CacheConfiguration
                     {

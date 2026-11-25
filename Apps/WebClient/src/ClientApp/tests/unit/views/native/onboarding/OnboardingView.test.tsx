@@ -16,7 +16,7 @@ import {
     selectOnboardingPending,
     useOnboardingStore,
 } from "@/stores/onboarding.store";
-import { updateStores } from "@/test/fixtures";
+import { loadConfigWithDarkMode, updateStores } from "@/test/fixtures";
 import {
     navigationBarMenuTitles,
     navigationBarRightItems,
@@ -112,6 +112,7 @@ describe("OnboardingView", () => {
 
         it("the gear leaves out Security, which the intro's own step sets", async () => {
             if (Platform.OS === "web") return;
+            loadConfigWithDarkMode(true);
             useOnboardingStore.setState({
                 screens: onboardingScreens,
                 securityOffered: false,

@@ -19,6 +19,7 @@ import { sessionGeneration } from "@/services/sessionFence";
 import { useAuthStore } from "@/stores/auth.store";
 import {
     selectFeatureToggles,
+    selectIsDarkModeEnabled,
     selectIsOffline,
     useConfigStore,
 } from "@/stores/config.store";
@@ -95,23 +96,28 @@ function useSharedEntries(overApp: boolean) {
     const router = useRouter();
     const preference = useThemeStore((s) => s.preference);
     const setPreference = useThemeStore((s) => s.setPreference);
+    const darkModeEnabled = useConfigStore(selectIsDarkModeEnabled);
     const supportShown = useSupportLinksShown();
     const push = (path: string) => router.push(toHref(path));
 
-    const darkMode: HeaderMenuEntry = {
-        type: "submenu",
-        key: "menu-btn-dark-mode-link",
-        label: "Dark Mode",
-        glyph: "darkMode",
-        items: darkModeChoices.map(({ value, label, subtitle }) => ({
-            type: "action",
-            key: `dark-mode-${label.toLowerCase()}`,
-            label,
-            subtitle,
-            checked: preference === value,
-            onPress: () => void setPreference(value),
-        })),
-    };
+    const darkMode: HeaderMenuEntry[] = darkModeEnabled
+        ? [
+              {
+                  type: "submenu",
+                  key: "menu-btn-dark-mode-link",
+                  label: "Dark Mode",
+                  glyph: "darkMode",
+                  items: darkModeChoices.map(({ value, label, subtitle }) => ({
+                      type: "action",
+                      key: `dark-mode-${label.toLowerCase()}`,
+                      label,
+                      subtitle,
+                      checked: preference === value,
+                      onPress: () => void setPreference(value),
+                  })),
+              },
+          ]
+        : [];
     const security: HeaderMenuAction[] = overApp
         ? []
         : [
@@ -169,7 +175,7 @@ function settingsMenu({
     return {
         kind: "settings",
         buttonLabel: "Settings",
-        sections: [[darkMode, ...security, ...support], versionSection],
+        sections: [[...darkMode, ...security, ...support], versionSection],
     };
 }
 
@@ -292,7 +298,7 @@ export function useHeaderMenu(): {
             initials,
             title: userName,
             sections: [
-                [...profile, darkMode, ...security],
+                [...profile, ...darkMode, ...security],
                 [...support, ...feedback],
                 [logout],
                 versionSection,

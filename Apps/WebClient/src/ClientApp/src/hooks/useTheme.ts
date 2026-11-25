@@ -2,7 +2,8 @@ import { vars } from "nativewind";
 import { useEffect } from "react";
 import { Platform, useColorScheme as useSystemColorScheme } from "react-native";
 
-import { useThemeStore } from "@/stores/theme.store";
+import { selectIsDarkModeEnabled, useConfigStore } from "@/stores/config.store";
+import { type ThemePreference, useThemeStore } from "@/stores/theme.store";
 import {
     type ColorScheme,
     palettes,
@@ -20,9 +21,19 @@ const themeVars: Record<ColorScheme, ReturnType<typeof vars>> = {
     dark: vars(cssVars.dark),
 };
 
-/** The scheme in effect: the stored preference, or the OS appearance when the preference is "system". */
-export function useColorScheme(): ColorScheme {
+/**
+ * The preference in effect: the stored one while the Dark Mode toggle is on, otherwise light. The stored choice is kept,
+ * so it comes back when the toggle is switched on again.
+ */
+export function useThemePreference(): ThemePreference {
     const preference = useThemeStore((s) => s.preference);
+    const enabled = useConfigStore(selectIsDarkModeEnabled);
+    return enabled ? preference : "light";
+}
+
+/** The scheme in effect: the preference in effect, or the OS appearance when it is "system". */
+export function useColorScheme(): ColorScheme {
+    const preference = useThemePreference();
     const system = useSystemColorScheme();
     if (preference === "system") return system === "dark" ? "dark" : "light";
     return preference;
