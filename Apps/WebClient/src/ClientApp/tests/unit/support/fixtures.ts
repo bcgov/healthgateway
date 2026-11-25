@@ -76,6 +76,7 @@ export const configFixture: ExternalConfiguration = {
                 },
             },
             notificationCentre: { enabled: true },
+            darkMode: { enabled: true },
             timeline: { comment: true },
             datasets: [
                 { name: "Immunization", enabled: true },
@@ -274,6 +275,31 @@ export function resetStores() {
         useNotificationStore.getState().reset();
         useCommunicationStore.getState().reset();
     });
+}
+
+/**
+ * Loads the fixture configuration with the Dark Mode toggle on, off, or left out (`undefined`), as a server without it
+ * would send it.
+ */
+export function loadConfigWithDarkMode(enabled: boolean | undefined) {
+    const featureToggleConfiguration = {
+        ...configFixture.webClient.featureToggleConfiguration,
+        darkMode: { enabled: enabled ?? false },
+    };
+    if (enabled === undefined)
+        Reflect.deleteProperty(featureToggleConfiguration, "darkMode");
+    updateStores(() =>
+        useConfigStore.setState({
+            config: {
+                ...configFixture,
+                webClient: {
+                    ...configFixture.webClient,
+                    featureToggleConfiguration,
+                },
+            },
+            status: "loaded",
+        })
+    );
 }
 
 /** Signed-in, fully registered BCSC user with the fixture configuration loaded. */

@@ -9,7 +9,7 @@ import {
 import { Platform } from "react-native";
 
 import { UserMenu } from "@/components/site/UserMenu.web";
-import { resetStores } from "@/test/fixtures";
+import { loadConfigWithDarkMode, resetStores } from "@/test/fixtures";
 import { isExpanded, press, render, screen } from "@/test/ui";
 
 jest.mock("expo-constants", () => ({
@@ -29,6 +29,7 @@ const describeWeb = Platform.OS === "web" ? describe : describe.skip;
 describeWeb("UserMenu", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+        loadConfigWithDarkMode(true);
     });
 
     afterEach(() => {
@@ -52,6 +53,20 @@ describeWeb("UserMenu", () => {
             "logoutBtn",
         ]);
     });
+
+    it.each([
+        ["off", false],
+        ["left out", undefined],
+    ] as const)(
+        "has no Dark Mode while its toggle is %s",
+        async (_name, enabled) => {
+            loadConfigWithDarkMode(enabled);
+            await render(<UserMenu visible showProfile {...handlers} />);
+            expect(screen.queryByTestId("menu-btn-dark-mode-link")).toBeNull();
+            expect(screen.getByTestId("profileBtn")).toBeTruthy();
+            expect(screen.getByTestId("logoutBtn")).toBeTruthy();
+        }
+    );
 
     it("stays open while a Dark Mode choice is made", async () => {
         await render(<UserMenu visible showProfile {...handlers} />);

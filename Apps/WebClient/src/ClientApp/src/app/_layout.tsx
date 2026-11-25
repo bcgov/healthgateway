@@ -22,6 +22,7 @@ import { useAppLockLifecycle } from "@/hooks/useAppLock";
 import { useRouteGuard } from "@/hooks/useRouteGuard";
 import {
     useColorScheme,
+    useThemePreference,
     useThemeVars,
     useWebThemeRoot,
 } from "@/hooks/useTheme";
@@ -37,7 +38,6 @@ import {
     selectOnboardingPending,
     useOnboardingStore,
 } from "@/stores/onboarding.store";
-import { useThemeStore } from "@/stores/theme.store";
 import { fontAssets } from "@/theme";
 import { registerDevStores } from "@/utils/devStores";
 import { AppErrorView } from "@/views/errors/AppErrorView";
@@ -125,7 +125,7 @@ export default function RootLayout() {
     const themeVars = useThemeVars();
     useWebThemeRoot(scheme);
     // Native system chrome (tab bar, alerts, keyboard) follows the in-app appearance choice, not only the OS.
-    const preference = useThemeStore((s) => s.preference);
+    const preference = useThemePreference();
     useEffect(() => {
         if (Platform.OS === "web") return;
         Appearance.setColorScheme(

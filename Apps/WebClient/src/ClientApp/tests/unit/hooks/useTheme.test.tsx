@@ -1,14 +1,26 @@
-import { afterEach, describe, expect, it, jest } from "@jest/globals";
+import {
+    afterEach,
+    beforeEach,
+    describe,
+    expect,
+    it,
+    jest,
+} from "@jest/globals";
 import { Platform } from "react-native";
 
 import {
     useColorScheme,
     useThemeColors,
+    useThemePreference,
     useThemeVars,
     useWebThemeRoot,
 } from "@/hooks/useTheme";
 import { useThemeStore } from "@/stores/theme.store";
-import { updateStores } from "@/test/fixtures";
+import {
+    loadConfigWithDarkMode,
+    resetStores,
+    updateStores,
+} from "@/test/fixtures";
 import { renderHook } from "@/test/ui";
 import { palettes, toCssVars } from "@/theme";
 
@@ -34,7 +46,10 @@ const setPreference = (preference: "light" | "dark" | "system") =>
     updateStores(() => useThemeStore.setState({ preference }));
 
 describe("useTheme", () => {
+    beforeEach(() => loadConfigWithDarkMode(true));
+
     afterEach(() => {
+        resetStores();
         setPreference("light");
         mockOsScheme.value = "light";
         jest.restoreAllMocks();
@@ -67,6 +82,37 @@ describe("useTheme", () => {
             expect(hook.result.current).toBe(expected);
         }
     );
+
+    it.each([
+        ["off", false],
+        ["left out", undefined],
+    ] as const)(
+        "shows light whatever the choice while the Dark Mode toggle is %s",
+        async (_name, enabled) => {
+            loadConfigWithDarkMode(enabled);
+            mockOsScheme.value = "dark";
+            setPreference("dark");
+            const hook = await renderHook(() => useColorScheme());
+            expect(hook.result.current).toBe("light");
+            setPreference("system");
+            await hook.rerender();
+            expect(hook.result.current).toBe("light");
+            expect(
+                (await renderHook(() => useThemePreference())).result.current
+            ).toBe("light");
+        }
+    );
+
+    it("brings the stored choice back when the toggle is switched on", async () => {
+        loadConfigWithDarkMode(false);
+        setPreference("dark");
+        const hook = await renderHook(() => useColorScheme());
+        expect(hook.result.current).toBe("light");
+        loadConfigWithDarkMode(true);
+        await hook.rerender();
+        expect(hook.result.current).toBe("dark");
+        expect(useThemeStore.getState().preference).toBe("dark");
+    });
 
     it("gives the palette and the CSS-variable style for the active scheme", async () => {
         setPreference("dark");

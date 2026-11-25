@@ -15,6 +15,9 @@
     "notificationCentre": {
         "enabled": true
     },
+    "darkMode": {
+        "enabled": true
+    },
     "timeline": {
         "comment": true
     },
