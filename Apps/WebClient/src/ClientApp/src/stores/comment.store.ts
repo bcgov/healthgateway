@@ -160,7 +160,7 @@ export const useCommentStore = create<CommentState>((set, get) => {
 
 export const selectCommentsAreLoading = (s: CommentState) =>
     s.status === LoadStatus.REQUESTED;
-/** getEntryComments: null when the entry has none recorded */
-export const entryCommentsGetter =
-    (comments: Record<string, UserComment[]>) => (entryId: string) =>
-        comments[entryId] === undefined ? null : comments[entryId];
+export const selectEntryComments =
+    (entryId: string) =>
+    (s: CommentState): UserComment[] | null =>
+        s.comments[entryId] ?? null;

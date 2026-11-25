@@ -2,7 +2,7 @@ import { EntryType } from "@/constants/entryType";
 import type { ClinicalDocument } from "@/models/clinicalDocument";
 import { fromIsoDate } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** Port of models/timeline/clinicalDocumentTimelineEntry.ts */
 export class ClinicalDocumentTimelineEntry extends TimelineEntry {
@@ -12,12 +12,7 @@ export class ClinicalDocumentTimelineEntry extends TimelineEntry {
     public facilityName: string;
     public discipline: string;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: ClinicalDocument,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: ClinicalDocument) {
         super(
             model.id,
             EntryType.ClinicalDocument,
@@ -28,14 +23,9 @@ export class ClinicalDocumentTimelineEntry extends TimelineEntry {
         this.documentType = model.type;
         this.facilityName = model.facilityName;
         this.discipline = model.discipline;
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return [
             this.name,
             this.documentType,

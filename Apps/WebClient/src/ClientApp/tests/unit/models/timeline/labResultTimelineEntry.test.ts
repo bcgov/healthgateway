@@ -33,7 +33,7 @@ describe("LabResultTimelineEntry (labResultTimelineEntry.ts port)", () => {
     it("keyword search covers name, lab and test names", () => {
         for (const k of ["lipid", "lifelabs", "ldl"])
             expect(
-                entry.filterApplies(
+                entry.matchesFilter(
                     TimelineFilterBuilder.create().withKeyword(k).build()
                 )
             ).toBe(true);

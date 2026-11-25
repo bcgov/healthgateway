@@ -10,6 +10,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { useThemeColors } from "@/hooks/useTheme";
 import type { TimelineEntry } from "@/models/timeline/timelineEntry";
 import { services } from "@/services/container";
+import { selectEntryComments, useCommentStore } from "@/stores/comment.store";
 import { useTimelineStore } from "@/stores/timeline.store";
 import { cn } from "@/utils/cn";
 import { formatDate } from "@/utils/dateUtil";
@@ -104,7 +105,8 @@ export function TimelineEntryCard({
         details?.title && details.title.trim() ? details.title : entry.type;
     const displayTitle = title?.trim() ?? "";
     const dateString = formatDate(entry.date);
-    const commentCount = entry.comments?.length ?? 0;
+    const commentCount =
+        useCommentStore(selectEntryComments(entry.id))?.length ?? 0;
 
     function trackCardExpanded() {
         if (!details) return;

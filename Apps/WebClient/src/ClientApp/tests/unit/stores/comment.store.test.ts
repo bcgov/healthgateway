@@ -12,7 +12,7 @@ import { ResultError } from "@/models/errors";
 import type { UserComment } from "@/models/userComment";
 import { services } from "@/services/container";
 import { UserCommentService } from "@/services/userComment.service";
-import { entryCommentsGetter, useCommentStore } from "@/stores/comment.store";
+import { useCommentStore } from "@/stores/comment.store";
 import { useErrorStore } from "@/stores/error.store";
 import {
     configFixture,
@@ -124,18 +124,13 @@ describe("comment store (stores/comment.ts port)", () => {
             useCommentStore.getState().comments["SA-1"].map((c) => c.id)
         ).toEqual(["0", "1"]);
         await useCommentStore.getState().updateComment("H1", comment("1", "x"));
-        expect(
-            entryCommentsGetter(useCommentStore.getState().comments)(
-                "SA-1"
-            )?.[1].text
-        ).toBe("edited");
+        expect(useCommentStore.getState().comments["SA-1"][1].text).toBe(
+            "edited"
+        );
         await useCommentStore.getState().deleteComment("H1", comment("0", "x"));
         expect(
             useCommentStore.getState().comments["SA-1"].map((c) => c.id)
         ).toEqual(["1"]);
-        expect(
-            entryCommentsGetter(useCommentStore.getState().comments)("other")
-        ).toBeNull();
     });
 
     it("a 429 on save errors the page; other failures banner 'Unable to add comment'", async () => {

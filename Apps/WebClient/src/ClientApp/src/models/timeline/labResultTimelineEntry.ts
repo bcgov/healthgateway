@@ -4,7 +4,7 @@ import { EntryType } from "@/constants/entryType";
 import type { LaboratoryOrder, LaboratoryTest } from "@/models/laboratory";
 import { fromIso } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 const resultOutOfRange = "Out of Range";
 const resultInRange = "-"; // HealthGateway.Laboratory.MapProfiles.LaboratoryTestProfile
@@ -55,12 +55,7 @@ export class LabResultTimelineEntry extends TimelineEntry {
     public reportAvailable: boolean;
     public tests: LaboratoryTestViewModel[];
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: LaboratoryOrder,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: LaboratoryOrder) {
         super(
             model.labPdfId,
             EntryType.LabResult,
@@ -80,14 +75,9 @@ export class LabResultTimelineEntry extends TimelineEntry {
             (test) => new LaboratoryTestViewModel(test)
         );
         this.sortResults();
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         const text = (
             this.commonName +
             this.reportingLab +

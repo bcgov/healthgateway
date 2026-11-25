@@ -8,7 +8,7 @@ import type {
 } from "@/models/immunization";
 import { formatDate, fromIso, fromIsoDate } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** DateTimeFormat.formatDateString */
 const formatDateString = "yyyy-MM-dd";
@@ -84,11 +84,7 @@ export class ImmunizationTimelineEntry extends TimelineEntry {
         this.immunization = new ImmunizationViewModel(model);
     }
 
-    public get comments(): UserComment[] | null {
-        return null;
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         const text = (
             (this.immunization.name ?? "") +
             (this.immunization.searchableAgentsText ?? "") +

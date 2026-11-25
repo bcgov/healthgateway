@@ -49,7 +49,7 @@ describe("HealthVisitTimelineEntry (healthVisitTimelineEntry.ts port)", () => {
         expect(old.showRollOffWarning).toBe(true);
         expect(old.practitionerName).toBe("Unknown Practitioner");
         expect(
-            recent.filterApplies(
+            recent.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("downtown").build()
             )
         ).toBe(true);

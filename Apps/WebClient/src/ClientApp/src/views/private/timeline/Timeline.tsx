@@ -59,7 +59,6 @@ import {
     useClinicalDocumentStore,
 } from "@/stores/clinicalDocument.store";
 import {
-    entryCommentsGetter,
     selectCommentsAreLoading,
     useCommentStore,
 } from "@/stores/comment.store";
@@ -306,27 +305,20 @@ export function Timeline({
 
     const unfilteredTimelineEntries = useMemo(() => {
         const entries: TimelineEntry[] = [];
-        const getComments = entryCommentsGetter(comments);
         for (const request of specialAuthorityRequests)
-            entries.push(
-                new SpecialAuthorityRequestTimelineEntry(request, getComments)
-            );
+            entries.push(new SpecialAuthorityRequestTimelineEntry(request));
         for (const medication of medications)
-            entries.push(new MedicationTimelineEntry(medication, getComments));
+            entries.push(new MedicationTimelineEntry(medication));
         for (const result of covid19TestResults)
-            entries.push(
-                new Covid19TestResultTimelineEntry(result, getComments)
-            );
+            entries.push(new Covid19TestResultTimelineEntry(result));
         for (const order of labResults)
-            entries.push(new LabResultTimelineEntry(order, getComments));
+            entries.push(new LabResultTimelineEntry(order));
         for (const healthVisit of healthVisits)
-            entries.push(
-                new HealthVisitTimelineEntry(healthVisit, getComments)
-            );
+            entries.push(new HealthVisitTimelineEntry(healthVisit));
         for (const visit of hospitalVisits)
-            entries.push(new HospitalVisitTimelineEntry(visit, getComments));
+            entries.push(new HospitalVisitTimelineEntry(visit));
         for (const doc of clinicalDocuments)
-            entries.push(new ClinicalDocumentTimelineEntry(doc, getComments));
+            entries.push(new ClinicalDocumentTimelineEntry(doc));
         for (const note of notes) entries.push(new NoteTimelineEntry(note));
         for (const immunization of immunizations)
             entries.push(new ImmunizationTimelineEntry(immunization));
@@ -337,15 +329,13 @@ export function Timeline({
             if (exam.type === HealthDataType.DiagnosticImagingExam)
                 entries.push(
                     new DiagnosticImagingTimelineEntry(
-                        exam as DiagnosticImagingExam,
-                        getComments
+                        exam as DiagnosticImagingExam
                     )
                 );
             else if (exam.type === HealthDataType.BcCancerScreening)
                 entries.push(
                     new BcCancerScreeningTimelineEntry(
-                        exam as BcCancerScreening,
-                        getComments
+                        exam as BcCancerScreening
                     )
                 );
         }
@@ -363,17 +353,16 @@ export function Timeline({
         notes,
         patientDataState,
         immunizations,
-        comments,
     ]);
 
     const filteredTimelineEntries = useMemo(
         () =>
             filter.hasActiveFilter()
                 ? unfilteredTimelineEntries.filter((e) =>
-                      e.filterApplies(filter)
+                      e.matchesFilter(filter, comments[e.id])
                   )
                 : unfilteredTimelineEntries,
-        [unfilteredTimelineEntries, filter]
+        [unfilteredTimelineEntries, filter, comments]
     );
 
     const numberOfPages =

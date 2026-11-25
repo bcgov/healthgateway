@@ -2,7 +2,7 @@ import { EntryType } from "@/constants/entryType";
 import type { DiagnosticImagingExam } from "@/models/patientData";
 import { fromIsoDate } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** Port of models/timeline/diagnosticImagingTimelineEntry.ts */
 export class DiagnosticImagingTimelineEntry extends TimelineEntry {
@@ -16,12 +16,7 @@ export class DiagnosticImagingTimelineEntry extends TimelineEntry {
     public fileId: string | undefined;
     public examDate: string;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: DiagnosticImagingExam,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: DiagnosticImagingExam) {
         super(
             model.id ?? `diagnosticImaging-${model.examDate}`,
             EntryType.DiagnosticImaging,
@@ -37,11 +32,6 @@ export class DiagnosticImagingTimelineEntry extends TimelineEntry {
         this.examStatus = model.examStatus || "N/A";
         this.fileId = model.fileId;
         this.examDate = model.examDate;
-        this.getComments = getComments;
-    }
-
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
     }
 
     protected containsText(keyword: string): boolean {

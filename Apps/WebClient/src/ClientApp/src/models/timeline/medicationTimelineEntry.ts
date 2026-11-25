@@ -7,7 +7,7 @@ import type {
 } from "@/models/medication";
 import { fromIsoDate } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 class PharmacyViewModel {
     public id: string;
@@ -77,12 +77,7 @@ export class MedicationTimelineEntry extends TimelineEntry {
     public prescriptionProvided?: boolean;
     public redirectedToHealthCareProvider?: boolean;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: MedicationStatement,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: MedicationStatement) {
         super(
             model.prescriptionIdentifier,
             EntryType.Medication,
@@ -106,14 +101,9 @@ export class MedicationTimelineEntry extends TimelineEntry {
         this.practitionerSurname = model.practitionerSurname || "N/A";
         this.prescriptionIdentifier = model.prescriptionIdentifier || "N/A";
         this.directions = model.directions || "N/A";
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         const text = (
             (this.practitionerSurname ?? "") +
             (this.title ?? "") +

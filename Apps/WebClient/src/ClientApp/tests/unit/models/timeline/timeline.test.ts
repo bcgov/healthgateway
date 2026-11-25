@@ -5,6 +5,7 @@ import type { ImmunizationEvent } from "@/models/immunization";
 import { ImmunizationTimelineEntry } from "@/models/timeline/immunizationTimelineEntry";
 import { DateGroup } from "@/models/timeline/timelineEntry";
 import { TimelineFilterBuilder } from "@/models/timeline/timelineFilter";
+import type { UserComment } from "@/models/userComment";
 
 const event = (
     overrides: Partial<ImmunizationEvent> = {}
@@ -61,7 +62,6 @@ describe("ImmunizationTimelineEntry (immunizationTimelineEntry.ts port)", () => 
         });
         expect(entry.immunization.providerOrClinic).toBeNull();
         expect(entry.immunization.forecast?.dueDate).toBe("2021-08-11");
-        expect(entry.comments).toBeNull();
     });
 
     it("keyword search covers name, agents (lot, name, product) and provider, case-insensitively", () => {
@@ -74,12 +74,12 @@ describe("ImmunizationTimelineEntry (immunizationTimelineEntry.ts port)", () => 
             "clinic b",
         ])
             expect(
-                entry.filterApplies(
+                entry.matchesFilter(
                     TimelineFilterBuilder.create().withKeyword(keyword).build()
                 )
             ).toBe(true);
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("flu").build()
             )
         ).toBe(false);
@@ -89,17 +89,17 @@ describe("ImmunizationTimelineEntry (immunizationTimelineEntry.ts port)", () => 
         const entry = new ImmunizationTimelineEntry(event());
         const b = () => TimelineFilterBuilder.create();
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 b().withEntryTypes([EntryType.Medication]).build()
             )
         ).toBe(false);
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 b().withEntryType(EntryType.Immunization).build()
             )
         ).toBe(true);
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 b()
                     .withStartDate("2021-07-14")
                     .withEndDate("2021-07-14")
@@ -107,11 +107,24 @@ describe("ImmunizationTimelineEntry (immunizationTimelineEntry.ts port)", () => 
             )
         ).toBe(true);
         expect(
-            entry.filterApplies(b().withStartDate("2021-07-15").build())
+            entry.matchesFilter(b().withStartDate("2021-07-15").build())
         ).toBe(false);
-        expect(entry.filterApplies(b().withEndDate("2021-07-13").build())).toBe(
+        expect(entry.matchesFilter(b().withEndDate("2021-07-13").build())).toBe(
             false
         );
+    });
+
+    it("keyword search also covers the comments passed in, case-insensitively", () => {
+        const entry = new ImmunizationTimelineEntry(event());
+        const filter = TimelineFilterBuilder.create()
+            .withKeyword("PHARMACY")
+            .build();
+        const comment = {
+            parentEntryId: "i1",
+            text: "Called the pharmacy",
+        } as UserComment;
+        expect(entry.matchesFilter(filter)).toBe(false);
+        expect(entry.matchesFilter(filter, [comment])).toBe(true);
     });
 });
 

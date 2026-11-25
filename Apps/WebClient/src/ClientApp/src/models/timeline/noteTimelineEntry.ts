@@ -2,7 +2,7 @@ import { EntryType } from "@/constants/entryType";
 import type { UserNote } from "@/models/userNote";
 import { formatDate, fromIsoDate, today } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** Port of models/timeline/noteTimelineEntry.ts */
 export class NoteTimelineEntry extends TimelineEntry {
@@ -31,11 +31,7 @@ export class NoteTimelineEntry extends TimelineEntry {
         this.version = model.version;
     }
 
-    public get comments(): UserComment[] | null {
-        return null;
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return ((this.title ?? "") + (this.text ?? ""))
             .toUpperCase()
             .includes(keyword.toUpperCase());

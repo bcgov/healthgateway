@@ -53,7 +53,7 @@ describe("SpecialAuthorityRequestEntry (SpecialAuthorityRequestTimelineComponent
     it("drug name and status in the header; prescriber, reference and dates (yyyy-MM-dd, N/A when missing) in the details", async () => {
         const entry = new SpecialAuthorityRequestTimelineEntry(model);
         expect(
-            entry.filterApplies(
+            entry.matchesFilter(
                 TimelineFilterBuilder.create().withKeyword("lovelace").build()
             )
         ).toBe(true);

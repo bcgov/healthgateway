@@ -7,7 +7,7 @@ import type {
 } from "@/models/laboratory";
 import { descending, fromIso } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 export class Covid19TestData {
     public id: string;
@@ -58,12 +58,7 @@ export class Covid19TestResultTimelineEntry extends TimelineEntry {
     public summaryStatus: string;
     public tests: Covid19TestData[];
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: Covid19LaboratoryOrder,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: Covid19LaboratoryOrder) {
         super(
             model.id,
             EntryType.Covid19TestResult,
@@ -85,14 +80,9 @@ export class Covid19TestResultTimelineEntry extends TimelineEntry {
         this.summaryStatus = firstResult.testStatus ?? "";
         this.resultReady = firstResult.resultReady;
         this.labResultOutcome = firstResult.labResultOutcome;
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return (this.summaryTitle + this.summaryDescription)
             .toUpperCase()
             .includes(keyword.toUpperCase());

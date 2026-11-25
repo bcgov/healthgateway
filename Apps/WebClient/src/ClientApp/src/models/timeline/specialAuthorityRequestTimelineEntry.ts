@@ -4,7 +4,7 @@ import { EntryType } from "@/constants/entryType";
 import type { MedicationRequest } from "@/models/medicationRequest";
 import { fromIsoDate } from "@/utils/dateUtil";
 
-import { TimelineEntry, type UserComment } from "./timelineEntry";
+import { TimelineEntry } from "./timelineEntry";
 
 /** Port of models/timeline/specialAuthorityRequestTimelineEntry.ts */
 export class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
@@ -15,12 +15,7 @@ export class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
     public expiryDate?: DateTime;
     public referenceNumber: string;
 
-    private readonly getComments: (entryId: string) => UserComment[] | null;
-
-    public constructor(
-        model: MedicationRequest,
-        getComments: (entryId: string) => UserComment[] | null = () => null
-    ) {
+    public constructor(model: MedicationRequest) {
         super(
             model.referenceNumber,
             EntryType.SpecialAuthorityRequest,
@@ -41,14 +36,9 @@ export class SpecialAuthorityRequestTimelineEntry extends TimelineEntry {
             ? fromIsoDate(model.expiryDate)
             : undefined;
         this.referenceNumber = model.referenceNumber;
-        this.getComments = getComments;
     }
 
-    public get comments(): UserComment[] | null {
-        return this.getComments(this.id);
-    }
-
-    public containsText(keyword: string): boolean {
+    protected containsText(keyword: string): boolean {
         return (
             (this.drugName ?? "") +
             (this.prescriberName ?? "") +
