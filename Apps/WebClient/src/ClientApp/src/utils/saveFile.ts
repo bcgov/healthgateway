@@ -1,4 +1,5 @@
 import { describeError, logger } from "@/services/logger";
+import { sessionGeneration } from "@/services/sessionFence";
 
 const EXPORT_FOLDER = "hg-exports";
 const activeExports = new Set<string>();
@@ -9,13 +10,17 @@ let nextExport = 0;
  * button saves, prints or sends it), Android's app for the file type. Without a viewer (an Android with no app for
  * the type, or a dev client built before the viewer was added) it opens the system's save sheet instead ("Save to
  * Files" on iOS, "Save as" on Android). Cancelling the sheet is not an error. The packages are imported lazily so a dev
- * client built before them fails with an error instead of crashing every screen.
+ * client built before them fails with an error instead of crashing every screen. Signing out part way through ends
+ * the export: nothing is shown, and the file is deleted however far it got.
  */
 export async function saveBase64File(
     base64: string,
     mimeType: string,
     fileName: string
 ): Promise<void> {
+    // sign-out's clearSavedFiles leaves this export's folder alone while it runs, so the export clears up after itself
+    const session = sessionGeneration();
+    const ended = () => session !== sessionGeneration();
     const { Directory, File } = await import("expo-file-system");
     // These are health records in the clear: each export has its own folder. Other exports may still be being written,
     // so only folders nobody is using are cleared here, a preview's from before included.
@@ -31,11 +36,14 @@ export async function saveBase64File(
         const file = new File(folder, fileName);
         // asynchronous since expo-file-system 58: saving before it finishes finds no file
         await file.write(base64, { encoding: "base64" });
+        // signed out while it was written: no viewer or save sheet over the signed-out app
+        if (ended()) return;
         previewed = await preview(file.uri, mimeType, fileName);
-        if (!previewed) await save(file.uri, mimeType, fileName);
+        if (!previewed && !ended()) await save(file.uri, mimeType, fileName);
     } finally {
         activeExports.delete(folder.uri);
-        if (!previewed && folder.exists) folder.delete();
+        // a preview from a session that has ended is not kept for the next export or start-up to clear
+        if ((!previewed || ended()) && folder.exists) folder.delete();
     }
 }
 

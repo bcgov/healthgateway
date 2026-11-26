@@ -9,6 +9,7 @@ import {
 import type { SaveDocumentsOptions } from "@react-native-documents/picker";
 import { Platform } from "react-native";
 
+import { endSessionGeneration } from "@/services/sessionFence";
 import { clearSavedFiles, saveBase64File } from "@/utils/saveFile";
 
 const written: { name?: string; content?: string; encoding?: string } = {};
@@ -150,6 +151,39 @@ describe("saveBase64File", () => {
             await first;
         });
 
+        it("signing out while the file is written shows nothing and removes it", async () => {
+            const export_ = save();
+            // sign-out: the session ends and clearSavedFiles leaves the folder being written
+            endSessionGeneration();
+            await clearSavedFiles();
+            await export_;
+            expect(mockViewDocument).not.toHaveBeenCalled();
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
+            expect(exports()).toEqual([]);
+        });
+
+        it("signing out while the viewer opens removes the previewed file", async () => {
+            mockViewDocument.mockImplementationOnce(async (options) => {
+                const shown = await showFile(options);
+                endSessionGeneration();
+                await clearSavedFiles();
+                return shown;
+            });
+            await save();
+            expect(mockViewDocument).toHaveBeenCalledTimes(1);
+            expect(exports()).toEqual([]);
+        });
+
+        it("signing out while the viewer opens does not fall back to the save sheet", async () => {
+            mockViewDocument.mockImplementationOnce(async () => {
+                endSessionGeneration();
+                throw mockUnableToOpen();
+            });
+            await save();
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
+            expect(exports()).toEqual([]);
+        });
+
         it("a viewer failure is reported and the file removed", async () => {
             mockViewDocument.mockRejectedValueOnce(new Error("no presenter"));
             await expect(save()).rejects.toThrow("no presenter");
@@ -165,8 +199,16 @@ describe("saveBase64File", () => {
                 throw new Error("RNDocumentViewer could not be found");
             });
             try {
+                // the fresh registry has its own logger, which jest.setup did not silence
+                const { logger } = await import("@/services/logger");
+                const warn = jest
+                    .spyOn(logger, "warn")
+                    .mockImplementation(() => undefined);
                 const fresh = await import("@/utils/saveFile");
                 await fresh.saveBase64File("QUJD", "application/pdf", "r.pdf");
+                expect(warn).toHaveBeenCalledWith(
+                    expect.stringContaining("No document viewer")
+                );
             } finally {
                 jest.resetModules();
                 jest.doMock("@react-native-documents/viewer", () =>
