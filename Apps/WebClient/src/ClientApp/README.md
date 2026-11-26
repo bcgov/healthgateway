@@ -111,6 +111,7 @@ adb reverse --list              # check
 ```
 
 - **More than one device attached:** add `-s <serial>` (from `adb devices`) to each `adb` command.
+- **A phone on USB:** `npm run android:device` forwards the default Local ports (3000–3006 and 3025), then runs `expo run:android --device`.
 - **Forwards don't survive** an emulator restart or the phone being unplugged: run them again, or restart **MobileApp**.
 - **A configuration change** that moves an endpoint to a new port needs a forward for that port too.
 
