@@ -203,7 +203,7 @@ export function HgButton({
                     : style
             }
             className={cn(
-                "group flex-row items-center justify-center rounded py-1.5 min-h-[36px]",
+                "group flex-row items-center justify-center rounded py-1.5 min-h-[36px] min-w-[64px]",
                 paddingClass,
                 containerClass,
                 alignClass,

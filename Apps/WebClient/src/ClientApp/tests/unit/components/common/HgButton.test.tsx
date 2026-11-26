@@ -67,6 +67,22 @@ describe("HgButton", () => {
         }
     });
 
+    it("keeps v-btn's 64px minimum width, slim or not", async () => {
+        await render(
+            <>
+                <HgButton text="OK" testID="regular" />
+                <HgButton text="OK" slim testID="slim" />
+            </>
+        );
+        if (Platform.OS === "web") return;
+        expect(classesOf(screen.getByTestId("regular"))).toMatch(
+            /\bmin-w-\[64px\]/
+        );
+        expect(classesOf(screen.getByTestId("slim"))).toMatch(
+            /\bmin-w-\[64px\]/
+        );
+    });
+
     it("has v-btn's 16px side padding in either case, and 8px when slim or inside card actions", async () => {
         await render(
             <>
