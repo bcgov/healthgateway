@@ -38,8 +38,9 @@ export async function saveBase64File(
         await file.write(base64, { encoding: "base64" });
         // signed out while it was written: no viewer or save sheet over the signed-out app
         if (ended()) return;
-        previewed = await preview(file.uri, mimeType, fileName);
-        if (!previewed && !ended()) await save(file.uri, mimeType, fileName);
+        previewed = await preview(file.uri, mimeType, fileName, ended);
+        if (!previewed && !ended())
+            await save(file.uri, mimeType, fileName, ended);
     } finally {
         activeExports.delete(folder.uri);
         // a preview from a session that has ended is not kept for the next export or start-up to clear
@@ -74,7 +75,8 @@ async function clearExports() {
 async function preview(
     uri: string,
     mimeType: string,
-    fileName: string
+    fileName: string,
+    ended: () => boolean
 ): Promise<boolean> {
     let viewer: typeof import("@react-native-documents/viewer");
     try {
@@ -84,6 +86,8 @@ async function preview(
         logger.warn(`No document viewer: ${describeError(error)}`);
         return false;
     }
+    // signed out while the viewer loaded: the caller saves nothing either, and deletes the file
+    if (ended()) return false;
     try {
         await viewer.viewDocument({
             uri,
@@ -104,9 +108,16 @@ async function preview(
 }
 
 /** The system's save sheet. Cancelling it is not an error. */
-async function save(uri: string, mimeType: string, fileName: string) {
+async function save(
+    uri: string,
+    mimeType: string,
+    fileName: string,
+    ended: () => boolean
+) {
     const { errorCodes, isErrorWithCode, saveDocuments } =
         await import("@react-native-documents/picker");
+    // signed out while the picker loaded: no save sheet over the signed-out app
+    if (ended()) return;
     try {
         await saveDocuments({ sourceUris: [uri], mimeType, fileName });
     } catch (error) {

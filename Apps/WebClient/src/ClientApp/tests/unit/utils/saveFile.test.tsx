@@ -70,13 +70,14 @@ const mockSaveDocuments = jest.fn(async (_options: SaveDocumentsOptions) => {
     if (!fileOnDisk) throw new Error("The file does not exist");
     return [{ uri: "files://report.pdf", name: "report.pdf", error: null }];
 });
-jest.mock("@react-native-documents/picker", () => ({
+const mockPickerModule = () => ({
     errorCodes: { OPERATION_CANCELED: "OPERATION_CANCELED" },
     isErrorWithCode: (e: unknown) =>
         typeof e === "object" && e !== null && "code" in e,
     saveDocuments: (options: SaveDocumentsOptions) =>
         mockSaveDocuments(options),
-}));
+});
+jest.mock("@react-native-documents/picker", () => mockPickerModule());
 
 const mockUnableToOpen = () =>
     Object.assign(new Error("no app"), { code: "UNABLE_TO_OPEN_FILE_TYPE" });
@@ -191,13 +192,20 @@ describe("saveBase64File", () => {
             expect(exports()).toEqual([]);
         });
 
-        it("without the viewer's native module, opens the save sheet", async () => {
-            // a dev client built before the viewer was added: importing it throws (TurboModuleRegistry.getEnforcing).
-            // resetModules, not isolateModules: an isolated registry still returns the mock already made.
+        /**
+         * Runs the export against a fresh module registry whose viewer or picker module comes from the given factory,
+         * which runs when saveFile lazily imports it. resetModules, not isolateModules: an isolated registry still
+         * returns the mock already made.
+         */
+        async function saveWithFreshModules(factories: {
+            viewer?: () => unknown;
+            picker?: () => unknown;
+        }) {
             jest.resetModules();
-            jest.doMock("@react-native-documents/viewer", () => {
-                throw new Error("RNDocumentViewer could not be found");
-            });
+            if (factories.viewer)
+                jest.doMock("@react-native-documents/viewer", factories.viewer);
+            if (factories.picker)
+                jest.doMock("@react-native-documents/picker", factories.picker);
             try {
                 // the fresh registry has its own logger, which jest.setup did not silence
                 const { logger } = await import("@/services/logger");
@@ -206,17 +214,64 @@ describe("saveBase64File", () => {
                     .mockImplementation(() => undefined);
                 const fresh = await import("@/utils/saveFile");
                 await fresh.saveBase64File("QUJD", "application/pdf", "r.pdf");
-                expect(warn).toHaveBeenCalledWith(
-                    expect.stringContaining("No document viewer")
-                );
+                return warn;
             } finally {
                 jest.resetModules();
                 jest.doMock("@react-native-documents/viewer", () =>
                     mockViewerModule()
                 );
+                jest.doMock("@react-native-documents/picker", () =>
+                    mockPickerModule()
+                );
             }
+        }
+        // the fresh registry's session, which the fresh saveFile reads
+        const endFreshSession = () =>
+            jest
+                .requireActual<typeof import("@/services/sessionFence")>(
+                    "@/services/sessionFence"
+                )
+                .endSessionGeneration();
+
+        it("without the viewer's native module, opens the save sheet", async () => {
+            // a dev client built before the viewer was added: importing it throws (TurboModuleRegistry.getEnforcing)
+            const warn = await saveWithFreshModules({
+                viewer: () => {
+                    throw new Error("RNDocumentViewer could not be found");
+                },
+            });
+            expect(warn).toHaveBeenCalledWith(
+                expect.stringContaining("No document viewer")
+            );
             expect(mockViewDocument).not.toHaveBeenCalled();
             expect(mockSaveDocuments).toHaveBeenCalledTimes(1);
+            expect(exports()).toEqual([]);
+        });
+
+        it("signing out while the viewer loads shows nothing and removes the file", async () => {
+            await saveWithFreshModules({
+                viewer: () => {
+                    endFreshSession();
+                    return mockViewerModule();
+                },
+            });
+            expect(mockViewDocument).not.toHaveBeenCalled();
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
+            expect(exports()).toEqual([]);
+        });
+
+        it("signing out while the save sheet loads opens nothing and removes the file", async () => {
+            mockViewDocument.mockImplementationOnce(async () => {
+                throw mockUnableToOpen();
+            });
+            await saveWithFreshModules({
+                picker: () => {
+                    endFreshSession();
+                    return mockPickerModule();
+                },
+            });
+            expect(mockViewDocument).toHaveBeenCalledTimes(1);
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
             expect(exports()).toEqual([]);
         });
     }
