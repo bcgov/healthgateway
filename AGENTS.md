@@ -1,31 +1,29 @@
 # AGENTS.md
 
-This repository is a multi-app .NET + web client monorepo. Use this guide to
-find build/lint/test commands and to follow the local code style.
+This repository is a multi-app .NET + React Native client monorepo. Use this guide to
+find build/lint/test commands and to follow the local code style. All paths below are
+relative to the repo root.
 
 If you are an agent, read these files first:
-- `healthgateway/.editorconfig`
-- `healthgateway/Apps/Directory.Build.props`
-- `healthgateway/Apps/stylecop.json`
-- `healthgateway/Apps/WebClient/src/ClientApp/eslint.config.mjs`
-- `healthgateway/Apps/Admin/Tests/Functional/eslint.config.mjs`
-- `healthgateway/Testing/functional/tests/eslint.config.mjs`
-
-No Cursor rules or Copilot instructions were found in this repo.
+- `.editorconfig`
+- `Apps/Directory.Build.props`
+- `Apps/stylecop.json`
+- `Apps/WebClient/src/ClientApp/eslint.config.mjs`
+- `Apps/Admin/Tests/Functional/eslint.config.mjs`
+- `Testing/functional/tests/eslint.config.mjs`
 
 ## Repo Layout (high level)
-- `healthgateway/Apps` contains .NET services, shared
-  libraries, and the WebClient.
-- `healthgateway/Testing` contains integration and
-  functional (Cypress) tests.
-- `healthgateway/Tools` contains dev tooling and
-  infra helpers.
+- `Apps` contains .NET services, shared libraries, and the ClientApp.
+- `Apps/WebClient/src/ClientApp` is the Expo + React Native client for iOS, Android, and web.
+- `Apps/WebClient/src/ClientApp.old` is the retired Vue client; ignore it unless asked.
+- `Testing` contains integration (.NET) and functional (Cypress) tests.
+- `Tools` contains Helm charts, Kong config, Keycloak setup, and local dev tooling.
+- `Build` contains Azure DevOps pipeline YAML.
 
 ## Tooling and Versions
-- .NET SDK pinned by `healthgateway/Apps/global.json`
-  (`10.0.100`, rollForward latestMajor).
-- C# projects target `net10.0` and nullable reference types are enabled.
-- Web client uses Vite + Vue 3 + TypeScript and ESLint + Prettier.
+- .NET SDK pinned by `Apps/global.json` (`11.0.100`, rollForward latestMajor).
+- C# projects target `net11.0` with C# 15, and nullable reference types are enabled.
+- ClientApp uses Expo + React Native + TypeScript and ESLint + Prettier.
 - Cypress functional tests use ESLint + Prettier.
 
 ## Build, Lint, Test Commands
@@ -33,67 +31,57 @@ All commands below are run from the repo root unless noted.
 
 ### .NET builds
 ```bash
-dotnet build healthgateway/Apps/HealthGateway.sln
+dotnet build Apps/HealthGateway.sln
 ```
 
-### .NET unit tests (solution)
+### .NET unit tests
 ```bash
-dotnet test healthgateway/Apps/HealthGateway.sln
+# Entire solution
+dotnet test Apps/HealthGateway.sln
+
+# A single service (faster)
+dotnet test Apps/GatewayApi/test/unit/GatewayApiTests.csproj
 ```
 
 ### .NET integration tests
 ```bash
-dotnet test healthgateway/Testing/integration/integration.sln
+dotnet test Testing/integration/integration.sln
 ```
 
 ### Run a single .NET test
 ```bash
-dotnet test healthgateway/Apps/HealthGateway.sln \
+dotnet test Apps/HealthGateway.sln \
   --filter FullyQualifiedName~Namespace.ClassName.TestName
 ```
 Notes:
 - You can also filter by trait: `--filter Category=Unit`.
 - For a specific test project, pass its `.csproj` path instead of the `.sln`.
 
-### Web client (Vue) build
-```bash
-cd healthgateway/Apps/WebClient/src/ClientApp
-npm run build
-```
+### ClientApp
+See `Apps/WebClient/src/ClientApp/AGENTS.md` for its build, lint, unit test, and
+Maestro commands.
 
-### Web client lint
+### Cypress functional tests (ClientApp web)
 ```bash
-cd healthgateway/Apps/WebClient/src/ClientApp
-npm run lintcheck
-```
-
-### Web client lint + fix
-```bash
-cd healthgateway/Apps/WebClient/src/ClientApp
-npm run lint
-```
-
-### Cypress functional tests (WebClient)
-```bash
-cd healthgateway/Testing/functional/tests
+cd Testing/functional/tests
 npm run e2e
 ```
 
 ### Cypress functional tests (Admin)
 ```bash
-cd healthgateway/Apps/Admin/Tests/Functional
+cd Apps/Admin/Tests/Functional
 npm run e2e
 ```
 
 ### Run a single Cypress spec
 ```bash
-cd healthgateway/Testing/functional/tests
-npx cypress run --spec "cypress/integration/user/emailValidation.js"
+cd Testing/functional/tests
+npx cypress run --spec "cypress/integration/ui/user/emailValidation.js"
 ```
 
 ```bash
-cd healthgateway/Apps/Admin/Tests/Functional
-npx cypress run --browser chrome --spec "cypress/integration/e2e/authentication/login.cy.js"
+cd Apps/Admin/Tests/Functional
+npx cypress run --browser chrome --spec "cypress/integration/e2e/authentication.cy.js"
 ```
 
 ## Code Style and Conventions
@@ -107,9 +95,9 @@ npx cypress run --browser chrome --spec "cypress/integration/e2e/authentication/
 
 ### C# and .NET conventions
 Source of truth:
-- `healthgateway/.editorconfig`
-- `healthgateway/Apps/Directory.Build.props`
-- `healthgateway/Apps/stylecop.json`
+- `.editorconfig`
+- `Apps/Directory.Build.props`
+- `Apps/stylecop.json`
 
 Key points to follow:
 - Nullable reference types are enabled; avoid null warnings and keep builds clean.
@@ -129,25 +117,20 @@ StyleCop notes:
 - XML headers are disabled; standard license header is configured if needed.
 - Documentation rules are relaxed for tests and store effects/reducers.
 
-### TypeScript / Vue conventions (WebClient)
-Source of truth:
-- `healthgateway/Apps/WebClient/src/ClientApp/eslint.config.mjs`
+### TypeScript / React Native conventions (ClientApp)
 
-Key points:
-- Use ESLint + Prettier; do not fight the formatter.
-- `simple-import-sort` enforces import and export ordering.
-- Unused imports are warnings; remove them.
-- Unused variables are allowed only when prefixed with `_`.
-- `any` is allowed but discouraged (warn); prefer precise types.
+See `Apps/WebClient/src/ClientApp/AGENTS.md`.
 
 ### Cypress test conventions
 Source of truth:
-- `healthgateway/Testing/functional/tests/eslint.config.mjs`
-- `healthgateway/Apps/Admin/Tests/Functional/eslint.config.mjs`
+- `Testing/functional/tests/eslint.config.mjs`
+- `Apps/Admin/Tests/Functional/eslint.config.mjs`
 
 Key points:
 - Use `simple-import-sort` and remove unused imports.
 - ESLint runs over `cypress/**/*.js`.
+- In both Cypress folders, `npm run lint` only checks (`--max-warnings 0`) and
+  `npm run lintfix` writes fixes. This is the reverse of the ClientApp, where `lint` writes.
 
 ## Error Handling and Logging
 - Validate public method arguments where appropriate and use `ArgumentNullException`.
