@@ -23,6 +23,20 @@ describe("decodeJwtPayload", () => {
         expect(decodeJwtPayload("a.%%%.c")).toBeUndefined();
     });
 
+    it("rejects padding inside the payload, with or without atob", () => {
+        // `{"sub":"abc"}` with a stray "=" after the first four characters
+        const malformed = "header.eyJz=dWIiOiJhYmMifQ==.sig";
+        expect(decodeJwtPayload(malformed)).toBeUndefined();
+        const saved = global.atob;
+        // @ts-expect-error simulate a runtime without atob
+        delete global.atob;
+        try {
+            expect(decodeJwtPayload(malformed)).toBeUndefined();
+        } finally {
+            global.atob = saved;
+        }
+    });
+
     it("works without atob (Hermes builds that lack it)", () => {
         const saved = global.atob;
         // @ts-expect-error simulate a runtime without atob
