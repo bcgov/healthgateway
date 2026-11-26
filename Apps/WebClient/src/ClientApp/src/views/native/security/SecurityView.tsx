@@ -224,12 +224,6 @@ function CacheSection({ hdid }: { hdid: string }) {
     );
 }
 
-/** The host an environment's configuration comes from, under its name. */
-const hostOf = (environment: Environment) =>
-    environment.configUrl
-        .replace(/^https?:\/\//, "")
-        .replace(/\/configuration$/, "");
-
 /**
  * Choosing another environment is a Reset App (`switchEnvironment`), so it asks first. Only what this build offers
  * (environmentSelector.md): a released build has Production only, so no section; Local only in development builds.
@@ -277,7 +271,6 @@ function EnvironmentSection() {
                         key={environment.id}
                         testID={`environment-${environment.id}`}
                         label={environment.name}
-                        description={hostOf(environment)}
                         selected={environment.id === current.id}
                         onSelect={() => confirmSwitch(environment)}
                     />
