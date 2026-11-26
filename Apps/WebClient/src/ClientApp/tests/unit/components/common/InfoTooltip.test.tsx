@@ -162,6 +162,40 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         expect(screen.queryByText("Pinned text")).toBeNull();
     });
 
+    // Enter / Space on the icon (a native button) makes the browser dispatch a click, so this covers the keyboard too
+    it("web: a click on another tooltip's icon hides a pinned one", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <>
+                <InfoTooltip testID="tip-a" text="First text" />
+                <InfoTooltip testID="tip-b" text="Second text" />
+            </>
+        );
+        await click(screen.getByTestId("tip-a") as unknown as HTMLElement);
+        await nextTick();
+        expect(screen.getByText("First text")).toBeTruthy();
+        await click(screen.getByTestId("tip-b") as unknown as HTMLElement);
+        expect(screen.queryByText("First text")).toBeNull();
+        expect(screen.getByText("Second text")).toBeTruthy();
+    });
+
+    it("web: hovering another tooltip hides a pinned one", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <>
+                <InfoTooltip testID="tip-a" text="First text" />
+                <InfoTooltip testID="tip-b" text="Second text" />
+            </>
+        );
+        await click(screen.getByTestId("tip-a") as unknown as HTMLElement);
+        fireEvent.mouseEnter(
+            screen.getByTestId("tip-b") as unknown as HTMLElement
+        );
+        await settle();
+        expect(screen.queryByText("First text")).toBeNull();
+        expect(screen.getByText("Second text")).toBeTruthy();
+    });
+
     it("web: after a click, hovering is ignored until the pointer leaves and returns", async () => {
         if (Platform.OS !== "web") return;
         await render(
