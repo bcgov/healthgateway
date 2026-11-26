@@ -3,12 +3,15 @@ import { View } from "react-native";
 
 import {
     AppText,
+    BulletList,
+    BulletListItem,
     DisplayField,
     ExternalLink,
     HgButton,
     HgDataTable,
     InfoTooltip,
     MessageDialog,
+    Strong,
 } from "@/components/common";
 import { EntryType, getEntryTypeDetails } from "@/constants/entryType";
 import { ErrorSourceType } from "@/constants/errorType";
@@ -25,6 +28,7 @@ import { isSessionEnded } from "@/models/errors";
 import type { ReportField } from "@/models/report";
 import type { LabResultTimelineEntry } from "@/models/timeline/labResultTimelineEntry";
 import { services } from "@/services/container";
+import { cn } from "@/utils/cn";
 import { formatDate } from "@/utils/dateUtil";
 import {
     downloadEncodedMedia,
@@ -48,12 +52,30 @@ function Field(props: React.ComponentProps<typeof DisplayField>) {
     );
 }
 
-const Bullet = ({ children }: { children: React.ReactNode }) => (
-    <View className="flex-row">
-        <AppText className="w-6">{"•"}</AppText>
-        <AppText className="flex-1">{children}</AppText>
-    </View>
-);
+const tooltipTextClass = "text-tooltip-text text-body-medium leading-[1.6]";
+
+function ResultInfo() {
+    return (
+        <>
+            <AppText className={cn(tooltipTextClass, "mb-4")}>
+                Follow the instructions from your health care provider. When
+                needed, they can explain what your results mean.
+            </AppText>
+            <AppText className={cn(tooltipTextClass, "mb-2")}>
+                Remember:
+            </AppText>
+            <BulletList textClassName={tooltipTextClass}>
+                <BulletListItem>
+                    <Strong>Ranges</Strong> are different between laboratories
+                </BulletListItem>
+                <BulletListItem>
+                    <Strong>“Out of range”</Strong> results may be{" "}
+                    <Strong>normal</Strong> for you
+                </BulletListItem>
+            </BulletList>
+        </>
+    );
+}
 
 /** Port of entry/LabResultTimelineComponent.vue */
 export function LabResultEntry({
@@ -151,23 +173,23 @@ export function LabResultEntry({
                         Find resources about your lab tests:
                     </AppText>
                 </View>
-                <View className="mb-4">
-                    <Bullet>
+                <BulletList className="mb-4">
+                    <BulletListItem>
                         <ExternalLink href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests">
                             HealthLink BC
                         </ExternalLink>
-                    </Bullet>
-                    <Bullet>
+                    </BulletListItem>
+                    <BulletListItem>
                         <ExternalLink href="https://www.mypathologyreport.ca/">
                             For pathology tests (like a biopsy)
                         </ExternalLink>
-                    </Bullet>
-                    <Bullet>
+                    </BulletListItem>
+                    <BulletListItem>
                         <ExternalLink href="https://smartsexresource.com/resources/">
                             BC CDC - Smart Sex Resource
                         </ExternalLink>
-                    </Bullet>
-                </View>
+                    </BulletListItem>
+                </BulletList>
                 {entry.reportAvailable ? (
                     <HgButton
                         testID="laboratory-report-download-btn"
@@ -197,33 +219,7 @@ export function LabResultEntry({
                                         tooltipTestID="result-info-popover"
                                         size={14}
                                     >
-                                        <AppText className="text-tooltip-text text-body-medium leading-[1.6] mb-4">
-                                            Follow the instructions from your
-                                            health care provider. When needed,
-                                            they can explain what your results
-                                            mean.
-                                        </AppText>
-                                        <AppText className="text-tooltip-text text-body-medium leading-[1.6] mb-2">
-                                            Remember:
-                                        </AppText>
-                                        <AppText className="text-tooltip-text text-body-medium leading-[1.6]">
-                                            {"• "}
-                                            <AppText className="text-tooltip-text font-bold">
-                                                Ranges
-                                            </AppText>{" "}
-                                            are different between laboratories
-                                        </AppText>
-                                        <AppText className="text-tooltip-text text-body-medium leading-[1.6]">
-                                            {"• "}
-                                            <AppText className="text-tooltip-text font-bold">
-                                                “Out of range”
-                                            </AppText>{" "}
-                                            results may be{" "}
-                                            <AppText className="text-tooltip-text font-bold">
-                                                normal
-                                            </AppText>{" "}
-                                            for you
-                                        </AppText>
+                                        <ResultInfo />
                                     </InfoTooltip>
                                 </View>
                             </View>
@@ -245,7 +241,7 @@ export function LabResultEntry({
                                         {item.statusInfo.map((paragraph, i) => (
                                             <AppText
                                                 key={i}
-                                                className="text-tooltip-text text-body-medium leading-[1.6]"
+                                                className={tooltipTextClass}
                                             >
                                                 {paragraph}
                                             </AppText>

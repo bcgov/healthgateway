@@ -1,13 +1,27 @@
-import { describe, expect, it } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent } from "@testing-library/react";
+import { useState } from "react";
 import { Platform } from "react-native";
 
+import { AppModal } from "@/components/common/AppModal";
+import { AppText } from "@/components/common/AppText";
 import { InfoTooltip } from "@/components/common/InfoTooltip";
-import { tooltipPosition } from "@/components/common/infoTooltipPosition";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { expectNoAxeViolations } from "@/test/axe";
+import { updateStores } from "@/test/fixtures";
 import { inAct, press, render, screen, settle, waitFor } from "@/test/ui";
 
+// the click that pins it starts listening for the next click on the next tick
+const nextTick = () => new Promise((resolve) => setTimeout(resolve, 0));
+const click = async (el: HTMLElement) => {
+    fireEvent.click(el);
+    await settle();
+};
+
 describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
     it("a press opens the tooltip text and a second press closes it", async () => {
         await render(
             <InfoTooltip
@@ -25,6 +39,89 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             await press(screen.getByTestId("tip"));
             expect(screen.queryByTestId("tip-popover")).toBeNull();
         }
+    });
+
+    it("ios: locking closes it, and it stays closed after unlocking", async () => {
+        if (Platform.OS !== "ios") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Ranges differ"
+            />
+        );
+        await press(screen.getByTestId("tip"));
+        expect(screen.getByTestId("tip-popover")).toBeTruthy();
+        updateStores(() => useAppLockStore.setState({ locked: true }));
+        await settle();
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
+        updateStores(() => useAppLockStore.setState({ locked: false }));
+        await settle();
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
+    });
+
+    it.each([
+        { x: 100, y: 300, left: "10px", top: "320px" },
+        { x: 1000, y: 740, left: "824px", top: "690px" },
+    ])(
+        "web: without anchor positioning it sits below the icon, above when there is no room below, inside the window (icon at $x, $y)",
+        async ({ x, y, left, top }) => {
+            if (Platform.OS !== "web") return;
+            jest.spyOn(
+                HTMLElement.prototype,
+                "offsetWidth",
+                "get"
+            ).mockReturnValue(200);
+            jest.spyOn(
+                HTMLElement.prototype,
+                "offsetHeight",
+                "get"
+            ).mockReturnValue(50);
+            await render(
+                <InfoTooltip
+                    testID="tip"
+                    tooltipTestID="tip-popover"
+                    text="Ranges differ"
+                />
+            );
+            const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+            jest.spyOn(trigger, "getBoundingClientRect").mockReturnValue(
+                new DOMRect(x, y, 20, 20)
+            );
+            await click(trigger);
+            const popover = (
+                screen.getByTestId("tip-popover") as unknown as HTMLElement
+            ).parentElement as HTMLElement;
+            expect(popover.style.left).toBe(left);
+            expect(popover.style.top).toBe(top);
+            // jsdom has no Popover API either, so it is fixed in a portal, outside any transformed ScrollView
+            expect(popover.style.position).toBe("fixed");
+            expect(popover.parentElement).toBe(document.body);
+        }
+    );
+
+    it("web: a modal opening without a click closes a pinned tooltip", async () => {
+        if (Platform.OS !== "web") return;
+        let openModal = () => {};
+        function Harness() {
+            const [visible, setVisible] = useState(false);
+            openModal = () => setVisible(true);
+            return (
+                <>
+                    <InfoTooltip testID="tip" text="Pinned text" />
+                    <AppModal visible={visible} transparent>
+                        <AppText>Are you still there?</AppText>
+                    </AppModal>
+                </>
+            );
+        }
+        await render(<Harness />);
+        await click(screen.getByTestId("tip") as unknown as HTMLElement);
+        await nextTick();
+        expect(screen.getByText("Pinned text")).toBeTruthy();
+        await inAct(() => openModal());
+        expect(screen.getByText("Are you still there?")).toBeTruthy();
+        expect(screen.queryByText("Pinned text")).toBeNull();
     });
 
     it("web: hovering shows it, leaving hides it", async () => {
@@ -45,7 +142,7 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         expect(screen.queryByText("Hover text")).toBeNull();
     });
 
-    it("web: focus shows it, Escape dismisses it, and the trigger is described by it while it shows", async () => {
+    it("web: focus alone does not show it; a press shows it as the trigger's description and Escape dismisses it", async () => {
         if (Platform.OS !== "web") return;
         await render(
             <InfoTooltip
@@ -55,8 +152,10 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             />
         );
         const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
-        expect(trigger.getAttribute("aria-expanded")).toBe("false");
         await inAct(() => trigger.focus());
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
+        expect(trigger.getAttribute("aria-expanded")).toBe("false");
+        await click(trigger);
         const bubble = screen.getByTestId(
             "tip-popover"
         ) as unknown as HTMLElement;
@@ -72,6 +171,80 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         );
         expect(screen.queryByTestId("tip-popover")).toBeNull();
         expect(trigger.getAttribute("aria-describedby")).toBeNull();
+    });
+
+    it("web: a click pins it after the pointer leaves; the next click anywhere hides it", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Pinned text"
+            />
+        );
+        const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+        fireEvent.mouseEnter(trigger);
+        await click(trigger);
+        fireEvent.mouseLeave(trigger);
+        await nextTick();
+        expect(screen.getByText("Pinned text")).toBeTruthy();
+        await click(document.body);
+        expect(screen.queryByText("Pinned text")).toBeNull();
+    });
+
+    // Enter / Space on the icon (a native button) makes the browser dispatch a click, so this covers the keyboard too
+    it("web: a click on another tooltip's icon hides a pinned one", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <>
+                <InfoTooltip testID="tip-a" text="First text" />
+                <InfoTooltip testID="tip-b" text="Second text" />
+            </>
+        );
+        await click(screen.getByTestId("tip-a") as unknown as HTMLElement);
+        await nextTick();
+        expect(screen.getByText("First text")).toBeTruthy();
+        await click(screen.getByTestId("tip-b") as unknown as HTMLElement);
+        expect(screen.queryByText("First text")).toBeNull();
+        expect(screen.getByText("Second text")).toBeTruthy();
+    });
+
+    it("web: hovering another tooltip hides a pinned one", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <>
+                <InfoTooltip testID="tip-a" text="First text" />
+                <InfoTooltip testID="tip-b" text="Second text" />
+            </>
+        );
+        await click(screen.getByTestId("tip-a") as unknown as HTMLElement);
+        fireEvent.mouseEnter(
+            screen.getByTestId("tip-b") as unknown as HTMLElement
+        );
+        await settle();
+        expect(screen.queryByText("First text")).toBeNull();
+        expect(screen.getByText("Second text")).toBeTruthy();
+    });
+
+    it("web: after a click, hovering is ignored until the pointer leaves and returns", async () => {
+        if (Platform.OS !== "web") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Hover text"
+            />
+        );
+        const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+        fireEvent.mouseEnter(trigger);
+        await click(trigger);
+        await nextTick();
+        await click(trigger);
+        expect(screen.queryByText("Hover text")).toBeNull();
+        fireEvent.mouseLeave(trigger);
+        fireEvent.mouseEnter(trigger);
+        await settle();
+        expect(screen.getByText("Hover text")).toBeTruthy();
     });
 
     it("web: the pointer can move onto the bubble and read it; leaving the bubble hides it", async () => {
@@ -97,29 +270,5 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         fireEvent.mouseLeave(hoverable);
         await settle();
         expect(screen.queryByText("Hover text")).toBeNull();
-    });
-});
-
-describe("tooltipPosition (location end center, offset 10)", () => {
-    it("right of the anchor and centred; flips left at the window edge", () => {
-        expect(
-            tooltipPosition(
-                { x: 100, y: 100, width: 20, height: 20 },
-                { width: 200, height: 40 },
-                1000,
-                800
-            )
-        ).toEqual({
-            left: 130,
-            top: 90,
-        });
-        expect(
-            tooltipPosition(
-                { x: 900, y: 100, width: 20, height: 20 },
-                { width: 200, height: 40 },
-                1000,
-                800
-            ).left
-        ).toBe(690);
     });
 });

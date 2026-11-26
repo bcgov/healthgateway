@@ -3,6 +3,8 @@ import { View } from "react-native";
 
 import {
     AppText,
+    BulletList,
+    BulletListItem,
     DisplayField,
     ExternalLink,
     HgButton,
@@ -38,13 +40,6 @@ function Field(props: React.ComponentProps<typeof DisplayField>) {
         </View>
     );
 }
-
-const Bullet = ({ children }: { children: React.ReactNode }) => (
-    <View className="flex-row">
-        <AppText className="w-6">{"•"}</AppText>
-        <AppText className="flex-1">{children}</AppText>
-    </View>
-);
 
 /** Port of entry/DiagnosticImagingTimelineComponent.vue */
 export function DiagnosticImagingEntry({
@@ -133,16 +128,18 @@ export function DiagnosticImagingEntry({
                     You can learn more about medical imaging tests on the
                     following websites:
                 </AppText>
-                <Bullet>
-                    <ExternalLink href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests">
-                        HealthLink BC
-                    </ExternalLink>
-                </Bullet>
-                <Bullet>
-                    <ExternalLink href="https://bcradiology.ca/patient-resources/">
-                        BC Radiological Society – Patient Resources
-                    </ExternalLink>
-                </Bullet>
+                <BulletList>
+                    <BulletListItem>
+                        <ExternalLink href="https://www.healthlinkbc.ca/tests-treatments-medications/medical-tests">
+                            HealthLink BC
+                        </ExternalLink>
+                    </BulletListItem>
+                    <BulletListItem>
+                        <ExternalLink href="https://bcradiology.ca/patient-resources/">
+                            BC Radiological Society – Patient Resources
+                        </ExternalLink>
+                    </BulletListItem>
+                </BulletList>
             </TimelineEntryCard>
             <MessageDialog
                 visible={confirmVisible}
