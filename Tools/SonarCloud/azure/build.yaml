@@ -13,6 +13,8 @@ variables:
   - group: Secrets
   - name: SONARSCANNER_VERSION
     value: 11.0.0
+  - name: clientAppDir
+    value: $(Build.SourcesDirectory)/Apps/WebClient/src/ClientApp
 jobs:
   - job: AnalyzeProjects
     timeoutInMinutes: 120
@@ -55,11 +57,38 @@ jobs:
             /k:bcgov_healthgateway \
             /n:HealthGateway \
             /d:sonar.token="$(SonarToken)" \
+            /d:sonar.javascript.lcov.reportPaths=$(clientAppDir)/coverage/lcov.info \
             /s:$(Build.SourcesDirectory)/Apps/sonar-config.xml
         displayName: "Begin Static Code Analysis"
         continueOnError: true
         workingDirectory: $(Build.SourcesDirectory)/Apps/
         enabled: "true"
+
+      # Expo 58 / React Native 0.88 need Node ^22.13 or ^24.3; don't rely on the agent image's default Node.
+      - task: UseNode@1
+        displayName: "Use Node.js 24.x"
+        inputs:
+          version: 24.x
+
+      # Before "Build and Test": with node_modules in place, WebClient.csproj's Debug-only npm install doesn't run.
+      - script: |
+          npm ci
+        displayName: "Install client NPM packages"
+        workingDirectory: $(clientAppDir)
+
+      # Coverage covers the folders in jest.config.js collectCoverageFrom, matched by sonar.coverage.exclusions in
+      # Apps/sonar-config.xml. Jest writes lcov paths relative to ClientApp; make them absolute so Sonar finds the files.
+      # A failing test still fails the step, after the report is fixed up, so Sonar gets the coverage that was collected.
+      - script: |
+          status=0
+          npm run test:coverage -- --ci || status=$?
+          if [ -f coverage/lcov.info ]; then
+            sed -i "s|^SF:|SF:$(clientAppDir)/|" coverage/lcov.info
+          fi
+          exit $status
+        displayName: "Client unit tests with coverage"
+        continueOnError: true
+        workingDirectory: $(clientAppDir)
 
       - script: |
           set -e
@@ -80,7 +109,8 @@ jobs:
       - script: |
           echo "Coverage file location:"
           find $(Build.SourcesDirectory) -name "coverage.opencover.xml" -exec ls -lh --time-style=long-iso {} \;
-        displayName: "Confirm location of coverage.opencover.xml"
+          ls -lh --time-style=long-iso $(clientAppDir)/coverage/lcov.info || echo "No client lcov.info"
+        displayName: "Confirm location of coverage reports"
 
       - script: |
           export DOTNET_ROLL_FORWARD=Major
