@@ -9,7 +9,7 @@ import {
 import type { SaveDocumentsOptions } from "@react-native-documents/picker";
 import { Platform } from "react-native";
 
-import { saveBase64File } from "@/utils/saveFile";
+import { clearSavedFiles, saveBase64File } from "@/utils/saveFile";
 
 const written: { name?: string; content?: string; encoding?: string } = {};
 let fileOnDisk = false;
@@ -77,6 +77,22 @@ jest.mock("@react-native-documents/picker", () => ({
         mockSaveDocuments(options),
 }));
 
+const mockUnableToOpen = () =>
+    Object.assign(new Error("no app"), { code: "UNABLE_TO_OPEN_FILE_TYPE" });
+const showFile = async (_options: object) => {
+    // the native side shows the file: it must be there
+    if (!fileOnDisk) throw new Error("The file does not exist");
+    return null;
+};
+const mockViewDocument = jest.fn(showFile);
+const mockViewerModule = () => ({
+    errorCodes: { UNABLE_TO_OPEN_FILE_TYPE: "UNABLE_TO_OPEN_FILE_TYPE" },
+    isErrorWithCode: (e: unknown) =>
+        typeof e === "object" && e !== null && "code" in e,
+    viewDocument: (options: object) => mockViewDocument(options),
+});
+jest.mock("@react-native-documents/viewer", () => mockViewerModule());
+
 describe("saveBase64File", () => {
     if (Platform.OS !== "web") {
         const save = () => saveBase64File("QUJD", "application/pdf", "r.pdf");
@@ -85,6 +101,114 @@ describe("saveBase64File", () => {
 
         beforeEach(() => {
             mockFolders.clear();
+            fileOnDisk = false;
+            mockViewDocument.mockClear();
+            mockSaveDocuments.mockClear();
+        });
+
+        it("previews the file and keeps it while the viewer shows it", async () => {
+            await save();
+            expect(mockViewDocument).toHaveBeenCalledWith({
+                uri: expect.stringMatching(
+                    /^cache:\/\/hg-exports\/\d+\/r\.pdf$/
+                ),
+                mimeType: "application/pdf",
+                headerTitle: "r.pdf",
+                presentationStyle: "fullScreen",
+            });
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
+            expect(exports()).toHaveLength(1);
+        });
+
+        it("the next export clears the previewed file", async () => {
+            await save();
+            const previewed = exports()[0];
+            await save();
+            expect(mockFolders.has(previewed)).toBe(false);
+            expect(exports()).toHaveLength(1);
+        });
+
+        it("clearSavedFiles removes the previewed file", async () => {
+            await save();
+            await clearSavedFiles();
+            expect(exports()).toEqual([]);
+        });
+
+        it("clearSavedFiles leaves an export that is still being written", async () => {
+            let finish: () => void = () => undefined;
+            mockViewDocument.mockImplementationOnce(async () => {
+                await new Promise<void>((resolve) => {
+                    finish = resolve;
+                });
+                return null;
+            });
+            const first = save();
+            await new Promise((resolve) => setImmediate(resolve));
+            await clearSavedFiles();
+            expect(exports()).toHaveLength(1);
+            finish();
+            await first;
+        });
+
+        it("a viewer failure is reported and the file removed", async () => {
+            mockViewDocument.mockRejectedValueOnce(new Error("no presenter"));
+            await expect(save()).rejects.toThrow("no presenter");
+            expect(mockSaveDocuments).not.toHaveBeenCalled();
+            expect(exports()).toEqual([]);
+        });
+
+        it("without the viewer's native module, opens the save sheet", async () => {
+            // a dev client built before the viewer was added: importing it throws (TurboModuleRegistry.getEnforcing).
+            // resetModules, not isolateModules: an isolated registry still returns the mock already made.
+            jest.resetModules();
+            jest.doMock("@react-native-documents/viewer", () => {
+                throw new Error("RNDocumentViewer could not be found");
+            });
+            try {
+                const fresh = await import("@/utils/saveFile");
+                await fresh.saveBase64File("QUJD", "application/pdf", "r.pdf");
+            } finally {
+                jest.resetModules();
+                jest.doMock("@react-native-documents/viewer", () =>
+                    mockViewerModule()
+                );
+            }
+            expect(mockViewDocument).not.toHaveBeenCalled();
+            expect(mockSaveDocuments).toHaveBeenCalledTimes(1);
+            expect(exports()).toEqual([]);
+        });
+    }
+});
+
+describe("saveBase64File with no app for the file type", () => {
+    if (Platform.OS !== "web") {
+        const save = () => saveBase64File("QUJD", "application/pdf", "r.pdf");
+        const exports = () =>
+            [...mockFolders].filter((uri) => uri !== "cache://hg-exports/");
+
+        beforeEach(() => {
+            mockFolders.clear();
+            fileOnDisk = false;
+            mockSaveDocuments.mockClear();
+            mockViewDocument.mockImplementation(async () => {
+                throw mockUnableToOpen();
+            });
+        });
+        afterEach(() => {
+            mockViewDocument.mockImplementation(showFile);
+        });
+
+        it("opens the save sheet instead", async () => {
+            await save();
+            expect(mockSaveDocuments).toHaveBeenCalledWith({
+                sourceUris: [
+                    expect.stringMatching(
+                        /^cache:\/\/hg-exports\/\d+\/r\.pdf$/
+                    ),
+                ],
+                mimeType: "application/pdf",
+                fileName: "r.pdf",
+            });
         });
 
         it("removes the file after saving", async () => {
@@ -139,7 +263,7 @@ describe("saveBase64File", () => {
         jest.restoreAllMocks();
     });
 
-    it("native: writes the base64 file to the cache and opens the save sheet; web: downloads it", async () => {
+    it("native: writes the base64 file to the cache and previews it; web: downloads it", async () => {
         if (Platform.OS === "web") {
             const g = globalThis as unknown as {
                 URL: { createObjectURL: unknown; revokeObjectURL: unknown };
@@ -172,15 +296,14 @@ describe("saveBase64File", () => {
                 content: "QUJD",
                 encoding: "base64",
             });
-            expect(mockSaveDocuments).toHaveBeenCalledWith({
-                sourceUris: [
-                    expect.stringMatching(
+            expect(mockViewDocument).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    uri: expect.stringMatching(
                         /^cache:\/\/hg-exports\/\d+\/report\.pdf$/
                     ),
-                ],
-                mimeType: "application/pdf",
-                fileName: "report.pdf",
-            });
+                    mimeType: "application/pdf",
+                })
+            );
         }
     });
 

@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from "expo-router";
 import { useMemo, useRef, useState } from "react";
-import { Image, Platform, View } from "react-native";
+import { ActivityIndicator, Image, Platform, View } from "react-native";
 
 import {
     AppText,
@@ -8,9 +8,9 @@ import {
     HgButton,
     HgChip,
     HgDatePicker,
-    HgMenu,
     HgSelect,
     MessageDialog,
+    ReportFormatMenu,
 } from "@/components/common";
 import { Loading } from "@/components/site/Loading";
 import { EntryType, getEntryTypeDetails } from "@/constants/entryType";
@@ -18,6 +18,7 @@ import { ErrorSourceType, ErrorType, ServiceCode } from "@/constants/errorType";
 import { SENSITIVE_DOCUMENT_MESSAGE } from "@/constants/sensitiveDocument";
 import { Action, Actor, Text } from "@/constants/tracking";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
+import { useThemeColors } from "@/hooks/useTheme";
 import { isSessionEnded, ResultError } from "@/models/errors";
 import { ReportFormatType, reportMimeTypeMap } from "@/models/report";
 import { type ReportFilter, ReportFilterBuilder } from "@/models/reportFilter";
@@ -127,6 +128,7 @@ export function ReportsComponent({ hdid, isDependent = false }: Props) {
         defaultEntryType?: string;
     }>();
     const { xs } = useBreakpoint();
+    const colors = useThemeColors();
     const report = useRef<ReportHandle>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
@@ -351,28 +353,21 @@ export function ReportsComponent({ hdid, isDependent = false }: Props) {
                                     : setIsAdvancedOpen(true)
                             }
                         />
-                        <HgMenu
+                        <ReportFormatMenu
                             testID="export-record-menu"
-                            items={[
-                                ReportFormatType.PDF,
-                                ReportFormatType.CSV,
-                                ReportFormatType.XLSX,
-                            ].map((type) => ({
-                                title: type,
-                                onPress: () => showConfirmationModal(type),
-                            }))}
+                            onPick={showConfirmationModal}
                         >
-                            {(open) => (
+                            {(onPress) => (
                                 <HgButton
                                     nativeID="export-record-btn"
                                     testID="export-record-btn"
                                     text="Download"
                                     disabled={isDownloadDisabled}
                                     loading={isGeneratingReport}
-                                    onPress={open}
+                                    onPress={onPress}
                                 />
                             )}
-                        </HgMenu>
+                        </ReportFormatMenu>
                     </View>
                 </View>
                 {reportFilter.hasActiveFilter() ? (
@@ -500,6 +495,17 @@ export function ReportsComponent({ hdid, isDependent = false }: Props) {
                 </View>
             </View>
             <Loading isLoading={isGeneratingReport} />
+            {selectedEntryType && isLoading ? (
+                // the record type's data is on its way: its report shows nothing until it arrives
+                <View className="items-center py-8">
+                    <ActivityIndicator
+                        testID="report-loading-spinner"
+                        size="large"
+                        color={colors.primary}
+                        accessibilityLabel="Loading records"
+                    />
+                </View>
+            ) : null}
             {selectedEntryType ? (
                 <View testID="report-sample">
                     {renderReport(selectedEntryType, {

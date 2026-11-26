@@ -135,7 +135,7 @@ interface BodyProps<Row> {
     caption?: string;
 }
 
-/** "No records found." or the preview table: `v-else-if="!isDependent"`, `d-none d-md-block` */
+/** Nothing while loading, then "No records found." or the preview table: `v-else-if="!isDependent"`, `d-none d-md-block` */
 function ReportBody<Row extends Record<string, unknown>>({
     isLoading,
     isEmpty,
@@ -147,7 +147,9 @@ function ReportBody<Row extends Record<string, unknown>>({
     caption = "Report preview",
 }: BodyProps<Row>) {
     const { mdAndUp } = useBreakpoint();
-    if (isEmpty && !isLoading) return <AppText>No records found.</AppText>;
+    // ReportsComponent's spinner shows while the records load
+    if (isLoading) return null;
+    if (isEmpty) return <AppText>No records found.</AppText>;
     if (isDependent || !mdAndUp) return null;
     return (
         <HgDataTable
@@ -156,7 +158,6 @@ function ReportBody<Row extends Record<string, unknown>>({
             items={items}
             fields={fields}
             density="compact"
-            loading={isLoading}
             renderItem={renderItem}
         />
     );

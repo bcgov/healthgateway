@@ -8,6 +8,7 @@ import { classifyAuthFailure } from "@/services/auth/authFailure";
 import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { sessionGeneration } from "@/services/sessionFence";
+import { clearSavedFiles } from "@/utils/saveFile";
 
 import { useAppLockStore } from "./appLock.store";
 import {
@@ -173,6 +174,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         useConnectivityStore.getState().setSessionStatus("live");
         useUserStore.getState().clearUserData();
         resetRecordStores();
+        // the last previewed file is a health record too
+        void clearSavedFiles();
         try {
             await services.auth.signOut();
             logger.verbose("Successfully signed out");
@@ -193,6 +196,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ tokenDetails: undefined, isAuthenticated: false });
         useUserStore.getState().clearUserData();
         resetRecordStores();
+        // the last previewed file is a health record too
+        void clearSavedFiles();
     },
 }));
 

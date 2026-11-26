@@ -6,6 +6,7 @@ import {
     it,
     jest,
 } from "@jest/globals";
+import { Platform } from "react-native";
 
 import {
     Action,
@@ -65,9 +66,10 @@ async function openDialog(onClose = jest.fn()) {
     return onClose;
 }
 
+/** Download Record: the format menu on web; native downloads a PDF straight away */
 async function chooseFormat(format: string) {
     await press(screen.getByTestId("export-recommendations-record-button"));
-    await press(screen.getByText(format));
+    if (Platform.OS === "web") await press(screen.getByText(format));
 }
 
 describe("RecommendationsDialog (RecommendationsDialogComponent.vue port)", () => {
@@ -148,6 +150,16 @@ describe("RecommendationsDialog (RecommendationsDialogComponent.vue port)", () =
             actor: Actor.User,
         });
     });
+
+    if (Platform.OS !== "web")
+        it("native: Download Record goes straight to the prompt, with no format menu", async () => {
+            await openDialog();
+            await press(
+                screen.getByTestId("export-recommendations-record-button")
+            );
+            expect(screen.queryByText("CSV")).toBeNull();
+            expect(screen.getByText("Sensitive Document")).toBeTruthy();
+        });
 
     it("Cancel on the confirmation does not download", async () => {
         const generate = jest.spyOn(services.report, "generateReport");

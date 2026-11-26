@@ -354,11 +354,19 @@ describe("Dependents", () => {
                     "download-immunization-history-report-btn-KID"
                 )
             );
-            await press(
-                screen.getByTestId(
-                    "download-immunization-history-report-pdf-btn-KID"
-                )
-            );
+            // web: the format menu; native downloads a PDF straight away
+            if (Platform.OS === "web")
+                await press(
+                    screen.getByTestId(
+                        "download-immunization-history-report-pdf-btn-KID"
+                    )
+                );
+            else
+                expect(
+                    screen.queryByTestId(
+                        "download-immunization-history-report-pdf-btn-KID"
+                    )
+                ).toBeNull();
             await press(screen.getByTestId("generic-message-submit-btn"));
             expect(generate.mock.calls[0][0]).toMatchObject({
                 template: "DependentImmunization",

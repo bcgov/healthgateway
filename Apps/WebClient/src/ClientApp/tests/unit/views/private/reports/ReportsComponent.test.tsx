@@ -77,6 +77,12 @@ async function selectMedications() {
     await press(screen.getByText("Medications"));
 }
 
+/** Download: the format menu on web; native downloads a PDF straight away */
+async function download(format: "PDF" | "CSV" = "PDF") {
+    await press(screen.getByTestId("export-record-btn"));
+    if (Platform.OS === "web") await press(screen.getByText(format));
+}
+
 describe("ReportsComponent (ReportsComponent.vue port)", () => {
     beforeEach(() => {
         setBreakpoint(1366);
@@ -153,27 +159,72 @@ describe("ReportsComponent (ReportsComponent.vue port)", () => {
     });
 
     it("generates and saves the report after the sensitive document prompt", async () => {
+        // web: a format from the menu; native: always a PDF
+        const [format, fileName, mimeType] =
+            Platform.OS === "web"
+                ? (["CSV", "m.csv", "text/csv"] as const)
+                : (["PDF", "m.pdf", "application/pdf"] as const);
         const generate = jest
             .spyOn(services.report, "generateReport")
-            .mockResolvedValue(
-                requestResult({ fileName: "m.csv", data: "AAAA" })
-            );
+            .mockResolvedValue(requestResult({ fileName, data: "AAAA" }));
         await render(<ReportsComponent hdid="HDID" />);
         await selectMedications();
-        await press(screen.getByTestId("export-record-btn"));
-        await press(screen.getByText("CSV"));
+        await download(format);
         expect(generate).not.toHaveBeenCalled();
         await press(screen.getByTestId("generic-message-submit-btn"));
         expect(generate.mock.calls[0][0]).toMatchObject({
             template: "Medication",
-            type: "CSV",
+            type: format,
         });
-        expect(saveBase64File).toHaveBeenCalledWith(
-            "AAAA",
-            "text/csv",
-            "m.csv"
-        );
+        expect(saveBase64File).toHaveBeenCalledWith("AAAA", mimeType, fileName);
     });
+
+    if (Platform.OS !== "web")
+        it("native: Download goes straight to the prompt, with no format menu", async () => {
+            await render(<ReportsComponent hdid="HDID" />);
+            await selectMedications();
+            await press(screen.getByTestId("export-record-btn"));
+            expect(screen.queryByText("CSV")).toBeNull();
+            expect(screen.queryByText("XLSX")).toBeNull();
+            expect(
+                screen.getByTestId("generic-message-submit-btn")
+            ).toBeTruthy();
+        });
+
+    it.each([
+        ["a wide screen", 1366],
+        ["a phone", 390],
+    ])(
+        "shows a spinner on %s while the record type loads",
+        async (_n, width) => {
+            setBreakpoint(width);
+            let finish: (value: unknown) => void = () => undefined;
+            jest.spyOn(
+                services.medication,
+                "getPatientMedicationStatements"
+            ).mockReturnValue(
+                new Promise((resolve) => {
+                    finish = resolve;
+                }) as never
+            );
+            await render(<ReportsComponent hdid="HDID" />);
+            expect(screen.queryByTestId("report-loading-spinner")).toBeNull();
+            await selectMedications();
+            expect(screen.getByTestId("report-loading-spinner")).toBeTruthy();
+            expect(screen.queryByText("No records found.")).toBeNull();
+            expect(
+                screen.queryByTestId("medication-history-report-table")
+            ).toBeNull();
+            await act(async () => {
+                finish(requestResult(medicationStatementsFixture()));
+            });
+            expect(screen.queryByTestId("report-loading-spinner")).toBeNull();
+            if (width > 960)
+                expect(
+                    screen.getByTestId("medication-history-report-table")
+                ).toBeTruthy();
+        }
+    );
 
     async function failDownload(result: unknown) {
         jest.spyOn(services.report, "generateReport").mockImplementation(() =>
@@ -183,8 +234,7 @@ describe("ReportsComponent (ReportsComponent.vue port)", () => {
         );
         await render(<ReportsComponent hdid="HDID" />);
         await selectMedications();
-        await press(screen.getByTestId("export-record-btn"));
-        await press(screen.getByText("PDF"));
+        await download();
         await press(screen.getByTestId("generic-message-submit-btn"));
     }
 

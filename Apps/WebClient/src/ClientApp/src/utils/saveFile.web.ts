@@ -20,3 +20,6 @@ export async function saveBase64File(
     // let the download start before releasing the blob
     setTimeout(() => URL.revokeObjectURL(url), 40_000);
 }
+
+/** Web: the browser keeps its downloads; the app has none of its own to clear. */
+export async function clearSavedFiles(): Promise<void> {}
