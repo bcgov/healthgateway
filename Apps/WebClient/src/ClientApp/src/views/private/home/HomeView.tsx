@@ -2,8 +2,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Platform, View } from "react-native";
 
-import HealthRecordsIcon from "@/assets/images/home/health-records-icon.svg";
-import HealthRecordsIconDark from "@/assets/images/home/health-records-icon-dark.svg";
 import OtherRecordSourcesImage from "@/assets/images/home/other-record-sources.svg";
 import OtherRecordSourcesImageDark from "@/assets/images/home/other-record-sources-dark.svg";
 import HealthLinkLogo from "@/assets/images/services/health-link-logo.svg";
@@ -60,7 +58,6 @@ export function HomeView() {
     const colors = useThemeColors();
     const dark = useColorScheme() === "dark";
     // Dark variants of the BC-owned artwork; third-party logos sit on a LogoPlate instead.
-    const RecordsIcon = dark ? HealthRecordsIconDark : HealthRecordsIcon;
     const SourcesImage = dark
         ? OtherRecordSourcesImageDark
         : OtherRecordSourcesImage;
@@ -169,7 +166,7 @@ export function HomeView() {
                 title="Health Records"
                 testID="health-records-card"
                 description="View your available health records, including dispensed medications, health visits, lab results, immunizations, and more."
-                icon={<RecordsIcon width={svgIconSize} height={svgIconSize} />}
+                icon={quickLinkIcon("box-archive")}
                 onPress={() => {
                     track({
                         action: Action.InternalLink,
