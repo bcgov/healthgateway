@@ -6,6 +6,7 @@ import {
     useRef,
     useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { Pressable, View } from "react-native";
 
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -25,8 +26,15 @@ export type { InfoTooltipProps } from "./infoTooltip.shared";
 // the space between the icon and the bubble: the popover's padding, so the pointer can cross it onto the bubble
 const GAP = 10;
 
+// without the Popover API (Safari before 17) the bubble is an ordinary div, so it is portalled to the body: every
+// react-native-web ScrollView has a transform, which would make it the fixed bubble's containing block and clip it.
+// A popover stays beside its icon in the document, for the reading order.
+const popoverIsSupported =
+    typeof HTMLElement !== "undefined" &&
+    "showPopover" in HTMLElement.prototype;
+
 // above the page and its modals (react-native-web's are 9999), as the top layer would be, matching WebDropdown
-const FALLBACK_Z_INDEX = "10000";
+const FALLBACK_Z_INDEX = 10000;
 
 // fallback behaviour: place below the icon, else above, measured once when it opens (it does not follow a scroll)
 function placeBelowOrAbove(bubble: HTMLElement, trigger: HTMLElement | null) {
@@ -49,7 +57,7 @@ function placeBelowOrAbove(bubble: HTMLElement, trigger: HTMLElement | null) {
  * time, so showing one, by any means, closes any other, and a modal opening closes it, as the top layer would cover the
  * modal. The bubble is a popover in the top layer, placed beside the icon by CSS anchor positioning and flipped to its
  * other side when it does not fit. Browsers without anchor positioning place it below the icon, or above when it does
- * not fit, measured once when it opens.
+ * not fit, measured once when it opens. Browsers without the Popover API show it fixed in a portal on the body instead.
  * iOS: `InfoTooltip.ios.tsx`; Android: `InfoTooltip.android.tsx`.
  */
 export function InfoTooltip({
@@ -130,15 +138,7 @@ export function InfoTooltip({
                 node.style.setProperty("position-try-fallbacks", "flip-inline");
             }
 
-            const popoverIsSupported = typeof node.showPopover === "function";
-
             if (popoverIsSupported) node.showPopover();
-            else {
-                // without the Popover API (Safari before 17) it is an ordinary div: fixed, it leaves the layout and
-                // escapes its table's or card's overflow clipping
-                node.style.setProperty("position", "fixed");
-                node.style.setProperty("z-index", FALLBACK_Z_INDEX);
-            }
 
             // after showing it, as a hidden popover has no size to measure
             if (!anchorPositioningIsSupported)
@@ -146,6 +146,34 @@ export function InfoTooltip({
         },
         [anchorName]
     );
+
+    const bubble = isOpen ? (
+        <div
+            ref={showBubble}
+            popover="manual"
+            onMouseEnter={() => setOverBubble(true)}
+            onMouseLeave={() => setOverBubble(false)}
+            style={{
+                border: "none",
+                padding: GAP,
+                background: "transparent",
+                overflow: "visible",
+                ...(popoverIsSupported
+                    ? {}
+                    : { position: "fixed", zIndex: FALLBACK_Z_INDEX }),
+            }}
+        >
+            <View
+                testID={tooltipTestID}
+                nativeID={bubbleId}
+                role="tooltip"
+                className="bg-tooltip-background rounded px-4 py-[5px]"
+                style={{ maxWidth }}
+            >
+                <InfoTooltipContent text={text}>{children}</InfoTooltipContent>
+            </View>
+        </div>
+    ) : null;
 
     return (
         <>
@@ -179,32 +207,9 @@ export function InfoTooltip({
             >
                 <InfoTooltipIcon icon={icon} size={size} color={color} />
             </Pressable>
-            {isOpen ? (
-                <div
-                    ref={showBubble}
-                    popover="manual"
-                    onMouseEnter={() => setOverBubble(true)}
-                    onMouseLeave={() => setOverBubble(false)}
-                    style={{
-                        border: "none",
-                        padding: GAP,
-                        background: "transparent",
-                        overflow: "visible",
-                    }}
-                >
-                    <View
-                        testID={tooltipTestID}
-                        nativeID={bubbleId}
-                        role="tooltip"
-                        className="bg-tooltip-background rounded px-4 py-[5px]"
-                        style={{ maxWidth }}
-                    >
-                        <InfoTooltipContent text={text}>
-                            {children}
-                        </InfoTooltipContent>
-                    </View>
-                </div>
-            ) : null}
+            {bubble && !popoverIsSupported
+                ? createPortal(bubble, document.body)
+                : bubble}
         </>
     );
 }

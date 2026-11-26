@@ -94,8 +94,9 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             ).parentElement as HTMLElement;
             expect(popover.style.left).toBe(left);
             expect(popover.style.top).toBe(top);
-            // jsdom has no Popover API either, so it is positioned out of the layout
+            // jsdom has no Popover API either, so it is fixed in a portal, outside any transformed ScrollView
             expect(popover.style.position).toBe("fixed");
+            expect(popover.parentElement).toBe(document.body);
         }
     );
 
