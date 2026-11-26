@@ -1,3 +1,5 @@
+import { View } from "react-native";
+
 import { useThemeColors } from "@/hooks/useTheme";
 
 import { AppText } from "./AppText";
@@ -27,12 +29,16 @@ export function InfoTooltipIcon({
 }: Pick<InfoTooltipProps, "icon" | "size" | "color">) {
     const colors = useThemeColors();
     return (
-        <Icon
-            name={icon ?? "circle-question"}
-            solid={icon !== undefined}
-            size={size}
-            color={color ?? colors.primary}
-        />
+        // a 24px box around the glyph, the press target (WCAG 2.5.8): the web has no hitSlop, and the native host
+        // views around the icon take touches only within their own bounds
+        <View className="min-w-6 min-h-6 items-center justify-center">
+            <Icon
+                name={icon ?? "circle-question"}
+                solid={icon !== undefined}
+                size={size}
+                color={color ?? colors.primary}
+            />
+        </View>
     );
 }
 

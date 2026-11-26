@@ -11,6 +11,10 @@ import { Pressable, View } from "react-native";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 
 import {
+    activateInfoTooltip,
+    deactivateInfoTooltip,
+} from "./activeInfoTooltip";
+import {
     InfoTooltipContent,
     InfoTooltipIcon,
     type InfoTooltipProps,
@@ -21,9 +25,8 @@ export type { InfoTooltipProps } from "./infoTooltip.shared";
 // the space between the icon and the bubble: the popover's padding, so the pointer can cross it onto the bubble
 const GAP = 10;
 
-// module-level variable storing the function that closes whichever tooltip is actively shown
-// to ensure only one tooltip is shown at a time
-let closeActiveTooltip: (() => void) | null = null;
+// above the page and its modals (react-native-web's are 9999), as the top layer would be, matching WebDropdown
+const FALLBACK_Z_INDEX = "10000";
 
 // fallback behaviour: place below the icon, else above, measured once when it opens (it does not follow a scroll)
 function placeBelowOrAbove(bubble: HTMLElement, trigger: HTMLElement | null) {
@@ -43,9 +46,10 @@ function placeBelowOrAbove(bubble: HTMLElement, trigger: HTMLElement | null) {
 /**
  * Web: hovering the "?" icon shows the tooltip; a click (or Enter / Space) pins it open until the next click anywhere,
  * and hovering is ignored after that click until the pointer leaves the icon and returns. Only one tooltip is shown at a
- * time, so showing one, by any means, closes any other. The bubble is a popover in the top layer, placed beside the icon
- * by CSS anchor positioning and flipped to its other side when it does not fit. Browsers without anchor positioning
- * place it below the icon, or above when it does not fit, measured once when it opens.
+ * time, so showing one, by any means, closes any other, and a modal opening closes it, as the top layer would cover the
+ * modal. The bubble is a popover in the top layer, placed beside the icon by CSS anchor positioning and flipped to its
+ * other side when it does not fit. Browsers without anchor positioning place it below the icon, or above when it does
+ * not fit, measured once when it opens.
  * iOS: `InfoTooltip.ios.tsx`; Android: `InfoTooltip.android.tsx`.
  */
 export function InfoTooltip({
@@ -81,17 +85,8 @@ export function InfoTooltip({
     // close any currently active tooltip before painting this one
     useLayoutEffect(() => {
         if (!isOpen) return;
-
-        closeActiveTooltip?.();
-
-        // since this tooltip is now active, store a reference to its close function
-        closeActiveTooltip = close;
-
-        return () => {
-            // during cleanup, if this is the active tooltip, the module-level variable needs to be cleared
-            // to allow this tooltip to be opened again in the future
-            if (closeActiveTooltip === close) closeActiveTooltip = null;
-        };
+        activateInfoTooltip(close);
+        return () => deactivateInfoTooltip(close);
     }, [isOpen, close]);
 
     // a click anywhere unpins it (the next tick, so the pinning click does not). It listens in the capture phase because
@@ -135,7 +130,15 @@ export function InfoTooltip({
                 node.style.setProperty("position-try-fallbacks", "flip-inline");
             }
 
-            if ("showPopover" in node) node.showPopover();
+            const popoverIsSupported = typeof node.showPopover === "function";
+
+            if (popoverIsSupported) node.showPopover();
+            else {
+                // without the Popover API (Safari before 17) it is an ordinary div: fixed, it leaves the layout and
+                // escapes its table's or card's overflow clipping
+                node.style.setProperty("position", "fixed");
+                node.style.setProperty("z-index", FALLBACK_Z_INDEX);
+            }
 
             // after showing it, as a hidden popover has no size to measure
             if (!anchorPositioningIsSupported)

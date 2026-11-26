@@ -1,7 +1,10 @@
 import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent } from "@testing-library/react";
+import { useState } from "react";
 import { Platform } from "react-native";
 
+import { AppModal } from "@/components/common/AppModal";
+import { AppText } from "@/components/common/AppText";
 import { InfoTooltip } from "@/components/common/InfoTooltip";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { expectNoAxeViolations } from "@/test/axe";
@@ -91,8 +94,34 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             ).parentElement as HTMLElement;
             expect(popover.style.left).toBe(left);
             expect(popover.style.top).toBe(top);
+            // jsdom has no Popover API either, so it is positioned out of the layout
+            expect(popover.style.position).toBe("fixed");
         }
     );
+
+    it("web: a modal opening without a click closes a pinned tooltip", async () => {
+        if (Platform.OS !== "web") return;
+        let openModal = () => {};
+        function Harness() {
+            const [visible, setVisible] = useState(false);
+            openModal = () => setVisible(true);
+            return (
+                <>
+                    <InfoTooltip testID="tip" text="Pinned text" />
+                    <AppModal visible={visible} transparent>
+                        <AppText>Are you still there?</AppText>
+                    </AppModal>
+                </>
+            );
+        }
+        await render(<Harness />);
+        await click(screen.getByTestId("tip") as unknown as HTMLElement);
+        await nextTick();
+        expect(screen.getByText("Pinned text")).toBeTruthy();
+        await inAct(() => openModal());
+        expect(screen.getByText("Are you still there?")).toBeTruthy();
+        expect(screen.queryByText("Pinned text")).toBeNull();
+    });
 
     it("web: hovering shows it, leaving hides it", async () => {
         if (Platform.OS !== "web") return;
