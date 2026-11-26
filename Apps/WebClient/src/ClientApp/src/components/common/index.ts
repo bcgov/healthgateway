@@ -1,8 +1,9 @@
 export { announce, type Politeness } from "./announce";
 export { Announcer } from "./Announcer";
 export { AppModal } from "./AppModal";
-export { AppText } from "./AppText";
+export { AppText, Strong } from "./AppText";
 export { AppVersion, appVersionText } from "./AppVersion";
+export { BulletList, BulletListItem } from "./BulletList";
 export { Dialog } from "./Dialog";
 export { DisplayField } from "./DisplayField";
 export { ExternalLink, NewTabHint } from "./ExternalLink";

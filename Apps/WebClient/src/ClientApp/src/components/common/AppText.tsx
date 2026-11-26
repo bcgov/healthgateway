@@ -29,3 +29,11 @@ export function AppText({
 }: AppTextProps) {
     return <Text {...rest} className={cn(variantClass[variant], className)} />;
 }
+
+/**
+ * Renders bold text that inherits the size, colour, and spacing of the `AppText` it is nested in.
+ * A nested `AppText` would reset them to its variant's defaults.
+ */
+export function Strong({ children }: { children: React.ReactNode }) {
+    return <Text className="font-bold">{children}</Text>;
+}
