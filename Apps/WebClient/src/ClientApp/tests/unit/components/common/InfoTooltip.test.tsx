@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 import { fireEvent } from "@testing-library/react";
 import { Platform } from "react-native";
 
@@ -16,6 +16,9 @@ const click = async (el: HTMLElement) => {
 };
 
 describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
     it("a press opens the tooltip text and a second press closes it", async () => {
         await render(
             <InfoTooltip
@@ -53,6 +56,43 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
         await settle();
         expect(screen.queryByTestId("tip-popover")).toBeNull();
     });
+
+    it.each([
+        { x: 100, y: 300, left: "10px", top: "320px" },
+        { x: 1000, y: 740, left: "824px", top: "690px" },
+    ])(
+        "web: without anchor positioning it sits below the icon, above when there is no room below, inside the window (icon at $x, $y)",
+        async ({ x, y, left, top }) => {
+            if (Platform.OS !== "web") return;
+            jest.spyOn(
+                HTMLElement.prototype,
+                "offsetWidth",
+                "get"
+            ).mockReturnValue(200);
+            jest.spyOn(
+                HTMLElement.prototype,
+                "offsetHeight",
+                "get"
+            ).mockReturnValue(50);
+            await render(
+                <InfoTooltip
+                    testID="tip"
+                    tooltipTestID="tip-popover"
+                    text="Ranges differ"
+                />
+            );
+            const trigger = screen.getByTestId("tip") as unknown as HTMLElement;
+            jest.spyOn(trigger, "getBoundingClientRect").mockReturnValue(
+                new DOMRect(x, y, 20, 20)
+            );
+            await click(trigger);
+            const popover = (
+                screen.getByTestId("tip-popover") as unknown as HTMLElement
+            ).parentElement as HTMLElement;
+            expect(popover.style.left).toBe(left);
+            expect(popover.style.top).toBe(top);
+        }
+    );
 
     it("web: hovering shows it, leaving hides it", async () => {
         if (Platform.OS !== "web") return;

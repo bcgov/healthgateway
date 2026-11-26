@@ -14,13 +14,27 @@ export type { InfoTooltipProps } from "./infoTooltip.shared";
 // the space between the icon and the bubble: the popover's padding, so the pointer can cross it onto the bubble
 const GAP = 10;
 
-const supportsAnchorPositioning = () =>
-    typeof CSS !== "undefined" && CSS.supports("position-area", "right");
+// fallback behaviour: place below the icon, else above, measured once when it opens (it does not follow a scroll)
+function placeBelowOrAbove(bubble: HTMLElement, trigger: HTMLElement | null) {
+    if (!trigger) return;
+    const icon = trigger.getBoundingClientRect();
+    const { offsetWidth: width, offsetHeight: height } = bubble;
+    const top =
+        icon.bottom + height <= window.innerHeight
+            ? icon.bottom
+            : icon.top - height;
+    const left = icon.left + icon.width / 2 - width / 2;
+    bubble.style.inset = "auto";
+    bubble.style.top = `${Math.max(0, top)}px`;
+    bubble.style.left = `${Math.max(0, Math.min(left, window.innerWidth - width))}px`;
+}
 
 /**
  * Web: hovering the "?" icon shows the tooltip; a click (or Enter / Space) pins it open until the next click anywhere,
  * and hovering is ignored after that click until the pointer leaves the icon and returns. The bubble is a popover in
  * the top layer, placed beside the icon by CSS anchor positioning and flipped to its other side when it does not fit.
+ * Browsers without anchor positioning place it below the icon, or above when it does not fit, measured once when it
+ * opens.
  * iOS: `InfoTooltip.ios.tsx`; Android: `InfoTooltip.android.tsx`.
  */
 export function InfoTooltip({
@@ -40,6 +54,7 @@ export function InfoTooltip({
     // the pointer may move onto the bubble and read it (WCAG 1.4.13)
     const [overBubble, setOverBubble] = useState(false);
     const bubbleRef = useRef<HTMLDivElement | null>(null);
+    const triggerRef = useRef<HTMLElement | null>(null);
     const bubbleId = useId();
     const anchorName = `--info-tooltip-${bubbleId.replace(/[^\w-]/g, "")}`;
     const open = pinned || hovered || overBubble;
@@ -71,14 +86,25 @@ export function InfoTooltip({
         (node: HTMLDivElement | null) => {
             bubbleRef.current = node;
             if (!node) return;
-            // without anchor positioning the popover keeps its default place, the middle of the window
-            if (supportsAnchorPositioning()) {
+
+            // override default margin that centres it in the window
+            node.style.setProperty("margin", "0");
+
+            const anchorPositioningIsSupported =
+                typeof CSS !== "undefined" &&
+                CSS.supports("position-area", "right");
+
+            if (anchorPositioningIsSupported) {
                 node.style.setProperty("position-anchor", anchorName);
                 node.style.setProperty("position-area", "right");
                 node.style.setProperty("position-try-fallbacks", "flip-inline");
-                node.style.setProperty("margin", "0");
             }
+
             if ("showPopover" in node) node.showPopover();
+
+            // after showing it, as a hidden popover has no size to measure
+            if (!anchorPositioningIsSupported)
+                placeBelowOrAbove(node, triggerRef.current);
         },
         [anchorName]
     );
@@ -87,10 +113,9 @@ export function InfoTooltip({
         <>
             <Pressable
                 ref={(node) => {
-                    (node as unknown as HTMLElement | null)?.style.setProperty(
-                        "anchor-name",
-                        anchorName
-                    );
+                    const element = node as unknown as HTMLElement | null;
+                    triggerRef.current = element;
+                    element?.style.setProperty("anchor-name", anchorName);
                 }}
                 testID={testID}
                 nativeID={nativeID}
