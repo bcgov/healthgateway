@@ -18,6 +18,20 @@ describe("getRouteMeta", () => {
         expect(getRouteMeta("/")).toBe(routeMeta[Path.Root]);
     });
 
+    it("trims a run of trailing slashes, leaving the root for slashes only", () => {
+        expect(getRouteMeta("/home///")).toBe(routeMeta[Path.Home]);
+        expect(getRouteMeta("//")).toBe(routeMeta[Path.Root]);
+        expect(getRouteMeta("/dependents/HDID/timeline//")).toBe(
+            getRouteMeta("/dependents/HDID/timeline")
+        );
+    });
+
+    it("stays fast on a long run of slashes that is not trailing (Sonar S8786)", () => {
+        const start = performance.now();
+        expect(getRouteMeta("/".repeat(100_000) + "x")).toBeUndefined();
+        expect(performance.now() - start).toBeLessThan(500);
+    });
+
     it("matches a dynamic child by its longest parent prefix", () => {
         expect(getRouteMeta("/validateEmail/abc123")).toBe(
             routeMeta[Path.ValidateEmail]

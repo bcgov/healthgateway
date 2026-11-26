@@ -23,6 +23,20 @@ describe("decodeJwtPayload", () => {
         expect(decodeJwtPayload("a.%%%.c")).toBeUndefined();
     });
 
+    it("rejects padding inside the payload, with or without atob", () => {
+        // `{"sub":"abc"}` with a stray "=" after the first four characters
+        const malformed = "header.eyJz=dWIiOiJhYmMifQ==.sig";
+        expect(decodeJwtPayload(malformed)).toBeUndefined();
+        const saved = global.atob;
+        // @ts-expect-error simulate a runtime without atob
+        delete global.atob;
+        try {
+            expect(decodeJwtPayload(malformed)).toBeUndefined();
+        } finally {
+            global.atob = saved;
+        }
+    });
+
     it("works without atob (Hermes builds that lack it)", () => {
         const saved = global.atob;
         // @ts-expect-error simulate a runtime without atob
@@ -35,6 +49,28 @@ describe("decodeJwtPayload", () => {
             expect(
                 decodeJwtPayload(token({ given_name: "Zoë", family: "Đặng" }))
             ).toEqual({ given_name: "Zoë", family: "Đặng" });
+        } finally {
+            global.atob = saved;
+        }
+    });
+
+    it("drops one or two padding characters without atob, padded or not", () => {
+        const saved = global.atob;
+        // @ts-expect-error simulate a runtime without atob
+        delete global.atob;
+        try {
+            // JSON lengths 11, 12 and 13 cover every remainder, so no, one and two "=" of padding
+            for (const sub of ["a", "ab", "abc"]) {
+                const payload = { sub };
+                const padded = Buffer.from(JSON.stringify(payload))
+                    .toString("base64")
+                    .replace(/\+/g, "-")
+                    .replace(/\//g, "_");
+                expect(decodeJwtPayload(token(payload))).toEqual(payload);
+                expect(decodeJwtPayload(`header.${padded}.sig`)).toEqual(
+                    payload
+                );
+            }
         } finally {
             global.atob = saved;
         }
