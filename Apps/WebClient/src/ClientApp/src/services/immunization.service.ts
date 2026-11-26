@@ -29,7 +29,7 @@ export class ImmunizationService implements IImmunizationService {
     private readonly IMMS_BASE_URI = "Immunization";
     private readonly baseUri: string;
     /** this environment was found to serve V1 only; one instance serves one environment */
-    private useV1 = false;
+    private useV1 = true;
 
     constructor(
         private readonly http: IHttpClient,
