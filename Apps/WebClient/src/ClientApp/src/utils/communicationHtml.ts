@@ -30,7 +30,7 @@ const safeHref = (href: string | undefined) => {
     if (!value) return undefined;
     if (/^(https?:|mailto:|tel:)/i.test(value)) return value;
     // dev's banner links a bare address: on native it can only mean mail
-    return /^[^\s/:@]+@[^\s/:@]+\.[^\s/:@]+$/.test(value)
+    return /^[^\s/:@]+@[^\s/:@.]+(?:\.[^\s/:@.]+)+$/.test(value)
         ? `mailto:${value}`
         : undefined;
 };

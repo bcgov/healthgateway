@@ -38,7 +38,7 @@ function decodeBase64Bytes(input: string): string {
     let out = "";
     let buffer = 0;
     let bits = 0;
-    for (const ch of input.replace(/=+$/, "")) {
+    for (const ch of input.replace(/=/g, "")) {
         buffer = (buffer << 6) | chars.indexOf(ch);
         bits += 6;
         if (bits >= 8) {

@@ -24,13 +24,14 @@ export interface ITrackingService {
  * at build time, so the real values cannot be changed at runtime.
  */
 export function trackingConfigFromEnv(
-    env: Record<string, string | undefined> = {
+    env?: Record<string, string | undefined>
+): TrackingConfig {
+    env ??= {
         EXPO_PUBLIC_SNOWPLOW_ENABLED: process.env.EXPO_PUBLIC_SNOWPLOW_ENABLED,
         EXPO_PUBLIC_SNOWPLOW_COLLECTOR:
             process.env.EXPO_PUBLIC_SNOWPLOW_COLLECTOR,
         EXPO_PUBLIC_SNOWPLOW_APP_ID: process.env.EXPO_PUBLIC_SNOWPLOW_APP_ID,
-    }
-): TrackingConfig {
+    };
     return {
         enabled:
             (env.EXPO_PUBLIC_SNOWPLOW_ENABLED ?? "true").toLowerCase() ===

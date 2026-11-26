@@ -37,7 +37,12 @@ describe("trackingConfigFromEnv", () => {
 
     it("reads the app's own environment by default", () => {
         const c = trackingConfigFromEnv();
-        expect(typeof c.enabled).toBe("boolean");
+        // jest.config.js switches it off unless the shell already set it
+        expect(c.enabled).toBe(
+            (
+                process.env.EXPO_PUBLIC_SNOWPLOW_ENABLED ?? "true"
+            ).toLowerCase() === "true"
+        );
         expect(c.collector.length).toBeGreaterThan(0);
         expect(c.appId.length).toBeGreaterThan(0);
     });

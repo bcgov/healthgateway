@@ -77,7 +77,7 @@ export function routeFeaturesEnabled(
 }
 
 export function getRouteMeta(pathname: string): RouteMeta | undefined {
-    const normalized = pathname.toLowerCase().replace(/\/+$/, "") || "/";
+    const normalized = pathname.toLowerCase().replace(/(?<!\/)\/+$/, "") || "/";
     if (/^\/dependents\/[^/]+(\/timeline|\/entry)?$/.test(normalized))
         return dependentTimelineMeta;
     const exact = Object.keys(routeMeta).find(

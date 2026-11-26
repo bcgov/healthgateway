@@ -44,4 +44,30 @@ describe("parseCommunicationHtml", () => {
             "mailto:a@b.ca"
         );
     });
+
+    it("turns a bare address with a dotted name and domain into a mail link", () => {
+        expect(
+            parseCommunicationHtml(
+                '<a href="first.last@health.gov.bc.ca">m</a>'
+            )[0].href
+        ).toBe("mailto:first.last@health.gov.bc.ca");
+    });
+
+    it.each(["a@b", "a@b..c", "a@.b", "a@b.", "a b@c.d", "a@b@c.d", "a@b/c.d"])(
+        "leaves the malformed bare address %s as plain text",
+        (address) => {
+            expect(
+                parseCommunicationHtml(`<a href="${address}">m</a>`)
+            ).toEqual([{ text: "m" }]);
+        }
+    );
+
+    it("stays fast on a long near-miss address (Sonar S8786)", () => {
+        const start = performance.now();
+        const [link] = parseCommunicationHtml(
+            `<a href="a@${".".repeat(100_000)}/">m</a>`
+        );
+        expect(link).toEqual({ text: "m" });
+        expect(performance.now() - start).toBeLessThan(500);
+    });
 });

@@ -39,4 +39,26 @@ describe("decodeJwtPayload", () => {
             global.atob = saved;
         }
     });
+
+    it("drops one or two padding characters without atob, padded or not", () => {
+        const saved = global.atob;
+        // @ts-expect-error simulate a runtime without atob
+        delete global.atob;
+        try {
+            // JSON lengths 11, 12 and 13 cover every remainder, so no, one and two "=" of padding
+            for (const sub of ["a", "ab", "abc"]) {
+                const payload = { sub };
+                const padded = Buffer.from(JSON.stringify(payload))
+                    .toString("base64")
+                    .replace(/\+/g, "-")
+                    .replace(/\//g, "_");
+                expect(decodeJwtPayload(token(payload))).toEqual(payload);
+                expect(decodeJwtPayload(`header.${padded}.sig`)).toEqual(
+                    payload
+                );
+            }
+        } finally {
+            global.atob = saved;
+        }
+    });
 });
