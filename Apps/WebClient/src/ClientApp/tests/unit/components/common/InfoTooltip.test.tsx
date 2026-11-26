@@ -3,7 +3,9 @@ import { fireEvent } from "@testing-library/react";
 import { Platform } from "react-native";
 
 import { InfoTooltip } from "@/components/common/InfoTooltip";
+import { useAppLockStore } from "@/stores/appLock.store";
 import { expectNoAxeViolations } from "@/test/axe";
+import { updateStores } from "@/test/fixtures";
 import { inAct, press, render, screen, settle, waitFor } from "@/test/ui";
 
 // the click that pins it starts listening for the next click on the next tick
@@ -31,6 +33,25 @@ describe("InfoTooltip (InfoTooltipComponent.vue port)", () => {
             await press(screen.getByTestId("tip"));
             expect(screen.queryByTestId("tip-popover")).toBeNull();
         }
+    });
+
+    it("ios: locking closes it, and it stays closed after unlocking", async () => {
+        if (Platform.OS !== "ios") return;
+        await render(
+            <InfoTooltip
+                testID="tip"
+                tooltipTestID="tip-popover"
+                text="Ranges differ"
+            />
+        );
+        await press(screen.getByTestId("tip"));
+        expect(screen.getByTestId("tip-popover")).toBeTruthy();
+        updateStores(() => useAppLockStore.setState({ locked: true }));
+        await settle();
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
+        updateStores(() => useAppLockStore.setState({ locked: false }));
+        await settle();
+        expect(screen.queryByTestId("tip-popover")).toBeNull();
     });
 
     it("web: hovering shows it, leaving hides it", async () => {

@@ -3,6 +3,7 @@ import { presentationBackground } from "@expo/ui/swift-ui/modifiers";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 
+import { useNativeWindowsHidden } from "@/hooks/useNativeWindowsHidden";
 import { useThemeColors } from "@/hooks/useTheme";
 
 import {
@@ -14,7 +15,8 @@ import {
 export type { InfoTooltipProps } from "./infoTooltip.shared";
 
 /**
- * iOS: a tap on the "?" icon presents a SwiftUI popover beside it, and a tap anywhere dismisses it.
+ * iOS: a tap on the "?" icon presents a SwiftUI popover beside it, and a tap anywhere dismisses it. The popover is its
+ * own window, so it closes when the app locks or requires an update rather than covering the lock screen or the dialog.
  * Android: `InfoTooltip.android.tsx`; web: `InfoTooltip.tsx`.
  */
 export function InfoTooltip({
@@ -30,7 +32,10 @@ export function InfoTooltip({
     accessibilityLabel = "More information",
 }: InfoTooltipProps) {
     const colors = useThemeColors();
+    const hidden = useNativeWindowsHidden();
     const [open, setOpen] = useState(false);
+    // closed for good, so it does not reappear on unlock
+    if (hidden && open) setOpen(false);
 
     return (
         <Host matchContents>

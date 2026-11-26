@@ -4,9 +4,10 @@ import {
     TooltipBox,
     type TooltipBoxRef,
 } from "@expo/ui/jetpack-compose";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Pressable, useWindowDimensions, View } from "react-native";
 
+import { useNativeWindowsHidden } from "@/hooks/useNativeWindowsHidden";
 import { useThemeColors } from "@/hooks/useTheme";
 
 import {
@@ -23,7 +24,8 @@ const RICH_TOOLTIP_CONTENT_WIDTH = 320 - 2 * RICH_TOOLTIP_PADDING;
 
 /**
  * Android: a tap on the "?" icon shows a Material rich tooltip above it (below when there is no room above), and a tap
- * anywhere dismisses it.
+ * anywhere dismisses it. The tooltip is its own window, so it is dismissed when the app locks or requires an update
+ * rather than covering the lock screen or the dialog.
  * iOS: `InfoTooltip.ios.tsx`; web: `InfoTooltip.tsx`.
  */
 export function InfoTooltip({
@@ -40,6 +42,10 @@ export function InfoTooltip({
 }: InfoTooltipProps) {
     const colors = useThemeColors();
     const tooltip = useRef<TooltipBoxRef>(null);
+    const hidden = useNativeWindowsHidden();
+    useEffect(() => {
+        if (hidden) void tooltip.current?.dismiss();
+    }, [hidden]);
     const { width: windowWidth } = useWindowDimensions();
     // Material aligns the tooltip with the icon's left edge, else its right edge, and otherwise centres it on the icon,
     // where it can run off the screen. One side always has at least half the window, so a tooltip that fits in half

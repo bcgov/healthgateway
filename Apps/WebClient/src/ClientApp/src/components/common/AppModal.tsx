@@ -1,8 +1,7 @@
 import { Modal, type ModalProps } from "react-native";
 
 import { useMotion } from "@/hooks/useMotion";
-import { useAppLockStore } from "@/stores/appLock.store";
-import { selectUpdateRequired, useConfigStore } from "@/stores/config.store";
+import { useNativeWindowsHidden } from "@/hooks/useNativeWindowsHidden";
 
 interface Props extends ModalProps {
     /** Shown while locked too: a modal opened from the lock screen itself, holding nothing private (its gear menu). */
@@ -21,17 +20,14 @@ export function AppModal({
     overLock = false,
     ...rest
 }: Props) {
-    const locked = useAppLockStore((s) => s.locked);
-    const updateRequired = useConfigStore(selectUpdateRequired);
+    const hidden = useNativeWindowsHidden();
     const motion = useMotion();
     return (
         <Modal
             {...rest}
             animationType={motion.modal(animationType)}
             // a lock screen's own modal shows over it, the lock screen being above the Update required dialog
-            visible={
-                visible !== false && (overLock || (!locked && !updateRequired))
-            }
+            visible={visible !== false && (overLock || !hidden)}
         />
     );
 }
