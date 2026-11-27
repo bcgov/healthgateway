@@ -349,7 +349,7 @@ export function SecurityView() {
                     },
                 ]}
             />
-            <PageTitle title="Security" />
+            <PageTitle title="Security" inNavigationBar />
             <View className="flex-row items-start">
                 <View className="flex-1 mr-3">
                     <AppText variant="h3" className="mb-2">

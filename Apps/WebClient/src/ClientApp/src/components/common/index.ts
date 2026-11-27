@@ -34,5 +34,6 @@ export { LogoPlate } from "./LogoPlate";
 export { MessageDialog } from "./MessageDialog";
 export { ModalSafeArea } from "./ModalSafeArea";
 export { PageTitle } from "./PageTitle";
+export { ReportFormatMenu } from "./ReportFormatMenu";
 export { SectionHeading } from "./SectionHeading";
 export { Skeleton } from "./Skeleton";

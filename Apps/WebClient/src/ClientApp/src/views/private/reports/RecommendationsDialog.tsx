@@ -6,8 +6,8 @@ import {
     Dialog,
     ExternalLink,
     HgButton,
-    HgMenu,
     MessageDialog,
+    ReportFormatMenu,
 } from "@/components/common";
 import { TooManyRequests } from "@/components/site/TooManyRequests";
 import { EntryType } from "@/constants/entryType";
@@ -150,28 +150,21 @@ export function RecommendationsDialog({
                             variant="secondary"
                             onPress={onClose}
                         />
-                        <HgMenu
+                        <ReportFormatMenu
                             testID="export-record-menu"
-                            items={[
-                                ReportFormatType.PDF,
-                                ReportFormatType.CSV,
-                                ReportFormatType.XLSX,
-                            ].map((type) => ({
-                                title: type,
-                                onPress: () => showConfirmationModal(type),
-                            }))}
+                            onPick={showConfirmationModal}
                         >
-                            {(open) => (
+                            {(onPress) => (
                                 <HgButton
                                     testID="export-recommendations-record-button"
                                     nativeID="export-recommendations-record-button"
                                     text="Download Record"
                                     disabled={!hasRecords}
                                     loading={isGeneratingReport}
-                                    onPress={open}
+                                    onPress={onPress}
                                 />
                             )}
-                        </HgMenu>
+                        </ReportFormatMenu>
                     </>
                 }
             >

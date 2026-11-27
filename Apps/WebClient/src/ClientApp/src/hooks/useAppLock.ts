@@ -25,6 +25,7 @@ import {
     unsealSession,
 } from "@/stores/localSession";
 import { getLocalAuthMethod, type LocalAuthMethod } from "@/utils/localAuth";
+import { clearSavedFiles } from "@/utils/saveFile";
 import { recordLastActive } from "@/utils/sessionExpiry";
 
 /**
@@ -66,6 +67,11 @@ export function useAppLockLifecycle() {
     useEffect(() => {
         if (Platform.OS === "web") return startNothing();
         return startFirstRecordSync();
+    }, []);
+
+    // a file previewed before the app was closed is still in the cache
+    useEffect(() => {
+        if (Platform.OS !== "web") void clearSavedFiles();
     }, []);
 
     const unreachable = useConnectivityStore(selectIsUnreachable);

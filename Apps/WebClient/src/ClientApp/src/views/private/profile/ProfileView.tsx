@@ -50,7 +50,7 @@ export function ProfileView() {
                     text="Please check your email for an email verification link. If you didn't receive one, please check your junk mail."
                 />
             ) : null}
-            <PageTitle title="Profile" />
+            <PageTitle title="Profile" inNavigationBar />
             {isLoading ? <Skeleton testID="profile-skeleton" /> : null}
             {/* v-show: hidden, not unmounted, so edits in progress survive the reload */}
             <View style={isLoading ? { display: "none" } : undefined}>

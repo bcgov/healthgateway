@@ -6,6 +6,7 @@ import {
     it,
     jest,
 } from "@jest/globals";
+import { Platform } from "react-native";
 
 import { services } from "@/services/container";
 import { Loader, useLoadingStore } from "@/stores/loading.store";
@@ -59,10 +60,11 @@ describe("ProfileView (ProfileView.vue port)", () => {
         expect(screen.getByTestId("editEmailSaveBtn")).toBeTruthy();
     });
 
-    it("has a heading outline that never skips a level: h1 Profile, h2 sections, h3 labels", async () => {
+    it("has a heading outline that never skips a level: h1 Profile (native: the navigation bar's title), h2 sections, h3 labels", async () => {
         await render(<ProfileView />);
         const levels = headingLevels();
-        expect(levels[0]).toBe(1);
+        // native: the navigation bar shows "Profile", so the page starts at its sections
+        expect(levels[0]).toBe(Platform.OS === "web" ? 1 : 2);
         expect(levels).toContain(2);
         levels.forEach((level, i) => {
             if (i > 0) expect(level).toBeLessThanOrEqual(levels[i - 1] + 1);

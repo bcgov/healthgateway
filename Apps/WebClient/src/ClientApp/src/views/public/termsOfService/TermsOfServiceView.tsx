@@ -39,7 +39,7 @@ export function TermsOfServiceView() {
                     },
                 ]}
             />
-            <PageTitle title="Terms of Service" />
+            <PageTitle title="Terms of Service" inNavigationBar />
             <Loading isLoading={html === undefined && !error} />
             {error ? (
                 <HgAlert

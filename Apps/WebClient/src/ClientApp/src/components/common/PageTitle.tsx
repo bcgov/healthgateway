@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -14,15 +14,22 @@ export function PageTitle({
     append,
     prepend,
     testID,
+    inNavigationBar = false,
 }: {
     title: string;
     append?: React.ReactNode;
     /** #prepend slot (the dependent timeline's back button) */
     prepend?: React.ReactNode;
     testID?: string;
+    /**
+     * Native: the navigation bar already shows this title (a page pushed on a stack with its title), so the page leaves
+     * it out rather than say it twice. Web keeps it.
+     */
+    inNavigationBar?: boolean;
 }) {
     const { isMobile } = useBreakpoint();
     usePageTitle(title);
+    if (inNavigationBar && Platform.OS !== "web") return null;
     return (
         <View
             nativeID="pageTitle"

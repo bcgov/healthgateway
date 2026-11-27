@@ -7,13 +7,13 @@ import {
     HgAlert,
     HgButton,
     HgDataTable,
-    HgMenu,
     type HgTab,
     HgTabPanel,
     HgTabs,
     HgWindow,
     Icon,
     MessageDialog,
+    ReportFormatMenu,
 } from "@/components/common";
 import { elevation1 } from "@/components/common/elevation";
 import { TableSkeleton } from "@/components/common/TableSkeleton";
@@ -121,31 +121,26 @@ function DownloadMenu({
     onPick: (type: ReportFormatType) => void;
 }) {
     return (
-        <HgMenu
+        <ReportFormatMenu
             testID={`download-immunization-${tab}-report-menu-${id}`}
-            items={[
-                ReportFormatType.PDF,
-                ReportFormatType.CSV,
-                ReportFormatType.XLSX,
-            ].map((type) => ({
-                title: type,
-                testID: `download-immunization-${tab}-report-${type.toLowerCase()}-btn-${id}`,
-                onPress: () => onPick(type),
-            }))}
+            itemTestID={(type) =>
+                `download-immunization-${tab}-report-${type.toLowerCase()}-btn-${id}`
+            }
+            onPick={onPick}
         >
-            {(open) => (
+            {(onPress, hasMenu) => (
                 <HgButton
                     nativeID={`download-immunization-${tab}-report-btn-${id}`}
                     testID={`download-immunization-${tab}-report-btn-${id}`}
                     variant="secondary"
-                    appendIcon="caret-down"
+                    appendIcon={hasMenu ? "caret-down" : undefined}
                     text="Download"
                     requiresConnection
                     disabled={disabled}
-                    onPress={open}
+                    onPress={onPress}
                 />
             )}
-        </HgMenu>
+        </ReportFormatMenu>
     );
 }
 

@@ -224,6 +224,8 @@ export function ImmunizationReport({
         );
     }, [hdid, retrieveImmunizations]);
 
+    // on the Reports page ReportsComponent's spinner shows while they load; forceShow keeps the tables' own skeletons
+    if (isLoading && !forceShow) return null;
     if (isRecommendationEmpty && isEmpty && !isLoading)
         return <AppText>No records found.</AppText>;
     // `d-none d-md-block` unless forceShow; dependents only with forceShow

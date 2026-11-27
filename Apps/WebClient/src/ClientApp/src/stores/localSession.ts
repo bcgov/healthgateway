@@ -8,6 +8,7 @@ import { services } from "@/services/container";
 import { describeError, logger } from "@/services/logger";
 import { COPY_DECLINED, recordCache } from "@/services/recordCache";
 import { sessionGeneration } from "@/services/sessionFence";
+import { clearSavedFiles } from "@/utils/saveFile";
 
 import { useAppLockStore } from "./appLock.store";
 import {
@@ -355,6 +356,8 @@ export function beginRelogin(): void {
     useUserStore.getState().clearUserData();
     useConnectivityStore.getState().setSessionStatus("live");
     useAuthStore.setState({ tokenDetails: undefined, isAuthenticated: false });
+    // the last previewed file is a health record too, and the next login may be someone else's
+    void clearSavedFiles();
 }
 
 /** Back online, or Health Gateway is back: a login that was on hold works again, or turns out to have expired. */
