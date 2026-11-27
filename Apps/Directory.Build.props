@@ -24,4 +24,8 @@
     <ItemGroup>
         <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
     </ItemGroup>
+    <ItemGroup>
+        <!-- Use legacy XML list separation for System.Xml.Serialization -->
+        <RuntimeHostConfigurationOption Include="Switch.System.Xml.Serialization.UseLegacyXmlListSeparation" Value="true" />
+    </ItemGroup>
 </Project>
