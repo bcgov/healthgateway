@@ -49,7 +49,7 @@
         "react-native-css-interop": "^0.2.7",
         "react-native-gesture-handler": "~3.5.0",
         "react-native-keyboard-controller": "1.22.7",
-        "react-native-reanimated": "4.7.1",
+        "react-native-reanimated": "4.8.0",
         "react-native-safe-area-context": "~5.11.1",
         "react-native-screens": "~4.30.0",
         "react-native-svg": "15.16.1",
