@@ -27,10 +27,8 @@ export function LoadingOverlay() {
         <View
             testID="loadingOverlay"
             pointerEvents="auto"
-            // iOS: VoiceOver stays on the overlay while it shows
             accessibilityViewIsModal
             className="absolute inset-0 z-50 items-center justify-center bg-black/30"
-            style={{ elevation: 50 }}
         >
             <LiveRegion
                 politeness="polite"
