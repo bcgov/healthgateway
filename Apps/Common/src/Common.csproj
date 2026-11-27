@@ -19,7 +19,7 @@
     <PackageReference Include="Microsoft.Extensions.Azure" Version="1.14.1" />
     <!-- Pinned to match Swashbuckle.AspNetCore's build-time dependency; 3.x throws MissingMethodException on IOpenApiRequestBody.Content during Swagger generation. -->
     <PackageReference Include="Microsoft.OpenApi" Version="3.11.1" />
-    <PackageReference Include="Npgsql.OpenTelemetry" Version="10.0.3" />
+    <PackageReference Include="Npgsql.OpenTelemetry" Version="10.0.4" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.21.0" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.21.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.17.0-beta.1" />
