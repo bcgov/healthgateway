@@ -185,14 +185,15 @@ describe("SecurityView", () => {
         const checked = (id: string) =>
             isChecked(screen.getByTestId(`environment-${id}`));
 
-        it("lists each environment with its host, the current one checked", async () => {
+        it("lists each environment by name, the current one checked", async () => {
             await open();
             // Jest runs as a development build, so Local is listed too
             for (const id of ["local", "dev", "test", "prod"])
                 expect(screen.getByTestId(`environment-${id}`)).toBeTruthy();
+            expect(screen.getByText("Production")).toBeTruthy();
             expect(
-                screen.getByText("test.healthgateway.gov.bc.ca")
-            ).toBeTruthy();
+                screen.queryByText("test.healthgateway.gov.bc.ca")
+            ).toBeNull();
             expect(checked("dev")).toBe(true);
             expect(checked("test")).toBe(false);
         });

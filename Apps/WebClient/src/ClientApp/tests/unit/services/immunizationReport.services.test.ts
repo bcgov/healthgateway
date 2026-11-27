@@ -28,46 +28,98 @@ describe("ImmunizationService (restImmunizationService port)", () => {
             status: "loaded",
         });
 
-    it("GETs Immunization?hdid=…&api-version=2.0 from the Immunization endpoint", async () => {
-        withDatasets(true);
-        const http = new FakeHttp().reply(immunizationResultFixture);
-        const result = await new ImmunizationService(
-            http,
-            configFixture
-        ).getPatientImmunizations("H1");
-        expect(http.calls[0]).toMatchObject({
-            method: "GET",
-            url: "https://api.test/immunization/Immunization?hdid=H1&api-version=2.0",
-        });
-        expect(result).toBe(immunizationResultFixture);
+    const v1Url = "https://api.test/immunization/Immunization?hdid=H1";
+    const v1 = (refreshInProgress = false) => ({
+        resourcePayload: {
+            ...immunizationResultFixture,
+            loadState: { refreshInProgress },
+        },
+        resultStatus: ResultType.Success,
+        totalResultCount: 1,
+        pageIndex: 0,
+        pageSize: 0,
     });
+    const service = (http: FakeHttp) =>
+        new ImmunizationService(http, configFixture);
 
     it("returns empty lists without calling the API when the dataset is off", async () => {
         withDatasets(false);
         const http = new FakeHttp();
         await expect(
-            new ImmunizationService(
-                http,
-                configFixture
-            ).getPatientImmunizations("H1")
+            service(http).getPatientImmunizations("H1")
         ).resolves.toEqual({ immunizations: [], recommendations: [] });
         expect(http.calls).toHaveLength(0);
     });
 
-    describe("an environment still on V1", () => {
-        const v1Url = "https://api.test/immunization/Immunization?hdid=H1";
-        const v1 = (refreshInProgress = false) => ({
-            resourcePayload: {
-                ...immunizationResultFixture,
-                loadState: { refreshInProgress },
-            },
-            resultStatus: ResultType.Success,
-            totalResultCount: 1,
-            pageIndex: 0,
-            pageSize: 0,
+    describe("V1", () => {
+        it("GETs Immunization?hdid=… from the Immunization endpoint, and unwraps the result", async () => {
+            withDatasets(true);
+            const http = new FakeHttp().reply(v1());
+            await expect(
+                service(http).getPatientImmunizations("H1")
+            ).resolves.toEqual({
+                immunizations: immunizationResultFixture.immunizations,
+                recommendations: immunizationResultFixture.recommendations,
+            });
+            expect(http.calls[0]).toMatchObject({ method: "GET", url: v1Url });
         });
-        const service = (http: FakeHttp) =>
-            new ImmunizationService(http, configFixture);
+
+        it("asks again while V1 says a refresh is running", async () => {
+            jest.useFakeTimers();
+            withDatasets(true);
+            const http = new FakeHttp().reply(v1(true)).reply(v1(false));
+            const result = service(http).getPatientImmunizations("H1");
+            await jest.advanceTimersByTimeAsync(10000);
+            await expect(result).resolves.toMatchObject({
+                immunizations: immunizationResultFixture.immunizations,
+            });
+            expect(http.calls).toHaveLength(2);
+            jest.useRealTimers();
+        });
+
+        it("stops asking eventually, with what it has", async () => {
+            jest.useFakeTimers();
+            withDatasets(true);
+            const http = new FakeHttp();
+            for (let i = 0; i < 12; i++) http.reply(v1(true));
+            const result = service(http).getPatientImmunizations("H1");
+            await jest.advanceTimersByTimeAsync(120000);
+            await expect(result).resolves.toMatchObject({
+                immunizations: immunizationResultFixture.immunizations,
+            });
+            expect(http.calls).toHaveLength(12);
+            jest.useRealTimers();
+        });
+
+        it("reports a V1 error result", async () => {
+            withDatasets(true);
+            const http = new FakeHttp().reply({
+                ...v1(),
+                resultStatus: ResultType.Error,
+                resultError: {
+                    errorCode: "X",
+                    resultMessage: "bad",
+                    statusCode: 500,
+                },
+            });
+            await expect(
+                service(http).getPatientImmunizations("H1")
+            ).rejects.toMatchObject({ errorCode: "X" });
+        });
+    });
+
+    // J#3822: the service calls V1 directly for now; re-enable these when it starts on V2 again
+    describe.skip("V2, falling back to V1", () => {
+        it("GETs Immunization?hdid=…&api-version=2.0 from the Immunization endpoint", async () => {
+            withDatasets(true);
+            const http = new FakeHttp().reply(immunizationResultFixture);
+            const result = await service(http).getPatientImmunizations("H1");
+            expect(http.calls[0]).toMatchObject({
+                method: "GET",
+                url: `${v1Url}&api-version=2.0`,
+            });
+            expect(result).toBe(immunizationResultFixture);
+        });
 
         it("falls back when V2 is refused with a 400, and unwraps the result", async () => {
             withDatasets(true);
@@ -97,54 +149,6 @@ describe("ImmunizationService (restImmunizationService port)", () => {
                 v1Url,
                 v1Url,
             ]);
-        });
-
-        it("asks again while V1 says a refresh is running", async () => {
-            jest.useFakeTimers();
-            withDatasets(true);
-            const http = new FakeHttp()
-                .fail(new HttpError("unsupported version", 400))
-                .reply(v1(true))
-                .reply(v1(false));
-            const result = service(http).getPatientImmunizations("H1");
-            await jest.advanceTimersByTimeAsync(10000);
-            await expect(result).resolves.toMatchObject({
-                immunizations: immunizationResultFixture.immunizations,
-            });
-            expect(http.calls).toHaveLength(3);
-            jest.useRealTimers();
-        });
-
-        it("stops asking eventually, with what it has", async () => {
-            jest.useFakeTimers();
-            withDatasets(true);
-            const http = new FakeHttp().fail(new HttpError("no", 400));
-            for (let i = 0; i < 12; i++) http.reply(v1(true));
-            const result = service(http).getPatientImmunizations("H1");
-            await jest.advanceTimersByTimeAsync(120000);
-            await expect(result).resolves.toMatchObject({
-                immunizations: immunizationResultFixture.immunizations,
-            });
-            expect(http.calls).toHaveLength(13);
-            jest.useRealTimers();
-        });
-
-        it("reports a V1 error result", async () => {
-            withDatasets(true);
-            const http = new FakeHttp()
-                .fail(new HttpError("unsupported version", 400))
-                .reply({
-                    ...v1(),
-                    resultStatus: ResultType.Error,
-                    resultError: {
-                        errorCode: "X",
-                        resultMessage: "bad",
-                        statusCode: 500,
-                    },
-                });
-            await expect(
-                service(http).getPatientImmunizations("H1")
-            ).rejects.toMatchObject({ errorCode: "X" });
         });
 
         it("a 400 from V1 as well is reported as the failure it is", async () => {
