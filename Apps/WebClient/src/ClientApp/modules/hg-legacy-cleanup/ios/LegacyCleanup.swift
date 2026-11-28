@@ -182,7 +182,7 @@ final class LegacyCleanup: @unchecked Sendable {
     if let documents = files.urls(for: .documentDirectory, in: .userDomainMask).first {
       // The old app's own rule (MigrationService.removeExistingDBIfNeeded): its encrypted Core Data store and the files
       // beside it. This app's copies are in the hg-record-cache folder, and AsyncStorage is in Application Support.
-      for url in topLevelFiles(of: documents) where url.lastPathComponent.contains(".sqlite") {
+      for url in topLevelFiles(of: documents, into: &database, where: { $0.contains(".sqlite") }) {
         remove(url, into: &database)
       }
       remove(documents.appendingPathComponent("MyHealth Document.pdf"), into: &pdf)
@@ -191,17 +191,39 @@ final class LegacyCleanup: @unchecked Sendable {
     if let library = files.urls(for: .libraryDirectory, in: .userDomainMask).first {
       remove(library.appendingPathComponent("snowplow"), into: &analytics)
       remove(library.appendingPathComponent("Application Support/snowplow"), into: &analytics)
-      for url in topLevelFiles(of: library) where url.lastPathComponent.hasPrefix("snowplowEvents.sqlite") {
+      for url in topLevelFiles(of: library, into: &analytics, where: { $0.hasPrefix("snowplowEvents.sqlite") }) {
         remove(url, into: &analytics)
       }
     }
     return [database, pdf, analytics, removeLegacyDefaults()]
   }
 
-  private func topLevelFiles(of folder: URL) -> [URL] {
-    let entries = try? FileManager.default.contentsOfDirectory(
-      at: folder, includingPropertiesForKeys: [.isRegularFileKey])
-    return (entries ?? []).filter { (try? $0.resourceValues(forKeys: [.isRegularFileKey]))?.isRegularFile == true }
+  /**
+   * The folder's own files with a matching name. A folder that can't be listed, or a matching entry that can't be
+   * inspected, counts as a failure: the flag stays unset and the next launch looks again.
+   */
+  private func topLevelFiles(of folder: URL, into group: inout Group, where matches: (String) -> Bool) -> [URL] {
+    guard FileManager.default.fileExists(atPath: folder.path) else { return [] }
+    let name = group.name
+    do {
+      let entries = try FileManager.default.contentsOfDirectory(
+        at: folder, includingPropertiesForKeys: [.isRegularFileKey])
+      return entries.filter { matches($0.lastPathComponent) }.filter { url in
+        do {
+          return try url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile == true
+        } catch {
+          group.found += 1
+          group.failed += 1
+          log.error("Legacy cleanup: could not inspect an entry for \(name, privacy: .public): \((error as NSError).code)")
+          return false
+        }
+      }
+    } catch {
+      group.found += 1
+      group.failed += 1
+      log.error("Legacy cleanup: could not list a folder for \(name, privacy: .public): \((error as NSError).code)")
+      return []
+    }
   }
 
   private func remove(_ url: URL, into group: inout Group) {

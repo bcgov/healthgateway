@@ -91,8 +91,8 @@ internal object LegacyCleanup {
       },
       Group("analytics").also { deleteSnowplow(context, it) },
       Group("pdf").also { group ->
-        context.filesDir.listFiles { file -> file.isFile && TEMP_PDF.matches(file.name) }
-          ?.forEach { delete(context, it, group) }
+        list(context.filesDir, group).filter { it.isFile && TEMP_PDF.matches(it.name) }
+          .forEach { delete(context, it, group) }
       },
     )
     if (groups.all { it.failed == 0 }) flags(context).edit().putBoolean(SWEPT, true).apply()
@@ -133,16 +133,31 @@ internal object LegacyCleanup {
 
   /** Snowplow Android 2.x's event queue and session. This app's tracker is JavaScript only and uses AsyncStorage. */
   private fun deleteSnowplow(context: Context, group: Group) {
-    context.getDatabasePath(SNOWPLOW).parentFile
-      ?.listFiles { file -> file.isFile && file.name.contains(SNOWPLOW, ignoreCase = true) }
-      ?.forEach { delete(context, it, group) }
-    preferencesFile(context, SNOWPLOW).parentFile
-      ?.listFiles { file -> file.name.contains(SNOWPLOW, ignoreCase = true) }
-      ?.mapNotNull { file ->
+    list(context.getDatabasePath(SNOWPLOW).parentFile, group)
+      .filter { it.isFile && it.name.contains(SNOWPLOW, ignoreCase = true) }
+      .forEach { delete(context, it, group) }
+    list(preferencesFile(context, SNOWPLOW).parentFile, group)
+      .filter { it.name.contains(SNOWPLOW, ignoreCase = true) }
+      .mapNotNull { file ->
         PREFS_SUFFIXES.firstOrNull { file.name.endsWith(it) }?.let { file.name.removeSuffix(it) }
       }
-      ?.distinct()
-      ?.forEach { deletePreferences(context, it, group) }
+      .distinct()
+      .forEach { deletePreferences(context, it, group) }
+  }
+
+  /**
+   * A folder's entries. A folder that exists but can't be read counts as a failure, so the flag stays unset and the next
+   * launch looks again: `listFiles` returns null for that, the same as for a folder that was never made.
+   */
+  private fun list(folder: File?, group: Group): List<File> {
+    if (folder == null || !folder.exists()) return emptyList()
+    val entries = folder.listFiles()
+    if (entries == null) {
+      Log.w(TAG, "Legacy cleanup: could not list a folder for ${group.name}")
+      group.count(false)
+      return emptyList()
+    }
+    return entries.asList()
   }
 
   private fun delete(context: Context, file: File, group: Group) {
