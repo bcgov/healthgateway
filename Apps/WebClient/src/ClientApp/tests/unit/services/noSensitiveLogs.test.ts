@@ -130,6 +130,9 @@ describe("source guard", () => {
     /** What is known to hold nothing personal. A new value in a log needs that decided, here. */
     const SAFE_IN_LOGS = new Set([
         "canAccess",
+        // the legacy cleanup's report (`services/legacyCleanup`): fixed text, group names and counts
+        "cleanupSource",
+        "cleanupSummary",
         "config.collector",
         "configured",
         "data.action",

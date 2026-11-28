@@ -5,6 +5,7 @@ import { Alert } from "react-native";
 
 import { onboardingScreens } from "@/constants/onboarding";
 import { services } from "@/services/container";
+import { removeLegacyData } from "@/services/legacyCleanup";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import {
@@ -14,11 +15,19 @@ import {
 import { useThemeStore } from "@/stores/theme.store";
 import { configFixture, fakeAuth } from "@/test/fixtures";
 import { resetApp, runReset } from "@/utils/resetApp";
+import { clearSavedFiles } from "@/utils/saveFile";
 
 jest.mock("expo-secure-store", () => ({
     getItemAsync: jest.fn(),
     setItemAsync: jest.fn(async () => undefined),
     deleteItemAsync: jest.fn(async () => undefined),
+}));
+
+jest.mock("@/services/legacyCleanup", () => ({
+    removeLegacyData: jest.fn(async () => undefined),
+}));
+jest.mock("@/utils/saveFile", () => ({
+    clearSavedFiles: jest.fn(async () => undefined),
 }));
 
 describe("resetApp", () => {
@@ -30,6 +39,8 @@ describe("resetApp", () => {
         signOut.mockClear();
         leavePage.mockClear();
         jest.mocked(SecureStore.deleteItemAsync).mockClear();
+        jest.mocked(removeLegacyData).mockClear();
+        jest.mocked(clearSavedFiles).mockClear();
         useAuthStore.setState({ signOut });
         useAppLockStore.setState({ enabled: true, locked: false });
         useThemeStore.setState({ preference: "dark" });
@@ -60,6 +71,13 @@ describe("resetApp", () => {
         expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith(
             "hg.oidc.session"
         );
+    });
+
+    it("clears exported files and the old apps' data even when the app never started", async () => {
+        jest.spyOn(services, "isInitialized", "get").mockReturnValueOnce(false);
+        await resetApp(leavePage);
+        expect(clearSavedFiles).toHaveBeenCalledTimes(1);
+        expect(removeLegacyData).toHaveBeenCalledTimes(1);
     });
 
     it("brings the intro and the security step back", async () => {
@@ -98,6 +116,7 @@ describe("resetApp", () => {
         await expect(resetApp(leavePage)).rejects.toThrow("keychain");
         expect(leavePage).not.toHaveBeenCalled();
         expect(useAppLockStore.getState().enabled).toBe(true);
+        expect(removeLegacyData).not.toHaveBeenCalled();
         expect(useThemeStore.getState().preference).toBe("dark");
         expect(await AsyncStorage.getItem("hg.theme.preference")).toBe("dark");
     });

@@ -38,6 +38,7 @@ Jest has two projects so that platform-specific modules are both exercised: unit
 - `src/components/`: UI primitives (`common/`) and the site shell (`site/`).
 - `src/theme/`: Design tokens, also used by Tailwind.
 - `modules/hg-secure-vault/`: native module for biometric-locked encryption.
+- `modules/hg-legacy-cleanup/`: native module that removes the data left by the old Health Gateway apps (see `legacy.md`).
 - `tests/unit/`: Jest tests, mirroring `src/`. Shared helpers are in `tests/unit/support/`.
 - `tests/maestro/`: Maestro flows, grouped by feature area.
 

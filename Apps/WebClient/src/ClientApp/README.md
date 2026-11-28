@@ -241,28 +241,29 @@ pkill -f maestro                                                                
 
 ## Project layout
 
-| Folder                     | Contents                                               |
-| -------------------------- | ------------------------------------------------------ |
-| `assets/`                  | Fonts, images, sounds                                  |
-| `modules/hg-secure-vault/` | Native module for biometric-locked encryption          |
-| `plugins/`                 | Expo config plugins                                    |
-| `public/`                  | Static web files (silent SSO page, favicon, web fonts) |
-| `scripts/`                 | Web build, version bump, Maestro runners, dev device   |
-| `src/app/`                 | Expo Router routes (thin files)                        |
-| `src/components/`          | UI primitives (`common/`) and site shell (`site/`)     |
-| `src/config/`              | Native environments                                    |
-| `src/constants/`           | Shared constants                                       |
-| `src/hooks/`               | React hooks                                            |
-| `src/models/`              | Data models                                            |
-| `src/navigation/`          | Root navigator, route guard, menu                      |
-| `src/services/`            | API, auth, HTTP, analytics                             |
-| `src/stores/`              | Zustand stores                                         |
-| `src/theme/`               | Design tokens (also used by Tailwind)                  |
-| `src/types/`               | CSS and SVG type declarations                          |
-| `src/utils/`               | Helpers                                                |
-| `src/views/`               | Screens                                                |
-| `tests/maestro/`           | Maestro end-to-end flows                               |
-| `tests/unit/`              | Jest unit tests                                        |
+| Folder                       | Contents                                               |
+| ---------------------------- | ------------------------------------------------------ |
+| `assets/`                    | Fonts, images, sounds                                  |
+| `modules/hg-legacy-cleanup/` | Native module that removes the old apps' data          |
+| `modules/hg-secure-vault/`   | Native module for biometric-locked encryption          |
+| `plugins/`                   | Expo config plugins                                    |
+| `public/`                    | Static web files (silent SSO page, favicon, web fonts) |
+| `scripts/`                   | Web build, version bump, Maestro runners, dev device   |
+| `src/app/`                   | Expo Router routes (thin files)                        |
+| `src/components/`            | UI primitives (`common/`) and site shell (`site/`)     |
+| `src/config/`                | Native environments                                    |
+| `src/constants/`             | Shared constants                                       |
+| `src/hooks/`                 | React hooks                                            |
+| `src/models/`                | Data models                                            |
+| `src/navigation/`            | Root navigator, route guard, menu                      |
+| `src/services/`              | API, auth, HTTP, analytics                             |
+| `src/stores/`                | Zustand stores                                         |
+| `src/theme/`                 | Design tokens (also used by Tailwind)                  |
+| `src/types/`                 | CSS and SVG type declarations                          |
+| `src/utils/`                 | Helpers                                                |
+| `src/views/`                 | Screens                                                |
+| `tests/maestro/`             | Maestro end-to-end flows                               |
+| `tests/unit/`                | Jest unit tests                                        |
 
 `android/` and `ios/` (prebuild) and `dist/` (web export) are generated and git-ignored.
 

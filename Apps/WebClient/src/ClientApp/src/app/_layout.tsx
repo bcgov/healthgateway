@@ -28,6 +28,7 @@ import {
 } from "@/hooks/useTheme";
 import { isTooManyRequestsError } from "@/models/errors";
 import { RootNavigator } from "@/navigation/RootNavigator";
+import { logLegacyCleanup } from "@/services/legacyCleanup";
 import { logger } from "@/services/logger";
 import { useAuthStore } from "@/stores/auth.store";
 import { bootstrap } from "@/stores/bootstrap";
@@ -50,6 +51,8 @@ import { OnboardingView } from "@/views/native/onboarding/OnboardingView";
 import { SplashView } from "@/views/native/splash/SplashView";
 
 registerDevStores();
+// Native: the cleanup of the old apps' data ran before JavaScript started; this only logs what it did
+void logLegacyCleanup();
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 SplashScreen.setOptions({ fade: true, duration: 300 });
