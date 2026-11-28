@@ -3,16 +3,18 @@ import { Alert } from "react-native";
 
 import { clearStoredSession } from "@/services/auth/storedSession";
 import { services } from "@/services/container";
+import { removeLegacyData } from "@/services/legacyCleanup";
 import { describeError, logger } from "@/services/logger";
 import { useAppLockStore } from "@/stores/appLock.store";
 import { useAuthStore } from "@/stores/auth.store";
 import { useCommunicationStore } from "@/stores/communication.store";
 import { useOnboardingStore } from "@/stores/onboarding.store";
 import { useThemeStore } from "@/stores/theme.store";
+import { clearSavedFiles } from "@/utils/saveFile";
 
 /**
  * Back to a fresh install: signs out (removing the tokens), forgets the app lock, and clears everything saved on the
- * device. Onboarding is reloaded last because it covers the screen; `leavePage` moves off any signed-in page beneath it.
+ * device, the old Health Gateway apps' data included. Onboarding is reloaded last because it covers the screen; `leavePage` moves off any signed-in page beneath it.
  * Rejects, before anything else is cleared, when the stored login could not be deleted: the next start would restore it.
  */
 export async function resetApp(leavePage: () => void): Promise<void> {
@@ -23,6 +25,10 @@ export async function resetApp(leavePage: () => void): Promise<void> {
     await clearStoredSession();
     leavePage();
     await useAppLockStore.getState().reset();
+    // sign-out clears the exported files, but it is skipped when the app never started
+    await clearSavedFiles();
+    // what the old Health Gateway apps left, where the launch's cleanup could not delete it (legacy.md)
+    await removeLegacyData();
     try {
         await AsyncStorage.clear();
     } catch (error) {
